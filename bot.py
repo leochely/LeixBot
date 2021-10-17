@@ -20,7 +20,8 @@ class LeixBot(commands.Bot):
                 'leix34',
                 # 'smallpinkpanda',
                 # 'lickers__',
-                'SeaBazT'
+                'kingostone',
+                # 'SeaBazT'
             ]
         )
         self.multipov_channels = ['smallpinkpanda', ]
@@ -95,7 +96,7 @@ class LeixBot(commands.Bot):
         await ctx.send('Multi mis à jour SeemsGood')
 
     @commands.command(name="multiset")
-    async def multiadd(self, ctx: commands.Context, *args):
+    async def multiset(self, ctx: commands.Context, *args):
         self.multipov_channels = []
         for channel in args:
             self.multipov_channels.append(channel)
@@ -107,6 +108,7 @@ class LeixBot(commands.Bot):
         await ctx.send('Multi a été reset SwiftRage')
 
     @commands.command(name="shutdown")
+    @mod_command
     async def shutdown_command(self, ctx: commands.bot.Context):
         await ctx.send(f"LeixBot is now shutting down.")
         # await self.db.close()
