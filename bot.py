@@ -91,28 +91,32 @@ class LeixBot(commands.Bot):
 
     @commands.command(name="multiadd")
     async def multiadd(self, ctx: commands.Context, *args):
-        for channel in args:
-            self.multipov_channels.append(channel)
-        await ctx.send('Multi mis à jour SeemsGood')
+        if ctx.author.is_mod:
+            for channel in args:
+                self.multipov_channels.append(channel)
+            await ctx.send('Multi mis à jour SeemsGood')
 
     @commands.command(name="multiset")
     async def multiset(self, ctx: commands.Context, *args):
-        self.multipov_channels = []
-        for channel in args:
-            self.multipov_channels.append(channel)
-        await ctx.send('Multi mis à jour SeemsGood')
+        if ctx.author.is_mod:
+            self.multipov_channels = []
+            for channel in args:
+                self.multipov_channels.append(channel)
+            await ctx.send('Multi mis à jour SeemsGood')
 
     @commands.command(name="multireset")
     async def multireset(self, ctx: commands.Context):
-        self.multipov_channels = []
-        await ctx.send('Multi a été reset SwiftRage')
+        if ctx.author.is_mod:
+            self.multipov_channels = []
+            await ctx.send('Multi a été reset SwiftRage')
 
     @commands.command(name="shutdown")
     async def shutdown_command(self, ctx: commands.bot.Context):
-        await ctx.send(f"LeixBot is now shutting down.")
-        # await self.db.close()
-        await self.close()
-        sys.exit(0)
+        if ctx.author.is_mod:
+            await ctx.send(f"LeixBot is now shutting down.")
+            # await self.db.close()
+            await self.close()
+            sys.exit(0)
 
 
 if __name__ == "__main__":
