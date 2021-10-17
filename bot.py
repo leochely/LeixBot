@@ -20,8 +20,10 @@ class LeixBot(commands.Bot):
                 'leix34',
                 # 'smallpinkpanda',
                 # 'lickers__',
-                'kingostone',
-                # 'SeaBazT'
+                # 'kingostone',
+                # 'SeaBazT',
+                'Hominidea',
+                'baddream',
             ]
         )
         self.multipov_channels = ['smallpinkpanda', ]
@@ -54,11 +56,9 @@ class LeixBot(commands.Bot):
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
 
-    # @commands.command()
-    # async def salut(self, ctx: commands.Context):
-    #     # Send a hello back!
-    #     # Sending a reply back to the channel is easy... Below is an example.
-    #     await ctx.send(f'Salut {ctx.author.name}!')
+    @commands.command(name="salut")
+    async def salut(self, ctx: commands.Context):
+        await ctx.send(f'Salut {ctx.author.name}!')
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
@@ -69,7 +69,7 @@ class LeixBot(commands.Bot):
         await ctx.send(f'Désolé @Lickers__!')
 
     @commands.command(name="fx")
-    async def salut(self, ctx: commands.Context):
+    async def fx(self, ctx: commands.Context):
         await ctx.send('Kel bo fx')
 
     @commands.command(name="so")
