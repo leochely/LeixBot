@@ -97,14 +97,12 @@ class LeixBot(commands.Bot):
         channels = '/'.join(self.multipov_channels)
         await ctx.send(f'https://kadgar.net/live/{ctx.author.channel.name}/{channels}')
 
-    @mod_command
     @commands.command(name="multiadd")
     async def multiadd(self, ctx: commands.Context, *args):
         for channel in args:
             self.multipov_channels.append(channel)
         await ctx.send('Multi mis à jour SeemsGood')
 
-    @mod_command
     @commands.command(name="multiset")
     async def multiset(self, ctx: commands.Context, *args):
         self.multipov_channels = []
@@ -112,13 +110,11 @@ class LeixBot(commands.Bot):
             self.multipov_channels.append(channel)
         await ctx.send('Multi mis à jour SeemsGood')
 
-    @mod_command
     @commands.command(name="multireset")
     async def multireset(self, ctx: commands.Context):
         self.multipov_channels = []
         await ctx.send('Multi a été reset SwiftRage')
 
-    @mod_command
     @commands.command(name="shutdown")
     async def shutdown_command(self, ctx: commands.bot.Context):
         await ctx.send(f"LeixBot is now shutting down.")
