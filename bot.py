@@ -19,9 +19,11 @@ class LeixBot(commands.Bot):
             initial_channels=[
                 'leix34',
                 # 'smallpinkpanda',
-                # 'lickers__'
+                # 'lickers__',
+                'SeaBazT'
             ]
         )
+        self.multipov_channels = ['smallpinkpanda', ]
 
     async def event_ready(self):
         # Notify us when everything is ready!
@@ -42,17 +44,20 @@ class LeixBot(commands.Bot):
             return
 
         # Print the contents of our message to console...
-        logging.info(message.content)
+        logging.info(
+            f'{message.author.name} on channel {message.author.channel.name}: '
+            f'{message.content}'
+        )
 
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
 
-    @commands.command(name="salut")
-    async def salut(self, ctx: commands.Context):
-        # Send a hello back!
-        # Sending a reply back to the channel is easy... Below is an example.
-        await ctx.send(f'Salut {ctx.author.name}!')
+    # @commands.command()
+    # async def salut(self, ctx: commands.Context):
+    #     # Send a hello back!
+    #     # Sending a reply back to the channel is easy... Below is an example.
+    #     await ctx.send(f'Salut {ctx.author.name}!')
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
@@ -74,16 +79,35 @@ class LeixBot(commands.Bot):
     async def den(self, ctx: commands.Context):
         await ctx.send('https://discord.gg/PEfEVWacgP')
 
-    @commands.command(name="multipov")
-    async def multipov(self, ctx: commands.Context):
-        await ctx.send('https://kadgar.net/live/leix34/smallpinkpanda')
-
     @commands.command(name="ref")
-    async def multipov(self, ctx: commands.Context):
+    async def ref(self, ctx: commands.Context):
         await ctx.send('glaref leix34Trigerred')
 
+    @commands.command(name="multipov")
+    async def multipov(self, ctx: commands.Context):
+        channels = '/'.join(self.multipov_channels)
+        await ctx.send(f'https://kadgar.net/live/{ctx.author.channel.name}/{channels}')
+
+    @commands.command(name="multiadd")
+    async def multiadd(self, ctx: commands.Context, *args):
+        for channel in args:
+            self.multipov_channels.append(channel)
+        await ctx.send('Multi mis à jour SeemsGood')
+
+    @commands.command(name="multiset")
+    async def multiadd(self, ctx: commands.Context, *args):
+        self.multipov_channels = []
+        for channel in args:
+            self.multipov_channels.append(channel)
+        await ctx.send('Multi mis à jour SeemsGood')
+
+    @commands.command(name="multireset")
+    async def multireset(self, ctx: commands.Context):
+        self.multipov_channels = []
+        await ctx.send('Multi a été reset SwiftRage')
+
     @commands.command(name="shutdown")
-    async def shutdown_command(self, ctx: commands.bot.Context) -> None:
+    async def shutdown_command(self, ctx: commands.bot.Context):
         await ctx.send(f"LeixBot is now shutting down.")
         # await self.db.close()
         await self.close()
