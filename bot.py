@@ -6,14 +6,6 @@ import sys
 from twitchio.ext import commands
 
 
-## Decorator ##
-def mod_command(func):
-    def wrapper(*args, **kwargs):
-        print('args - ', args)
-        return func(*args, **kwargs)
-    return wrapper
-
-
 class LeixBot(commands.Bot):
 
     def __init__(self):
