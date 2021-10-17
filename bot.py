@@ -18,12 +18,12 @@ class LeixBot(commands.Bot):
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[
                 'leix34',
-                # 'smallpinkpanda',
+                'smallpinkpanda',
                 # 'lickers__',
                 # 'kingostone',
                 # 'SeaBazT',
                 'Hominidea',
-                'baddream',
+                'kalderinofeross'
             ]
         )
         self.multipov_channels = ['smallpinkpanda', ]
@@ -76,6 +76,10 @@ class LeixBot(commands.Bot):
     async def so(self, ctx: commands.Context):
         await ctx.send('yapadeso')
 
+    @commands.command(name="porte")
+    async def porte(self, ctx: commands.Context):
+        await ctx.send("Vision d'artiste")
+
     @commands.command(name="den")
     async def den(self, ctx: commands.Context):
         await ctx.send('https://discord.gg/PEfEVWacgP')
@@ -83,6 +87,8 @@ class LeixBot(commands.Bot):
     @commands.command(name="ref")
     async def ref(self, ctx: commands.Context):
         await ctx.send('glaref leix34Trigerred')
+
+    ## MULTIPOV COMMANDS ##
 
     @commands.command(name="multipov")
     async def multipov(self, ctx: commands.Context):
@@ -109,6 +115,14 @@ class LeixBot(commands.Bot):
         if ctx.author.is_mod:
             self.multipov_channels = []
             await ctx.send('Multi a été reset SwiftRage')
+
+    @commands.command(name="list")
+    async def list(self, ctx: commands.Context):
+        list = ""
+        for command in self.commands:
+            list += command + ", "
+        list = list[:-2]
+        await ctx.send(f'La liste des commandes de LeixBot: {list}')
 
     @commands.command(name="shutdown")
     async def shutdown_command(self, ctx: commands.bot.Context):
