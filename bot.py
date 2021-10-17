@@ -108,7 +108,6 @@ class LeixBot(commands.Bot):
         await ctx.send('Multi a été reset SwiftRage')
 
     @commands.command(name="shutdown")
-    @mod_command
     async def shutdown_command(self, ctx: commands.bot.Context):
         await ctx.send(f"LeixBot is now shutting down.")
         # await self.db.close()
