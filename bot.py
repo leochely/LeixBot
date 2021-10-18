@@ -2,7 +2,9 @@
 import logging
 import os  # for importing env vars for the bot to use
 import sys
+from pathlib import Path
 
+import cogs
 from twitchio.ext import commands
 
 
@@ -20,13 +22,29 @@ class LeixBot(commands.Bot):
                 'leix34',
                 'smallpinkpanda',
                 # 'lickers__',
-                # 'kingostone',
+                'kingostone',
                 # 'SeaBazT',
                 'Hominidea',
                 'kalderinofeross'
             ]
         )
+        self._cogs_names: t.Dict[str] = [
+            p.stem for p in Path(".").glob("./cogs/*.py")
+        ]
         self.multipov_channels = ['smallpinkpanda', ]
+
+    def setup(self):
+        print("Chargement des cogs...")
+
+        for cog in self._cogs_names:
+            print(f" Loading `{cog}` cog.")
+            self.load_module(f"cogs.{cog}")
+
+        print("Chargement terminé")
+
+    def run(self):
+        self.setup()
+        super().run()
 
     async def event_ready(self):
         # Notify us when everything is ready!
@@ -87,34 +105,6 @@ class LeixBot(commands.Bot):
     @commands.command(name="ref")
     async def ref(self, ctx: commands.Context):
         await ctx.send('glaref leix34Trigerred')
-
-    ## MULTIPOV COMMANDS ##
-
-    @commands.command(name="multipov")
-    async def multipov(self, ctx: commands.Context):
-        channels = '/'.join(self.multipov_channels)
-        await ctx.send(f'https://kadgar.net/live/{ctx.author.channel.name}/{channels}')
-
-    @commands.command(name="multiadd")
-    async def multiadd(self, ctx: commands.Context, *args):
-        if ctx.author.is_mod:
-            for channel in args:
-                self.multipov_channels.append(channel)
-            await ctx.send('Multi mis à jour SeemsGood')
-
-    @commands.command(name="multiset")
-    async def multiset(self, ctx: commands.Context, *args):
-        if ctx.author.is_mod:
-            self.multipov_channels = []
-            for channel in args:
-                self.multipov_channels.append(channel)
-            await ctx.send('Multi mis à jour SeemsGood')
-
-    @commands.command(name="multireset")
-    async def multireset(self, ctx: commands.Context):
-        if ctx.author.is_mod:
-            self.multipov_channels = []
-            await ctx.send('Multi a été reset SwiftRage')
 
     @commands.command(name="list")
     async def list(self, ctx: commands.Context):
