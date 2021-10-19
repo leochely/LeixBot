@@ -4,8 +4,8 @@ import os  # for importing env vars for the bot to use
 import sys
 from pathlib import Path
 
-import cogs
-from twitchio.ext import commands
+from twitchio import Channel, Client, User
+from twitchio.ext import commands, pubsub
 
 
 class LeixBot(commands.Bot):
@@ -20,14 +20,16 @@ class LeixBot(commands.Bot):
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[
                 'leix34',
-                'smallpinkpanda',
+                # 'smallpinkpanda',
                 # 'lickers__',
                 'kingostone',
                 # 'SeaBazT',
-                'Hominidea',
-                'kalderinofeross'
+                # 'Hominidea',
+                # 'kalderinofeross',
+                # 'potdechoucroute',
             ]
         )
+        self.pubsub_client = None
         self._cogs_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./cogs/*.py")
         ]
@@ -48,15 +50,18 @@ class LeixBot(commands.Bot):
 
     async def event_ready(self):
         # Notify us when everything is ready!
+
+        # Subscribes through pubsub to topics
+        c: Channel = self.connected_channels[0]
+        u: List["User"] = await self.fetch_users(names=[c.name])
+        uu: User = u[0]
+
+        topics = [pubsub.channel_points(self.pubsub_client._http.token)[uu.id]]
+        await self.pubsub_client.pubsub.subscribe_topics(topics)
+        await self.pubsub_client.connect()
+
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
-
-    # async def event_join(self, channel, user):
-    #     # Notify us when everything is ready!
-    #     # We are logged in and ready to chat and use commands...
-    #     self.channel: twitchio.Channel = self.get_channel(channel.name)
-    #     await self.channel.send("LeixBot is now online!")
-    #     logging.info(f'Joined channel {channel}')
 
     async def event_message(self, message):
         # Messages with echo set to True are messages sent by the bot...
@@ -74,37 +79,24 @@ class LeixBot(commands.Bot):
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
 
+    ## PUBSUB FUNCTIONS ##
+    async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
+        logging.info(
+            f'Redemption by {event.user.name} of reward {event.reward.title} '
+            f'with text {event.reward.prompt} done'
+        )
+        channel = self.pubsub_client.get_channel("leix34")
+        await channel.send("test")
+
+    ## GENERAL FUNCTIONS ##
+
     @commands.command(name="salut")
     async def salut(self, ctx: commands.Context):
         await ctx.send(f'Salut {ctx.author.name}!')
 
-    @commands.command(name="dblade")
-    async def dblade(self, ctx: commands.Context):
-        await ctx.send(f'Je te dedicace cette dblade {ctx.author.name}!')
-
-    @commands.command(name="boubou")
-    async def boubou(self, ctx: commands.Context):
-        await ctx.send(f'Désolé @Lickers__!')
-
-    @commands.command(name="fx")
-    async def fx(self, ctx: commands.Context):
-        await ctx.send('Kel bo fx')
-
-    @commands.command(name="so")
-    async def so(self, ctx: commands.Context):
-        await ctx.send('yapadeso')
-
-    @commands.command(name="porte")
-    async def porte(self, ctx: commands.Context):
-        await ctx.send("Vision d'artiste")
-
-    @commands.command(name="den")
-    async def den(self, ctx: commands.Context):
-        await ctx.send('https://discord.gg/PEfEVWacgP')
-
-    @commands.command(name="ref")
-    async def ref(self, ctx: commands.Context):
-        await ctx.send('glaref leix34Trigerred')
+    @commands.command(name="git")
+    async def git(self, ctx: commands.Context):
+        await ctx.send(f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid')
 
     @commands.command(name="list")
     async def list(self, ctx: commands.Context):
@@ -132,5 +124,19 @@ if __name__ == "__main__":
             logging.StreamHandler()
         ]
     )
+
+    client = Client(
+        token=os.environ['CHANNEL_ACCESS_TOKEN'],
+        initial_channels=['leix34'],
+        client_secret=os.environ['CLIENT_SECRET']
+    )
+
+    client.pubsub = pubsub.PubSubPool(client)
+
+    @client.event()
+    async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
+        await bot.event_pubsub_channel_points(event)
+
     bot = LeixBot()
+    bot.pubsub_client = client
     bot.run()
