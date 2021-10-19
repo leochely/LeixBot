@@ -20,13 +20,13 @@ class LeixBot(commands.Bot):
             prefix=os.environ['BOT_PREFIX'],
             initial_channels=[
                 'leix34',
-                # 'smallpinkpanda',
+                'smallpinkpanda',
                 # 'lickers__',
                 'kingostone',
                 # 'SeaBazT',
-                # 'Hominidea',
-                # 'kalderinofeross',
-                # 'potdechoucroute',
+                'Hominidea',
+                'kalderinofeross',
+                'potdechoucroute',
             ]
         )
         self.pubsub_client = None
