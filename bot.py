@@ -85,14 +85,20 @@ class LeixBot(commands.Bot):
             f'Redemption by {event.user.name} of reward {event.reward.title} '
             f'with text {event.reward.prompt} done'
         )
-        channel = self.pubsub_client.get_channel("leix34")
+        channel = self.pubsub_client.get_channel(
+            os.environ['CHANNEL']
+        )
         await channel.send("test")
 
     ## GENERAL FUNCTIONS ##
 
     @commands.command(name="salut")
-    async def salut(self, ctx: commands.Context):
-        await ctx.send(f'Salut {ctx.author.name}!')
+    async def salut(self, ctx: commands.Context, *name):
+        if not name:
+            name = ctx.author.name
+        else:
+            name = name[0]
+        await ctx.send(f'Salut @{name}!')
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
@@ -127,7 +133,7 @@ if __name__ == "__main__":
 
     client = Client(
         token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        initial_channels=['leix34'],
+        initial_channels=os.environ['CHANNEL'],
         client_secret=os.environ['CLIENT_SECRET']
     )
 

@@ -10,8 +10,12 @@ class Misc(commands.Cog):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme :(")
 
     @commands.command(name="bn")
-    async def bn(self, ctx: commands.Context):
-        await ctx.send(f'Bonne nuit {ctx.author.name} <3')
+    async def bn(self, ctx: commands.Context, *name):
+        if not name:
+            name = ctx.author.name
+        else:
+            name = name[0]
+        await ctx.send(f'Bonne nuit @{name} <3')
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
