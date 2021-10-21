@@ -1,7 +1,9 @@
 # bot.py
+import asyncio
 import logging
 import os  # for importing env vars for the bot to use
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from twitchio import Channel, Client, User
@@ -85,10 +87,13 @@ class LeixBot(commands.Bot):
             f'Redemption by {event.user.name} of reward {event.reward.title} '
             f'with text {event.reward.prompt} done'
         )
-        channel = self.pubsub_client.get_channel(
-            os.environ['CHANNEL']
-        )
-        await channel.send("test")
+        channel = self.pubsub_client.get_channel("leix34")
+        if event.reward.title == "Hats off to you":
+            minutes = 5
+            time = datetime.now() + timedelta(minutes=minutes)
+            await channel.send(f"Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
+            await asyncio.sleep(minutes * 60)
+            await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
     ## GENERAL FUNCTIONS ##
 
@@ -133,7 +138,7 @@ if __name__ == "__main__":
 
     client = Client(
         token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        initial_channels=os.environ['CHANNEL'],
+        initial_channels=['leix34'],
         client_secret=os.environ['CLIENT_SECRET']
     )
 

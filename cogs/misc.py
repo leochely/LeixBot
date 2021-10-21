@@ -1,3 +1,5 @@
+import datetime
+
 from twitchio.ext import commands
 
 
@@ -16,6 +18,16 @@ class Misc(commands.Cog):
         else:
             name = name[0]
         await ctx.send(f'Bonne nuit @{name} <3')
+
+    @commands.command(name="uptime")
+    async def uptime_command(self, ctx: commands.bot.Context):
+        stream = await self.bot.fetch_streams(user_logins=[ctx.author.channel.name])
+
+        if len(stream) == 0:
+            return await ctx.send("Il n'y a pas de live en cours :(")
+
+        uptime = datetime.datetime.now() - stream[0].started_at
+        await ctx.send(f"En ligne depuis {uptime} (oui c'est précis)")
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
