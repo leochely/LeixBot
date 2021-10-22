@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from twitchio import Channel, Client, User
-from twitchio.ext import commands, pubsub
+from twitchio.ext import commands, pubsub, routines
 
 
 class LeixBot(commands.Bot):
@@ -23,7 +23,7 @@ class LeixBot(commands.Bot):
             initial_channels=[
                 'leix34',
                 'smallpinkpanda',
-                # 'lickers__',
+                'lickers__',
                 'kingostone',
                 # 'SeaBazT',
                 'Hominidea',
@@ -41,10 +41,13 @@ class LeixBot(commands.Bot):
         print("Chargement des cogs...")
 
         for cog in self._cogs_names:
-            print(f" Loading `{cog}` cog.")
+            logging.info(f"Loading `{cog}` cog.")
             self.load_module(f"cogs.{cog}")
 
-        print("Chargement terminé")
+        # logging.info("Starting timers")
+        # self.loop.create_task(self.timers())
+
+        logging.info("Chargement terminé")
 
     def run(self):
         self.setup()
@@ -61,6 +64,9 @@ class LeixBot(commands.Bot):
         topics = [pubsub.channel_points(self.pubsub_client._http.token)[uu.id]]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
+
+        # Starting timers
+        self.youtube.start()
 
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
@@ -95,8 +101,13 @@ class LeixBot(commands.Bot):
             await asyncio.sleep(minutes * 60)
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
-    ## GENERAL FUNCTIONS ##
+    ## TIMERS ##
+    @routines.routine(minutes=45.0, iterations=1, wait_first=False)
+    async def youtube(self):
+        channel = self.get_channel('leix34')
+        await channel.send("Mon YouTube: https://youtube.com/leix34")
 
+    ## GENERAL FUNCTIONS ##
     @commands.command(name="salut")
     async def salut(self, ctx: commands.Context, *name):
         if not name:
@@ -107,7 +118,9 @@ class LeixBot(commands.Bot):
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
-        await ctx.send(f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid')
+        await ctx.send(
+            f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
+        )
 
     @commands.command(name="list")
     async def list(self, ctx: commands.Context):
@@ -121,7 +134,6 @@ class LeixBot(commands.Bot):
     async def shutdown_command(self, ctx: commands.bot.Context):
         if ctx.author.is_mod:
             await ctx.send(f"LeixBot is now shutting down.")
-            # await self.db.close()
             await self.close()
             sys.exit(0)
 
