@@ -29,7 +29,8 @@ class LeixBot(commands.Bot):
                 'Hominidea',
                 'kalderinofeross',
                 'potdechoucroute',
-            ]
+            ],
+            case_insensitive=True
         )
         self.pubsub_client = None
         self._cogs_names: t.Dict[str] = [

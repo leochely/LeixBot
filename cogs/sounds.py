@@ -7,10 +7,10 @@ class Sound(commands.Cog):
         self.bot = bot
 
     @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command(name="testson")
-    async def testson(self, ctx: commands.Context):
-        playsound('sounds/test.wav', False)
-        await ctx.send("Bien ma sonnette? Kappa")
+    @commands.command(name="dontlookback", aliases=['dlb', 'guilty'])
+    async def dontlookback(self, ctx: commands.Context):
+        playsound('sounds/dontlookback.wav', False)
+        await ctx.send("Kreygasm")
 
 
 def prepare(bot: commands.Bot):
