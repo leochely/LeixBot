@@ -29,6 +29,7 @@ class LeixBot(commands.Bot):
                 'Hominidea',
                 'kalderinofeross',
                 'potdechoucroute',
+                'zenoxyde'
             ],
             case_insensitive=True
         )
@@ -67,7 +68,7 @@ class LeixBot(commands.Bot):
         await self.pubsub_client.connect()
 
         # Starting timers
-        self.youtube.start()
+        self.links.start()
 
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
@@ -103,10 +104,15 @@ class LeixBot(commands.Bot):
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
     ## TIMERS ##
-    @routines.routine(minutes=45.0, iterations=1, wait_first=False)
-    async def youtube(self):
+    @routines.routine(minutes=30.0, wait_first=False)
+    async def links(self):
         channel = self.get_channel('leix34')
         await channel.send("Mon YouTube: https://youtube.com/leix34")
+        await asyncio.sleep(60 * 30)
+        await channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
+        await asyncio.sleep(60 * 30)
+        await channel.send("Le discord: https://leochely.github.io/apexLegendsGuide/")
+        await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
     @commands.command(name="salut")
@@ -115,7 +121,9 @@ class LeixBot(commands.Bot):
             name = ctx.author.name
         else:
             name = name[0]
-        await ctx.send(f'Salut @{name}!')
+            if name[0] != '@':
+                name = '@' + name
+        await ctx.send(f'Salut {name}!')
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
