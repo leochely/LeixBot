@@ -34,6 +34,7 @@ class LeixBot(commands.Bot):
             case_insensitive=True
         )
         self.pubsub_client = None
+        self.channel = None
         self._cogs_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./cogs/*.py")
         ]
@@ -63,9 +64,13 @@ class LeixBot(commands.Bot):
         u: List["User"] = await self.fetch_users(names=[c.name])
         uu: User = u[0]
 
-        topics = [pubsub.channel_points(self.pubsub_client._http.token)[uu.id]]
+        topics = [
+            pubsub.channel_points(self.pubsub_client._http.token)[uu.id],
+            pubsub.bits(self.pubsub_client._http.token)[uu.id]
+        ]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
+        self.channel = self.pubsub_client.get_channel("leix34")
 
         # Starting timers
         self.links.start()
@@ -93,25 +98,31 @@ class LeixBot(commands.Bot):
     async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
         logging.info(
             f'Redemption by {event.user.name} of reward {event.reward.title} '
-            f'with text {event.reward.prompt} done'
+            f'with input {event.input} done'
         )
-        channel = self.pubsub_client.get_channel("leix34")
         if event.reward.title == "Hats off to you":
             minutes = 5
             time = datetime.now() + timedelta(minutes=minutes)
-            await channel.send(f"Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
+            await self.channel.send(f"Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
             await asyncio.sleep(minutes * 60)
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
+
+    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
+        logging.info(
+            f'{event.user.name} just donated {event.bits_used} bits PogChamp !'
+        )
+        self.channel.send(
+            f'Merci pour les {event.bits_used} bits @{event.user.name}'
+        )
 
     ## TIMERS ##
     @routines.routine(minutes=30.0, wait_first=False)
     async def links(self):
-        channel = self.get_channel('leix34')
-        await channel.send("Mon YouTube: https://youtube.com/leix34")
+        await self.channel.send("Mon YouTube: https://youtube.com/leix34")
         await asyncio.sleep(60 * 30)
-        await channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
+        await self.channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
         await asyncio.sleep(60 * 30)
-        await channel.send("Le discord: https://leochely.github.io/apexLegendsGuide/")
+        await self.channel.send("Le discord: https://leochely.github.io/apexLegendsGuide/")
         await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##

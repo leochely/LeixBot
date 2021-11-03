@@ -7,9 +7,19 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    @commands.command(name="ban")
+    async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
+        await ctx.send(f"/ban {user} {reason}")
+        await ctx.send(f"Au revoir {user} HeyGuys")
+
+    @commands.command(name="unban")
+    async def unban(self, ctx: commands.Context, user):
+        await ctx.send(f"/unban {user}")
+        await ctx.send(f"Bon retour parmi nous {user} HeyGuys !")
+
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
-        await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme :(")
+        await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
 
     @commands.command(name="bn")
     async def bn(self, ctx: commands.Context, *name):
