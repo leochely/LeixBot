@@ -107,12 +107,12 @@ class LeixBot(commands.Bot):
             await asyncio.sleep(minutes * 60)
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
-    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
+    async def event_pubsub_bits(self, event: pubsub.PubSubBitsMessage):
         logging.info(
-            f'{event.user.name} just donated {event.bits_used} bits PogChamp !'
+            f'{event.user.name} just donated {event.bits_used} bits!'
         )
         self.channel.send(
-            f'Merci pour les {event.bits_used} bits @{event.user.name}'
+            f'Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
         )
 
     ## TIMERS ##
