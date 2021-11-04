@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from twitchio.ext import commands
 
@@ -9,7 +10,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="ban")
     async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
-        if ctx.author.is_mod or ctx.author == user:
+        if ctx.author.is_mod or ctx.author.name == user:
             await ctx.send(f"/ban {user} {reason}")
             await ctx.send(f"Au revoir {user} HeyGuys")
 
