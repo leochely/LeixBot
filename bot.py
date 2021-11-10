@@ -122,11 +122,11 @@ class LeixBot(commands.Bot):
         await asyncio.sleep(60 * 30)
         await self.channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
         await asyncio.sleep(60 * 30)
-        await self.channel.send("Le discord: https://leochely.github.io/apexLegendsGuide/")
+        await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
         await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
-    @commands.command(name="salut")
+    @commands.command(name="salut", aliases=['slt'])
     async def salut(self, ctx: commands.Context, *name):
         if not name:
             name = ctx.author.name
@@ -150,13 +150,6 @@ class LeixBot(commands.Bot):
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
 
-    @commands.command(name="shutdown")
-    async def shutdown_command(self, ctx: commands.bot.Context):
-        if ctx.author.is_mod:
-            await ctx.send(f"LeixBot is now shutting down.")
-            await self.close()
-            sys.exit(0)
-
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -179,6 +172,10 @@ if __name__ == "__main__":
     @client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
         await bot.event_pubsub_channel_points(event)
+
+    @client.event()
+    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
+        await bot.event_pubsub_bits(event)
 
     bot = LeixBot()
     bot.pubsub_client = client
