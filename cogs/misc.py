@@ -48,6 +48,10 @@ class Misc(commands.Cog):
     async def dblade(self, ctx: commands.Context):
         await ctx.send(f'Je te dedicace cette dblade {ctx.author.name}!')
 
+    @commands.command(name="cursed")
+    async def cursed(self, ctx: commands.Context):
+        await ctx.send("C'est non")
+
     @commands.command(name="boubou")
     async def boubou(self, ctx: commands.Context):
         await ctx.send(f'Désolé @Lickers__!')
