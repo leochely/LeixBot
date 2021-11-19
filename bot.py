@@ -132,9 +132,9 @@ class LeixBot(commands.Bot):
             name = ctx.author.name
         else:
             name = name[0]
-            if name[0] != '@':
-                name = '@' + name
-        await ctx.send(f'Salut {name}!')
+            if name[0] == '@':
+                name = name[-1:]
+        await ctx.send(f'Salut @{name}!')
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):

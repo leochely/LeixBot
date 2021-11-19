@@ -30,8 +30,8 @@ class Misc(commands.Cog):
             name = ctx.author.name
         else:
             name = name[0]
-            if name[0] != '@':
-                name = '@' + name
+            if name[0] == '@':
+                name = name[-1:]
         await ctx.send(f'Bonne nuit @{name} <3')
 
     @commands.command(name="uptime")
