@@ -3,6 +3,8 @@ import asyncio
 import logging
 import os  # for importing env vars for the bot to use
 import sys
+import random
+import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -90,6 +92,9 @@ class LeixBot(commands.Bot):
             f'{message.content}'
         )
 
+        if "@leixbot" in message.content.lower():
+            await self.random_reply(message)
+
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
@@ -149,6 +154,18 @@ class LeixBot(commands.Bot):
             list += command + ", "
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
+
+    async def random_reply(self, message):
+        compiled_msg = re.compile(re.escape("@leixbot"), re.IGNORECASE)
+        msg_clean = compiled_msg.sub("", message.content)
+        reply_pool = [
+            "wsh t ki", "DONT LOOK BACK",
+            "leix34Trigerred",
+            "Oui vous m'avez demandé?",
+            f"Ah ouais {msg_clean} ??"
+        ]
+        reply = random.choice(reply_pool)
+        await self.channel.send(f"@{message.author.name} {reply}")
 
 
 if __name__ == "__main__":
