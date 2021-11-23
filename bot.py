@@ -133,7 +133,7 @@ class LeixBot(commands.Bot):
         else:
             name = name[0]
             if name[0] == '@':
-                name = name[-1:]
+                name = name[1:]
         await ctx.send(f'Salut @{name}!')
 
     @commands.command(name="git")
