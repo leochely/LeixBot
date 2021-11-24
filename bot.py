@@ -165,7 +165,7 @@ class LeixBot(commands.Bot):
             f"Ah ouais {msg_clean} ??"
         ]
         reply = random.choice(reply_pool)
-        await self.channel.send(f"@{message.author.name} {reply}")
+        await message.author.channel.send(f"@{message.author.name} {reply}")
 
 
 if __name__ == "__main__":
