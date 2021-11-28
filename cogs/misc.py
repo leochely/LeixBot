@@ -7,6 +7,7 @@ from twitchio.ext import commands
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.mh_id = "id not set!"
 
     @commands.command(name="ban")
     async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
@@ -79,6 +80,16 @@ class Misc(commands.Cog):
     @commands.command(name="cam")
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
+
+    @commands.command(name="id")
+    async def id(self, ctx: commands.Context):
+        await ctx.send(self.mh_id)
+
+    @commands.command(name="setId")
+    async def setId(self, ctx: commands.Context, id):
+        if ctx.author.is_mod:
+            self.mh_id = id
+            await ctx.send('id set SeemsGood')
 
 
 def prepare(bot: commands.Bot):
