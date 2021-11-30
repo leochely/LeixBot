@@ -1,5 +1,6 @@
 import datetime
 import logging
+import asyncio
 
 from twitchio.ext import commands
 
@@ -8,6 +9,10 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.mh_id = "id not set!"
+
+    @commands.command(name="discord")
+    async def discord(self, ctx: commands.Context):
+        await ctx.send("Le discord: https://discord.com/invite/jzU7xWstS9")
 
     @commands.command(name="ban")
     async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
@@ -61,9 +66,19 @@ class Misc(commands.Cog):
     async def fx(self, ctx: commands.Context):
         await ctx.send('Kel bo fx')
 
-    @commands.command(name="so")
-    async def so(self, ctx: commands.Context):
+    @commands.command(name="lurk")
+    async def lurk(self, ctx: commands.Context):
+        await ctx.send(f'{ctx.author.name} devient un lurkeur fou!')
+
+    @commands.command(name='shoutout', aliases=['so'])
+    async def shoutout(self, ctx: commands.Context, name):
         await ctx.send('yapadeso')
+        if ctx.author.is_mod:
+            if name[0] == '@':
+                name = name[1:]
+            await asyncio.sleep(5)
+            game = await self.get_game(name)
+            await ctx.send(f'Je plaisante haha, allez voir @{name} à www.twitch.tv/{name} pour du gaming de qualitay sur {game}')
 
     @commands.command(name="porte")
     async def porte(self, ctx: commands.Context):
@@ -90,6 +105,19 @@ class Misc(commands.Cog):
         if ctx.author.is_mod:
             self.mh_id = id
             await ctx.send('id set SeemsGood')
+
+    async def get_game(self, broadcaster: str) -> str:
+        """Get the last game played by the specified broadcaster.
+
+        Args:
+            broadcaster: Name of the broadcaster whose last game is needed.
+
+        Returns:
+            The last game played is returned as string.
+
+        """
+        channel_info = await self.bot.fetch_channel(broadcaster)
+        return channel_info.game_name
 
 
 def prepare(bot: commands.Bot):
