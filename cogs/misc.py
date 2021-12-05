@@ -73,7 +73,7 @@ class Misc(commands.Cog):
     @commands.command(name='shoutout', aliases=['so'])
     async def shoutout(self, ctx: commands.Context, name):
         await ctx.send('yapadeso')
-        if ctx.author.is_mod:
+        if 'vip' in ctx.author.badges or ctx.author.is_mod:
             if name[0] == '@':
                 name = name[1:]
             await asyncio.sleep(5)

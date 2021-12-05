@@ -15,24 +15,10 @@ from twitchio.ext import commands, pubsub, routines
 class LeixBot(commands.Bot):
 
     def __init__(self):
-        # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
-        # prefix can be a callable, which returns a list of strings or a string...
-        # initial_channels can also be a callable which returns a list of strings...
         super().__init__(
-            # set up the bot
             token=os.environ['ACCESS_TOKEN'],
             prefix=os.environ['BOT_PREFIX'],
-            initial_channels=[
-                'leix34',
-                'smallpinkpanda',
-                'lickers__',
-                'kingostone',
-                # 'SeaBazT',
-                'Hominidea',
-                'kalderinofeross',
-                'potdechoucroute',
-                'zenoxyde'
-            ],
+            initial_channels=os.environ['INITIAL_CHANNELS'].split(', '),
             case_insensitive=True
         )
         self.pubsub_client = None
@@ -40,7 +26,6 @@ class LeixBot(commands.Bot):
         self._cogs_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./cogs/*.py")
         ]
-        self.multipov_channels = ['smallpinkpanda', ]
 
     def setup(self):
         print("Chargement des cogs...")
