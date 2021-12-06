@@ -8,7 +8,9 @@ from twitchio.ext import commands
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.mh_id = "id not set!"
+        self.mh_id = {
+            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(',')
+        }
 
     @commands.command(name="discord")
     async def discord(self, ctx: commands.Context):
@@ -98,12 +100,12 @@ class Misc(commands.Cog):
 
     @commands.command(name="id")
     async def id(self, ctx: commands.Context):
-        await ctx.send(self.mh_id)
+        await ctx.send(self.mh_id[ctx.author.channel])
 
-    @commands.command(name="setId")
+    @ commands.command(name="setId")
     async def setId(self, ctx: commands.Context, id):
         if ctx.author.is_mod:
-            self.mh_id = id
+            self.mh_id[ctx.author.channel] = id
             await ctx.send('id set SeemsGood')
 
     async def get_game(self, broadcaster: str) -> str:
