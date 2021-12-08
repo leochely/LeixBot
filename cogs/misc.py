@@ -10,7 +10,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.mh_id = {
-            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(',')
+            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(' ,')
         }
 
     @commands.command(name="discord")
@@ -103,8 +103,9 @@ class Misc(commands.Cog):
     async def id(self, ctx: commands.Context):
         await ctx.send(self.mh_id[ctx.author.channel])
 
-    @ commands.command(name="setId")
+    @commands.command(name="setId")
     async def setId(self, ctx: commands.Context, id):
+        print(self.mh_id)
         if ctx.author.is_mod:
             self.mh_id[ctx.author.channel] = id
             await ctx.send('id set SeemsGood')

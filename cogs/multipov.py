@@ -7,12 +7,11 @@ class Multipov(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.multipov_channels = {
-            x: [] for x in os.environ['INITIAL_CHANNELS'].split(',')
+            x: [] for x in os.environ['INITIAL_CHANNELS'].split(' ,')
         }
 
     @commands.command(name="multipov", aliases=[])
     async def multipov(self, ctx: commands.bot.Context):
-        print(self.multipov_channels)
         channels = '/'.join(self.multipov_channels[ctx.author.channel])
         await ctx.send(f'https://kadgar.net/live/{ctx.author.channel.name}/{channels}')
 
