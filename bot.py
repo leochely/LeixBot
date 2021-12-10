@@ -26,8 +26,11 @@ class LeixBot(commands.Bot):
         self._cogs_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./cogs/*.py")
         ]
+        self.bot_to_reply = ["wizebot", "streamelements"]
 
     def setup(self):
+        random.seed()
+
         print("Chargement des cogs...")
 
         for cog in self._cogs_names:
@@ -79,6 +82,9 @@ class LeixBot(commands.Bot):
 
         if "@leixbot" in message.content.lower():
             await self.random_reply(message)
+
+        if message.author.name.lower() in self.bot_to_reply:
+            await self.random_bot_reply(message)
 
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...
@@ -151,6 +157,16 @@ class LeixBot(commands.Bot):
         ]
         reply = random.choice(reply_pool)
         await message.author.channel.send(f"@{message.author.name} {reply}")
+
+    async def random_bot_reply(self, message):
+        reply_pool = [
+            "wsh t ki DarkMode",
+            f"LeixBot > {message.author.name} SwiftRage",
+            f"tg {message.author.name} MrDestructoid",
+            f"Connard de {message.author.name} SwiftRage",
+        ]
+        reply = random.choice(reply_pool)
+        await message.author.channel.send(f"{reply}")
 
 
 if __name__ == "__main__":
