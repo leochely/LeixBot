@@ -3,6 +3,7 @@ import logging
 import asyncio
 import os
 
+from twitchio import User
 from twitchio.ext import commands
 
 
@@ -34,23 +35,23 @@ class Misc(commands.Cog):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
 
     @commands.command(name="bn")
-    async def bn(self, ctx: commands.Context, *name):
-        if not name:
-            name = ctx.author.name
-        else:
-            name = name[0]
-            if name[0] == '@':
-                name = name[1:]
-        await ctx.send(f'Bonne nuit @{name} <3')
+    async def bn(self, ctx: commands.Context, user: User = None):
+        if not user:
+            user = ctx.author
+        await ctx.send(f'Bonne nuit @{user.name} <3')
 
     @commands.command(name="uptime")
     async def uptime_command(self, ctx: commands.bot.Context):
-        stream = await self.bot.fetch_streams(user_logins=[ctx.author.channel.name])
+        stream = await self.bot.fetch_streams(
+            user_logins=[
+                ctx.author.channel.name
+            ])
 
         if len(stream) == 0:
             return await ctx.send("Il n'y a pas de live en cours :(")
 
-        uptime = datetime.datetime.now() - stream[0].started_at
+        uptime = datetime.datetime.now(
+            datetime.timezone.utc) - stream[0].started_at
         await ctx.send(f"En ligne depuis {uptime} (oui c'est précis)")
 
     @commands.command(name="dblade")
@@ -74,14 +75,15 @@ class Misc(commands.Cog):
         await ctx.send(f'{ctx.author.name} devient un lurkeur fou!')
 
     @commands.command(name='shoutout', aliases=['so'])
-    async def shoutout(self, ctx: commands.Context, name):
+    async def shoutout(self, ctx: commands.Context, broadcaster: User
+                       ):
         await ctx.send('yapadeso')
         if 'vip' in ctx.author.badges or ctx.author.is_mod:
-            if name[0] == '@':
-                name = name[1:]
+            channel_info = await self.bot.fetch_channel(broadcaster.name)
             await asyncio.sleep(5)
-            game = await self.get_game(name)
-            await ctx.send(f'Je plaisante haha, allez voir @{name} à www.twitch.tv/{name} pour du gaming de qualitay sur {game}')
+            await ctx.send(
+                f'Je plaisante haha, allez voir @{broadcaster} à www.twitch.tv/{broadcaster} pour du gaming de qualitay sur {channel_info.game_name}'
+            )
 
     @commands.command(name="porte")
     async def porte(self, ctx: commands.Context):
@@ -109,19 +111,6 @@ class Misc(commands.Cog):
         if ctx.author.is_mod:
             self.mh_id[ctx.author.channel] = id
             await ctx.send('id set SeemsGood')
-
-    async def get_game(self, broadcaster: str) -> str:
-        """Get the last game played by the specified broadcaster.
-
-        Args:
-            broadcaster: Name of the broadcaster whose last game is needed.
-
-        Returns:
-            The last game played is returned as string.
-
-        """
-        channel_info = await self.bot.fetch_channel(broadcaster)
-        return channel_info.game_name
 
 
 def prepare(bot: commands.Bot):

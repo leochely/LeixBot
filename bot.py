@@ -123,14 +123,10 @@ class LeixBot(commands.Bot):
 
     ## GENERAL FUNCTIONS ##
     @commands.command(name="salut", aliases=['slt'])
-    async def salut(self, ctx: commands.Context, *name):
-        if not name:
-            name = ctx.author.name
-        else:
-            name = name[0]
-            if name[0] == '@':
-                name = name[1:]
-        await ctx.send(f'Salut @{name}!')
+    async def salut(self, ctx: commands.Context, user: User = None):
+        if not user:
+            user = ctx.author
+        await ctx.send(f'Salut @{user.name}!')
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
