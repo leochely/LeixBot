@@ -82,7 +82,7 @@ class Misc(commands.Cog):
             channel_info = await self.bot.fetch_channel(broadcaster.name)
             await asyncio.sleep(5)
             await ctx.send(
-                f'Je plaisante haha, allez voir @{broadcaster} à www.twitch.tv/{broadcaster} pour du gaming de qualitay sur {channel_info.game_name}'
+                f'Je plaisante haha, allez voir @{broadcaster.name} à www.twitch.tv/{broadcaster} pour du gaming de qualitay sur {channel_info.game_name}'
             )
 
     @commands.command(name="porte")
