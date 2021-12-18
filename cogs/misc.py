@@ -1,6 +1,6 @@
+import asyncio
 import datetime
 import logging
-import asyncio
 import os
 
 from twitchio import User
@@ -33,6 +33,12 @@ class Misc(commands.Cog):
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
+
+    @commands.command(name="salut", aliases=['slt'])
+    async def salut(self, ctx: commands.Context, user: User = None):
+        if not user:
+            user = ctx.author
+        await ctx.send(f'Salut @{user.name}!')
 
     @commands.command(name="bn")
     async def bn(self, ctx: commands.Context, user: User = None):

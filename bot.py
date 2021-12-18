@@ -2,9 +2,9 @@
 import asyncio
 import logging
 import os  # for importing env vars for the bot to use
-import sys
 import random
 import re
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -122,12 +122,6 @@ class LeixBot(commands.Bot):
         await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
-    @commands.command(name="salut", aliases=['slt'])
-    async def salut(self, ctx: commands.Context, user: User = None):
-        if not user:
-            user = ctx.author
-        await ctx.send(f'Salut @{user.name}!')
-
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
         await ctx.send(
@@ -139,6 +133,8 @@ class LeixBot(commands.Bot):
         list = ""
         for command in self.commands:
             list += command + ", "
+
+        # Remove last comma and space
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
 
