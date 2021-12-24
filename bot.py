@@ -111,6 +111,10 @@ class LeixBot(commands.Bot):
             f'Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
         )
 
+    # TODO: add subs, follows, raids... events when twitchio has the classes implemented
+    # async def event_pubsub_channel_subscription(self, event: pubsub.PubSubChannelSubscription):
+    #     logging.info("Un nouveau sub!")
+
     ## TIMERS ##
     @routines.routine(minutes=30.0, wait_first=False)
     async def links(self):
@@ -186,6 +190,10 @@ if __name__ == "__main__":
     @client.event()
     async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
         await bot.event_pubsub_bits(event)
+
+    # @client.event()
+    # async def event_channel_subscriptions(event: pubsub.PubSubChannelSubscription):
+    #     await bot.event_pubsub_channel_subscription(event)
 
     bot = LeixBot()
     bot.pubsub_client = client

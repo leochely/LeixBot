@@ -87,9 +87,14 @@ class Misc(commands.Cog):
         if 'vip' in ctx.author.badges or ctx.author.is_mod:
             channel_info = await self.bot.fetch_channel(broadcaster.name)
             await asyncio.sleep(5)
-            await ctx.send(
-                f'Je plaisante haha, allez voir @{broadcaster.name} à www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
-            )
+            if channel_info.game_name:
+                await ctx.send(
+                    f'Je plaisante haha, allez voir @{broadcaster.name} à www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
+                )
+            else:
+                await ctx.send(
+                    f"Je plaisante haha, @{broadcaster.name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
+                )
 
     @commands.command(name="porte")
     async def porte(self, ctx: commands.Context):
