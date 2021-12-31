@@ -18,18 +18,6 @@ class Misc(commands.Cog):
     async def discord(self, ctx: commands.Context):
         await ctx.send("Le discord: https://discord.com/invite/jzU7xWstS9")
 
-    @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
-        if ctx.author.is_mod or ctx.author.name == user:
-            await ctx.send(f"/ban {user} {reason}")
-            await ctx.send(f"Au revoir {user} HeyGuys")
-
-    @commands.command(name="unban")
-    async def unban(self, ctx: commands.Context, user):
-        if ctx.author.is_mod:
-            await ctx.send(f"/unban {user}")
-            await ctx.send(f"Bon retour parmi nous {user} HeyGuys !")
-
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")

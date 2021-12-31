@@ -50,8 +50,7 @@ class LeixBot(commands.Bot):
         # Notify us when everything is ready!
 
         # Subscribes through pubsub to topics
-        c: Channel = self.connected_channels[0]
-        u: List["User"] = await self.fetch_users(names=[c.name])
+        u: List["User"] = await self.fetch_users(names=[os.environ['CHANNEL']])
         uu: User = u[0]
 
         topics = [
@@ -60,7 +59,7 @@ class LeixBot(commands.Bot):
         ]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
-        self.channel = self.pubsub_client.get_channel("leix34")
+        self.channel = self.get_channel(os.environ['CHANNEL'])
 
         # Starting timers
         self.links.start()
@@ -156,10 +155,9 @@ class LeixBot(commands.Bot):
 
     async def random_bot_reply(self, message):
         reply_pool = [
-            "wsh t ki DarkMode",
+            f"wsh t ki @{message.author.name} DarkMode",
             f"LeixBot > {message.author.name} SwiftRage",
             f"tg {message.author.name} MrDestructoid",
-            f"Connard de {message.author.name} SwiftRage",
         ]
         reply = random.choice(reply_pool)
         await message.author.channel.send(f"{reply}")
