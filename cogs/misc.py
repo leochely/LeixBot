@@ -11,7 +11,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.mh_id = {
-            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(' ,')
+            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(', ')
         }
 
     @commands.command(name="discord")
@@ -69,8 +69,7 @@ class Misc(commands.Cog):
         await ctx.send(f'{ctx.author.name} devient un lurkeur fou!')
 
     @commands.command(name='shoutout', aliases=['so'])
-    async def shoutout(self, ctx: commands.Context, broadcaster: User
-                       ):
+    async def shoutout(self, ctx: commands.Context, broadcaster: User):
         await ctx.send('yapadeso')
         if 'vip' in ctx.author.badges or ctx.author.is_mod:
             channel_info = await self.bot.fetch_channel(broadcaster.name)
@@ -102,13 +101,13 @@ class Misc(commands.Cog):
 
     @commands.command(name="id")
     async def id(self, ctx: commands.Context):
-        await ctx.send(self.mh_id[ctx.author.channel])
+        await ctx.send(self.mh_id[ctx.author.channel.name])
 
     @commands.command(name="setId")
     async def setId(self, ctx: commands.Context, id):
         print(self.mh_id)
         if ctx.author.is_mod:
-            self.mh_id[ctx.author.channel] = id
+            self.mh_id[ctx.author.channel.name] = id
             await ctx.send('id set SeemsGood')
 
 
