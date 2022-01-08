@@ -83,7 +83,7 @@ class LeixBot(commands.Bot):
         )
 
         if "@leixbot" in message.content.lower():
-            await random_reply(message)
+            await random_reply(self, message)
         elif message.author.name.lower() in self.bot_to_reply:
             await random_bot_reply(message)
         else:

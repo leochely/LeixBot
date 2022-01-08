@@ -3,8 +3,12 @@ import datetime
 import logging
 import os
 
+import humanize
 from twitchio import User
 from twitchio.ext import commands
+
+# Sets humanize to French language
+humanize.i18n.activate("fr_FR")
 
 
 class Misc(commands.Cog):
@@ -46,7 +50,7 @@ class Misc(commands.Cog):
 
         uptime = datetime.datetime.now(
             datetime.timezone.utc) - stream[0].started_at
-        await ctx.send(f"En ligne depuis {uptime} (oui c'est précis)")
+        await ctx.send(f"Ton streamer préféré est en live depuis {humanize.precisedelta(uptime, minimum_unit='seconds')}")
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):

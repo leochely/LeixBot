@@ -4,6 +4,26 @@ from datetime import datetime, timedelta
 
 from twitchio.ext import commands
 
+game_replies = {
+    'Guilty Gear: Strive':      ['#10HitPetitPoingCombo',
+                                 'MET TA GARDE',
+                                 'Arrête de piffer tes ults SwiftRage',
+                                 'Tu main Faust? leix34Trigerred',
+                                 'DONT LOOK BACK SwiftRage'],
+    'Monster Hunter: World':    ['Arrête de critiquer les hitboxes stp Kappa',
+                                 '#FixTheClaw',
+                                 'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
+                                 "RisE C'eSt B1"],
+    'Doom Eternal':             ['RIP AND TEAR leix34Trigerred',
+                                 'Meurs démon SwiftRage',
+                                 '#BloodPunchFixed'],
+}
+
+vip_replies = [
+    "Oui vous m'avez demandé?",
+    'Pour vous servir monsieur le vip',
+]
+
 
 async def auto_so(bot, message, vip_info):
     vip_name = message.author.name
@@ -25,15 +45,22 @@ async def auto_so(bot, message, vip_info):
         )
 
 
-async def random_reply(message):
-    compiled_msg = re.compile(re.escape("@leixbot"), re.IGNORECASE)
-    msg_clean = compiled_msg.sub("", message.content)
+async def random_reply(bot, message):
+    channel_info = await bot.fetch_channel(message.channel.name)
+    compiled_msg = re.compile(re.escape('@leixbot'), re.IGNORECASE)
+    msg_clean = compiled_msg.sub('', message.content)
     reply_pool = [
-        "wsh t ki", "DONT LOOK BACK",
+        "wsh t ki",
+        "DONT LOOK BACK",
         "leix34Trigerred",
-        "Oui vous m'avez demandé?",
-        f"Ah ouais {msg_clean} ??"
+        f"Ah ouais {msg_clean}??"
     ]
+    if channel_info.game_name in game_replies:
+        reply_pool += game_replies[channel_info.game_name]
+
+    if 'vip' in message.author.badges:
+        reply_pool += vip_replies
+
     reply = random.choice(reply_pool)
     await message.author.channel.send(f"@{message.author.name} {reply}")
 
@@ -42,7 +69,7 @@ async def random_bot_reply(message):
     reply_pool = [
         f"wsh t ki @{message.author.name} DarkMode",
         f"LeixBot > {message.author.name} SwiftRage",
-        f"tg {message.author.name} MrDestructoid",
+        f"LeixBot s'en charge {message.author.name} MrDestructoid",
         f"#LeixBotOnly, pas besoin de toi @{message.author.name}"
     ]
     reply = random.choice(reply_pool)
