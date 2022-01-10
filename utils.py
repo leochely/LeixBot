@@ -1,22 +1,27 @@
 import random
+import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from twitchio.ext import commands
 
 game_replies = {
-    'Guilty Gear: Strive':      ['#10HitPetitPoingCombo',
-                                 'MET TA GARDE',
-                                 'Arrête de piffer tes ults SwiftRage',
-                                 'Tu main Faust? leix34Trigerred',
-                                 'DONT LOOK BACK SwiftRage'],
-    'Monster Hunter: World':    ['Arrête de critiquer les hitboxes stp Kappa',
-                                 '#FixTheClaw',
-                                 'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
-                                 "RisE C'eSt B1"],
-    'Doom Eternal':             ['RIP AND TEAR leix34Trigerred',
-                                 'Meurs démon SwiftRage',
-                                 '#BloodPunchFixed'],
+    'Guilty Gear: Strive':                 ['#10HitPetitPoingCombo',
+                                            'MET TA GARDE',
+                                            'Arrête de piffer tes ults SwiftRage',
+                                            'Tu main Faust? leix34Trigerred',
+                                            'DONT LOOK BACK SwiftRage'],
+    'Monster Hunter: World':               ['Arrête de critiquer les hitboxes stp Kappa',
+                                            '#FixTheClaw',
+                                            'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
+                                            "RisE C'eSt B1"],
+    'Doom Eternal':                        ['RIP AND TEAR leix34Trigerred',
+                                            'Meurs démon SwiftRage',
+                                            '#BloodPunchFixed'],
+    'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
+                                            "J'ai beau être un robot, j'ai mal aux yeux devant GU smallp9EuuuuuH",
+                                            'Toi aussi tu es hébété devant le MALAISE du Tigrex??'
+                                            ]
 }
 
 vip_replies = [
@@ -28,11 +33,16 @@ vip_replies = [
 async def auto_so(bot, message, vip_info):
     vip_name = message.author.name
     channel_info = await bot.fetch_channel(message.author.name)
-    if (vip_name in vip_info and vip_info[vip_name] == datetime.now().date()) or 'vip' not in message.author.badges:
+    stream = await bot.fetch_streams(
+        user_logins=[
+            vip_name
+        ])
+    logging.info(vip_info)
+    if (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or 'vip' not in message.author.badges:
         return
 
     # Update last automatic shoutout time
-    vip_info[message.author.name] = datetime.now().date()
+    vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
     if channel_info.game_name:

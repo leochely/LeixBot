@@ -4,7 +4,7 @@ import logging
 import os  # for importing env vars for the bot to use
 import random
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from twitchio import Channel, Client, User
@@ -29,7 +29,7 @@ class LeixBot(commands.Bot):
         self.vip_so = {
             x: {} for x in os.environ['INITIAL_CHANNELS'].split(', ')
         }
-        self.bot_to_reply = ["wizebot", "streamelements", "nightbot", ]
+        self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
 
     def setup(self):
         random.seed()
@@ -94,15 +94,21 @@ class LeixBot(commands.Bot):
         await self.handle_commands(message)
 
     async def event_raw_usernotice(self, channel, tags):
+        logging.debug(tags)
         if tags["msg-id"] == "sub":
             await channel.send(f"PogChamp {tags['display-name']} rejoint la légion PogChamp")
         elif tags["msg-id"] == "resub":
             await channel.send(
                 f"PogChamp Le resuuuub de {tags['display-name']}. Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
             )
+        elif tags['msg-id'] == 'subgift':
+            await channel.send(
+                f'{display-name} est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
+            )
         elif tags["msg-id"] == "raid":
             await channel.send(
-                f"Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!")
+                f"Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
+            )
 
     ## PUBSUB FUNCTIONS ##
 
@@ -167,7 +173,7 @@ if __name__ == "__main__":
 
     client = Client(
         token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        initial_channels=['leix34'],
+        initial_channels=os.environ['CHANNEL'],
         client_secret=os.environ['CLIENT_SECRET']
     )
 
