@@ -96,22 +96,21 @@ class LeixBot(commands.Bot):
     async def event_raw_usernotice(self, channel, tags):
         logging.debug(tags)
         if tags["msg-id"] == "sub":
-            await channel.send(f"PogChamp {tags['display-name']} rejoint la légion PogChamp")
+            await channel.send(f"/me PogChamp {tags['display-name']} rejoint la légion! Merci pour le sub PogChamp")
         elif tags["msg-id"] == "resub":
             await channel.send(
-                f"PogChamp Le resuuuub de {tags['display-name']}. Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
+                f"/me PogChamp Le resub de {tags['display-name']}!! Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
             )
         elif tags['msg-id'] == 'subgift':
             await channel.send(
-                f'{display-name} est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
+                f'/me {display-name} est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
             )
         elif tags["msg-id"] == "raid":
             await channel.send(
-                f"Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
+                f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
             )
 
     ## PUBSUB FUNCTIONS ##
-
     async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
         logging.info(
             f'Redemption by {event.user.name} of reward {event.reward.title} '
@@ -120,7 +119,7 @@ class LeixBot(commands.Bot):
         if event.reward.title == "Hats off to you":
             minutes = 5
             time = datetime.now() + timedelta(minutes=minutes)
-            await self.channel.send(f"Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
+            await self.channel.send(f"/me Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
             await asyncio.sleep(minutes * 60)
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
@@ -128,12 +127,11 @@ class LeixBot(commands.Bot):
         logging.info(
             f'{event.user.name} just donated {event.bits_used} bits!'
         )
-        # self.channel.send(
-        #     f'Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
-        # )
+        self.channel.send(
+            f'/me Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
+        )
 
     ## TIMERS ##
-
     @routines.routine(minutes=30.0, wait_first=False)
     async def links(self):
         await self.channel.send("Mon YouTube: https://youtube.com/leix34")

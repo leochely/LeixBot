@@ -10,23 +10,29 @@ game_replies = {
                                             'MET TA GARDE',
                                             'Arrête de piffer tes ults SwiftRage',
                                             'Tu main Faust? leix34Trigerred',
-                                            'DONT LOOK BACK SwiftRage'],
+                                            'Tu main Sol? <3',
+                                            'Tu main May? WutFace',
+                                            'DONT LOOK BACK SwiftRage',
+                                            'Le choppeur fou PogChamp'],
     'Monster Hunter: World':               ['Arrête de critiquer les hitboxes stp Kappa',
                                             '#FixTheClaw',
                                             'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
-                                            "RisE C'eSt B1"],
+                                            "RisE C'eSt B1",
+                                            'Tu peux rejoindre la session et carry grâce a la commande !id SeemsGood'],
     'Doom Eternal':                        ['RIP AND TEAR leix34Trigerred',
                                             'Meurs démon SwiftRage',
-                                            '#BloodPunchFixed'],
+                                            '#BloodPunchFixed', ],
     'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
                                             "J'ai beau être un robot, j'ai mal aux yeux devant GU smallp9EuuuuuH",
-                                            'Toi aussi tu es hébété devant le MALAISE du Tigrex??'
-                                            ]
+                                            'Toi aussi tu es hébété devant le MALAISE du Tigrex??',
+                                            "Je note ton message 6 sur l'échelle de MALAISE du Diablos Noir"]
 }
 
 vip_replies = [
     "Oui vous m'avez demandé?",
-    'Pour vous servir monsieur le vip',
+    'Pour vous servir monsieur le VIP',
+    'Merci de soutenir le stream cher VIP, votre diamant rose est bien mérité <3',
+    '<3'
 ]
 
 
@@ -47,7 +53,7 @@ async def auto_so(bot, message, vip_info):
     # Send message
     if vip_channel_info.game_name:
         await message.author.channel.send(
-            f'Allez voir @{vip_name} à www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
+            f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
         )
     else:
         await message.author.channel.send(
@@ -63,7 +69,8 @@ async def random_reply(bot, message):
         "wsh t ki",
         "DONT LOOK BACK",
         "leix34Trigerred",
-        f"Ah ouais {msg_clean}??"
+        f"Ah ouais {msg_clean}??",
+        'Bip boup, je suis un robot'
     ]
     if channel_info.game_name in game_replies:
         reply_pool += game_replies[channel_info.game_name]
@@ -77,7 +84,6 @@ async def random_reply(bot, message):
 
 async def random_bot_reply(message):
     reply_pool = [
-        f"wsh t ki @{message.author.name} DarkMode",
         f"LeixBot > {message.author.name} SwiftRage",
         f"LeixBot s'en charge {message.author.name} MrDestructoid",
         f"#LeixBotOnly, pas besoin de toi @{message.author.name}"

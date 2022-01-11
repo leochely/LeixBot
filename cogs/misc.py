@@ -30,13 +30,13 @@ class Misc(commands.Cog):
     async def salut(self, ctx: commands.Context, user: User = None):
         if not user:
             user = ctx.author
-        await ctx.send(f'Salut @{user.name}!')
+        await ctx.send(f'Mes salutations les plus distinguées @{user.name}! <3')
 
     @commands.command(name="bn")
     async def bn(self, ctx: commands.Context, user: User = None):
         if not user:
             user = ctx.author
-        await ctx.send(f'Bonne nuit @{user.name} <3')
+        await ctx.send(f'Fais de beaux rêves @{user.name} <3')
 
     @commands.command(name="uptime")
     async def uptime_command(self, ctx: commands.bot.Context):
@@ -54,7 +54,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
-        await ctx.send(f'Je te dedicace cette dblade {ctx.author.name}!')
+        await ctx.send(f'Je te dédicace cette dblade {ctx.author.name}!')
 
     @commands.command(name="cursed")
     async def cursed(self, ctx: commands.Context):
@@ -80,7 +80,7 @@ class Misc(commands.Cog):
             await asyncio.sleep(5)
             if channel_info.game_name:
                 await ctx.send(
-                    f'Je plaisante haha, allez voir @{broadcaster.name} à www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
+                    f'Je plaisante haha, allez voir @{broadcaster.name} sur www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
                 )
             else:
                 await ctx.send(
