@@ -32,22 +32,22 @@ vip_replies = [
 
 async def auto_so(bot, message, vip_info):
     vip_name = message.author.name
-    channel_info = await bot.fetch_channel(message.author.name)
+    vip_channel_info = await bot.fetch_channel(message.author.name)
     stream = await bot.fetch_streams(
         user_logins=[
-            vip_name
+            message.author.channel.name
         ])
-    logging.info(vip_info)
-    if (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or 'vip' not in message.author.badges:
+
+    if len(stream) == 0 or (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or 'vip' not in message.author.badges:
         return
 
     # Update last automatic shoutout time
     vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
-    if channel_info.game_name:
+    if vip_channel_info.game_name:
         await message.author.channel.send(
-            f'Allez voir @{vip_name} à www.twitch.tv/{vip_name} pour du gaming de qualitay sur {channel_info.game_name}'
+            f'Allez voir @{vip_name} à www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
         )
     else:
         await message.author.channel.send(
