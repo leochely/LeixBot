@@ -25,7 +25,11 @@ game_replies = {
     'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
                                             "J'ai beau être un robot, j'ai mal aux yeux devant GU smallp9EuuuuuH",
                                             'Toi aussi tu es hébété devant le MALAISE du Tigrex??',
-                                            "Je note ton message 6 sur l'échelle de MALAISE du Diablos Noir"]
+                                            "Je note ton message 6 sur l'échelle de MALAISE du Diablos Noir"],
+    'Monster Hunter Rise':                 ['World > Rise Kappa',
+                                            "Comment s'appelle ton palico? <3",
+                                            "Comment s'appelle ton doggo? <3",
+                                            '#TeamMarteau'],
 }
 
 vip_replies = [
