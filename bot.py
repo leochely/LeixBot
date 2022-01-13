@@ -105,6 +105,10 @@ class LeixBot(commands.Bot):
             await channel.send(
                 f'/me {display-name} est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
             )
+        elif tags['msg-id'] == 'anonsubgift':
+            await channel.send(
+                f'/me AnAnonymousGifter est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
+            )
         elif tags["msg-id"] == "raid":
             await channel.send(
                 f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
