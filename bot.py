@@ -103,11 +103,11 @@ class LeixBot(commands.Bot):
             )
         elif tags['msg-id'] == 'subgift':
             await channel.send(
-                f'/me {display-name} est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
+                f'/me {tags["display-name"]} est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
         elif tags['msg-id'] == 'anonsubgift':
             await channel.send(
-                f'/me AnAnonymousGifter est vraiment trop sympa, il régale {msg-param-recipient-display-name} avec un sub!'
+                f'/me AnAnonymousGifter est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
         elif tags["msg-id"] == "raid":
             await channel.send(
