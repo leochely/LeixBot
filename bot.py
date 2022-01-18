@@ -57,8 +57,7 @@ class LeixBot(commands.Bot):
         uu: User = u[0]
 
         topics = [
-            pubsub.channel_points(self.pubsub_client._http.token)[uu.id],
-            pubsub.bits(self.pubsub_client._http.token)[uu.id]
+            pubsub.channel_points(self.pubsub_client._http.token)[uu.id]
         ]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
@@ -107,7 +106,7 @@ class LeixBot(commands.Bot):
             )
         elif tags['msg-id'] == 'anonsubgift':
             await channel.send(
-                f'/me AnAnonymousGifter est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
+                f'/me Un donateur anonyme est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
         elif tags["msg-id"] == "raid":
             await channel.send(
@@ -126,14 +125,6 @@ class LeixBot(commands.Bot):
             await self.channel.send(f"/me Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
             await asyncio.sleep(minutes * 60)
             await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
-
-    async def event_pubsub_bits(self, event: pubsub.PubSubBitsMessage):
-        logging.info(
-            f'{event.user.name} just donated {event.bits_used} bits!'
-        )
-        self.channel.send(
-            f'/me Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
-        )
 
     ## TIMERS ##
     @routines.routine(minutes=30.0, wait_first=False)
@@ -184,10 +175,6 @@ if __name__ == "__main__":
     @client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
         await bot.event_pubsub_channel_points(event)
-
-    @client.event()
-    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
-        await bot.event_pubsub_bits(event)
 
     bot = LeixBot()
     bot.pubsub_client = client

@@ -20,7 +20,13 @@ class Misc(commands.Cog):
 
     @commands.command(name="discord")
     async def discord(self, ctx: commands.Context):
-        await ctx.send("Le discord: https://discord.com/invite/jzU7xWstS9")
+        if ctx.author.channel.name.lower() == os.environ['CHANNEL'].lower():
+            await ctx.send("Le discord: https://discord.com/invite/jzU7xWstS9")
+
+    @commands.command(name="yt")
+    async def youtube(self, ctx: commands.Context):
+        if ctx.author.channel.name.lower() == os.environ['CHANNEL'].lower():
+            await ctx.send("Mon YouTube: https://youtube.com/leix34")
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
