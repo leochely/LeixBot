@@ -30,6 +30,8 @@ game_replies = {
                                             "Comment s'appelle ton palico? <3",
                                             "Comment s'appelle ton doggo? <3",
                                             '#TeamMarteau'],
+    'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
+                                            'Je suis enragé par ton message SwiftRage']
 }
 
 vip_replies = [
