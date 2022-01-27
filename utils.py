@@ -48,7 +48,7 @@ async def auto_so(bot, message, vip_info):
             message.author.channel.name
         ])
 
-    if len(stream) == 0 or (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or 'vip' not in message.author.badges:
+    if len(stream) == 0 or (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or ('vip' not in message.author.badges and 'moderator' not in message.author.badges):
         return
 
     # Update last automatic shoutout time
@@ -88,9 +88,14 @@ async def random_reply(bot, message):
 
 async def random_bot_reply(message):
     reply_pool = [
-        f"LeixBot > {message.author.name} SwiftRage",
+        f'LeixBot > {message.author.name} SwiftRage',
         f"LeixBot s'en charge {message.author.name} MrDestructoid",
-        f"#LeixBotOnly, pas besoin de toi @{message.author.name}"
+        f'#LeixBotOnly, pas besoin de toi @{message.author.name}'
     ]
     reply = random.choice(reply_pool)
     await message.author.channel.send(f"{reply}")
+
+
+def check_for_bot(message):
+    # TODO: Add a bot detection system
+    return True

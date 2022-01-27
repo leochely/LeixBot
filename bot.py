@@ -9,7 +9,7 @@ from pathlib import Path
 
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
-from utils import auto_so, random_bot_reply, random_reply
+from utils import auto_so, random_bot_reply, random_reply, check_for_bot
 
 
 class LeixBot(commands.Bot):
@@ -40,9 +40,6 @@ class LeixBot(commands.Bot):
             logging.info(f"Loading `{cog}` cog.")
             self.load_module(f"cogs.{cog}")
 
-        # logging.info("Starting timers")
-        # self.loop.create_task(self.timers())
-
         logging.info("Chargement terminé")
 
     def run(self):
@@ -64,6 +61,7 @@ class LeixBot(commands.Bot):
         self.channel = self.get_channel(os.environ['CHANNEL'])
 
         # Starting timers
+        logging.info("Starting routines...")
         self.links.start()
 
         # We are logged in and ready to chat and use commands...
@@ -80,6 +78,11 @@ class LeixBot(commands.Bot):
             f'{message.author.name} on channel {message.author.channel.name}: '
             f'{message.content}'
         )
+
+        # if check_for_bot(message.content):
+        #     logging.info("BOT DETECTED")
+        #     message.author.channel.send(
+        #         f'/ban {message.author.name} Vilain Bot')
 
         if "@leixbot" in message.content.lower():
             await random_reply(self, message)
@@ -112,6 +115,10 @@ class LeixBot(commands.Bot):
             await channel.send(
                 f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
             )
+
+    async def event_command_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.CommandNotFound):
+            logging.error("Command does not exist")
 
     ## PUBSUB FUNCTIONS ##
     async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):

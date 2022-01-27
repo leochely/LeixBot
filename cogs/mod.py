@@ -17,16 +17,22 @@ class Mod(commands.Cog):
         Not functional yet. Waiting for a twitchio fix.
         """
         logging.info(
-            'Error in {0.command.qualified_name}: {1}'.format(ctx, error)
+            'User not moderator'
         )
 
     @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user, reason="rise of the machines"):
+    async def ban(self, ctx: commands.Context, user, *reason):
+        logging.info(f'User {user} has been banned')
+        if not reason:
+            reason = 'Rise of the machines'
+        else:
+            reason = ' '.join(reason)
         await ctx.send(f"/ban {user} {reason}")
         await ctx.send(f"Au revoir {user} HeyGuys")
 
     @commands.command(name="unban")
     async def unban(self, ctx: commands.Context, user):
+        logging.info(f'User {user} has been unbanned')
         await ctx.send(f"/unban {user}")
         await ctx.send(f"Bon retour parmi nous {user} HeyGuys !")
 
