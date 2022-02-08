@@ -3,6 +3,7 @@ import os
 
 from twitchio import Channel, Game
 from twitchio.ext import commands
+from db import get_token
 
 
 class Mod(commands.Cog):
@@ -50,7 +51,7 @@ class Mod(commands.Cog):
         g: List["Games"] = await self.bot.fetch_games(names=[' '.join(game_name)])
         game: Game = g[0]
 
-        await channel.modify_stream(os.environ['CHANNEL_ACCESS_TOKEN'], game_id=game.id)
+        await channel.modify_stream(get_token(ctx.author.channel.name), game_id=game.id)
         await ctx.send('Game updated SeemsGood')
 
 
