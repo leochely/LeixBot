@@ -18,6 +18,7 @@ class LeixBot(commands.Bot):
         super().__init__(
             token=os.environ['ACCESS_TOKEN'],
             prefix=os.environ['BOT_PREFIX'],
+            client_id=os.environ['CLIENT_ID'],
             initial_channels=os.environ['INITIAL_CHANNELS'].split(', '),
             case_insensitive=True
         )
@@ -34,7 +35,8 @@ class LeixBot(commands.Bot):
     def setup(self):
         random.seed()
 
-        print("Chargement des cogs...")
+        logging.info(f'{self._http.client_id}')
+        logging.info("Chargement des cogs...")
 
         for cog in self._cogs_names:
             logging.info(f"Loading `{cog}` cog.")

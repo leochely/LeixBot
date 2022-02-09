@@ -1,9 +1,16 @@
 import random
 import logging
+import requests
+import os
 import re
+
 from datetime import datetime, timedelta, timezone
+from db import get_token
 
 from twitchio.ext import commands
+
+
+### Replies ###
 
 game_replies = {
     'Guilty Gear: Strive':                 ['#10HitPetitPoingCombo',
@@ -101,3 +108,27 @@ async def random_bot_reply(message):
 def check_for_bot(message):
     # TODO: Add a bot detection system
     return True
+
+
+### API ###
+base_url = "https://api.twitch.tv/helix/channels?broadcaster_id="
+
+
+def modify_stream(user, game_id: int = None, language: str = None, title: str = None):
+    url = base_url + str(user.id)
+    auth = "Bearer " + get_token(user.name)
+    id = os.environ['CLIENT_ID']
+
+    headers = {
+        "Client-Id": id,
+        "Authorization": auth
+    }
+
+    data = {
+        k: v
+        for k, v in {"game_id": game_id, "broadcaster_language": language, "title": title}.items()
+        if v is not None
+    }
+
+    resp = requests.patch(url, headers=headers, data=data)
+    return resp.status_code == 200

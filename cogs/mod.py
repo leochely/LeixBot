@@ -3,7 +3,7 @@ import os
 
 from twitchio import Channel, Game
 from twitchio.ext import commands
-from db import get_token
+from utils import modify_stream
 
 
 class Mod(commands.Cog):
@@ -39,20 +39,24 @@ class Mod(commands.Cog):
 
     @commands.command(name="title")
     async def title(self, ctx: commands.Context, *title):
-        u: List["User"] = await self.bot.fetch_users(names=[ctx.author.channel.name])
-        channel: Channel = u[0]
-        await channel.modify_stream(os.environ['CHANNEL_ACCESS_TOKEN'], title=' '.join(title))
-        await ctx.send('Title updated SeemsGood')
+        user = await ctx.author.channel.user()
+        success = modify_stream(title=' '.join(title), user=user)
+        if success:
+            await ctx.send('Game updated SeemsGood')
+        else:
+            await ctx.send('Error MrDestructoid')
 
     @commands.command(name="game")
     async def game(self, ctx: commands.Context, *game_name):
-        u: List["User"] = await self.bot.fetch_users(names=[ctx.author.channel.name])
-        channel: Channel = u[0]
         g: List["Games"] = await self.bot.fetch_games(names=[' '.join(game_name)])
         game: Game = g[0]
+        user = await ctx.author.channel.user()
 
-        await channel.modify_stream(get_token(ctx.author.channel.name), game_id=game.id)
-        await ctx.send('Game updated SeemsGood')
+        success = modify_stream(game_id=game.id, user=user)
+        if success:
+            await ctx.send('Game updated SeemsGood')
+        else:
+            await ctx.send('Error MrDestructoid')
 
 
 def prepare(bot: commands.Bot):
