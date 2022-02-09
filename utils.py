@@ -131,4 +131,4 @@ def modify_stream(user, game_id: int = None, language: str = None, title: str = 
     }
 
     resp = requests.patch(url, headers=headers, data=data)
-    return resp.status_code == 200
+    return resp.status_code == 204
