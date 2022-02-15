@@ -11,17 +11,22 @@ class CustomCommand(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        return ctx.author.is_mod
+
     @commands.command(name="cmdadd")
-    async def cmdadd(self, ctx: commands.Context, command, text):
+    async def cmdadd(self, ctx: commands.Context, command, *text):
         channel = ctx.author.channel.name.lower()
+        text = ' '.join(text)
 
         custom_commands.add_command(command, channel, text)
 
         await ctx.send(f"Commande {command} ajoutee avec succes SeemsGood")
 
     @commands.command(name="cmdedit")
-    async def cmdedit(self, ctx: commands.Context, command, text):
+    async def cmdedit(self, ctx: commands.Context, command, *text):
         channel = ctx.author.channel.name.lower()
+        text = ' '.join(text)
 
         custom_commands.edit_command(command, channel, text)
 
