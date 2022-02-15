@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import psycopg2
 import requests
 import logging
@@ -6,7 +5,7 @@ import os
 from configparser import ConfigParser
 
 
-def config(filename='./database.ini', section='postgresql'):
+def config(filename='./database_auth.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -26,7 +25,7 @@ def config(filename='./database.ini', section='postgresql'):
 
 
 def get_token(user):
-    """ Connect to the PostgreSQL database server and returns user token """
+    """ Connects to the PostgreSQL database server and returns user token """
     conn = None
     try:
         # read connection parameters

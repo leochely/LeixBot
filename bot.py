@@ -9,7 +9,9 @@ from pathlib import Path
 
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
+
 from utils import auto_so, random_bot_reply, random_reply, check_for_bot
+import custom_commands
 
 
 class LeixBot(commands.Bot):
@@ -66,6 +68,9 @@ class LeixBot(commands.Bot):
         logging.info("Starting routines...")
         self.links.start()
 
+        # Retrieving custom commands from db
+        custom_commands.init_commands()
+
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
 
@@ -85,6 +90,12 @@ class LeixBot(commands.Bot):
         #     logging.info("BOT DETECTED")
         #     message.author.channel.send(
         #         f'/ban {message.author.name} Vilain Bot')
+
+        if message.content[0] == os.environ['BOT_PREFIX']:
+            reply = custom_commands.find_command(message)
+            if reply is not None:
+                await message.author.channel.send(reply)
+                return
 
         if "@leixbot" in message.content.lower():
             await random_reply(self, message)
