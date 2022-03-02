@@ -69,7 +69,8 @@ class MDSR(commands.Cog):
     @commands.command(name="don")
     async def don(self, ctx: commands.Context):
         await ctx.send("Vous pouvez faire un don pour le fond dédié aux enfants victimes "
-                       "de la guerre en Ukraine par l'association Save The Children ici:")
+                       "de la guerre en Ukraine par l'association Save The Children ici: "
+                       "https://donate.tiltify.com/@modern-doom-speedrunning/mdsr-spring-2022")
 
     @commands.command(name="mdsr")
     async def mdsr(self, ctx: commands.Context):

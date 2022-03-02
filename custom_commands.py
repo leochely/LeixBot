@@ -27,7 +27,6 @@ def init_commands():
         commands_raw = cur.fetchall()
 
         for command in commands_raw:
-            logging.info(command[1])
             commands[(command[0], command[1])] = command[2]
 
         # close the communication with the PostgreSQL
