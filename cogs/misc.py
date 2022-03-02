@@ -35,7 +35,7 @@ class Misc(commands.Cog):
         await ctx.send(f'Fais de beaux rêves @{user.name} <3')
 
     @commands.command(name="uptime")
-    async def uptime_command(self, ctx: commands.bot.Context):
+    async def uptime(self, ctx: commands.bot.Context):
         stream = await self.bot.fetch_streams(
             user_logins=[
                 ctx.author.channel.name

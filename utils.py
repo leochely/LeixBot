@@ -26,7 +26,7 @@ game_replies = {
                                             'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
                                             "RisE C'eSt B1",
                                             'Tu peux rejoindre la session et carry grâce a la commande !id SeemsGood'],
-    'Doom Eternal':                        ['RIP AND TEAR leix34Trigerred',
+    'DOOM Eternal':                        ['RIP AND TEAR leix34Trigerred',
                                             'Meurs démon SwiftRage',
                                             '#BloodPunchFixed', ],
     'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
