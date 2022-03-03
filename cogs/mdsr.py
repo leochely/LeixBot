@@ -102,6 +102,15 @@ class MDSR(commands.Cog):
             f"{run.runner} de speedrun {run.game}"
         )
 
+    @commands.command(name="precedent", aliases=['previous', 'prev'])
+    async def precedent(self, ctx: commands.Context):
+        self.current_run = max(0, self.current_run - 1)
+        run = self.planning[self.current_run]
+        await ctx.send(
+            f"Oups, la run d'avant n'est pas encore finie! "
+            f"{run.runner} speedrun {run.game}"
+        )
+
 
 def prepare(bot: commands.Bot):
     bot.add_cog(MDSR(bot))
