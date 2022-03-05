@@ -7,11 +7,10 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import custom_commands
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
-
-from utils import auto_so, random_bot_reply, random_reply, check_for_bot
-import custom_commands
+from utils import auto_so, check_for_bot, random_bot_reply, random_reply
 
 
 class LeixBot(commands.Bot):
@@ -157,7 +156,8 @@ class LeixBot(commands.Bot):
         # await asyncio.sleep(60 * 30)
 
         await self.channel.send("Vous pouvez faire un don pour le fond dédié aux enfants victimes "
-                                "de la guerre en Ukraine par l'association Save The Children ici:")
+                                "de la guerre en Ukraine par l'association Save The Children ici: "
+                                "https://mdsr.info/donate")
         await asyncio.sleep(60 * 30)
         await self.channel.send("MDSR '22 est un événement caritatif de speedrun des jeux "
                                 "Doom modernes et autres Doom-like au profit de l'association "
