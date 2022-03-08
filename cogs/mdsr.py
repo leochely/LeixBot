@@ -113,4 +113,5 @@ class MDSR(commands.Cog):
 
 
 def prepare(bot: commands.Bot):
-    bot.add_cog(MDSR(bot))
+    logging.warning("Pas de MDSR alors skip")
+    # bot.add_cog(MDSR(bot))
