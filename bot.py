@@ -7,11 +7,10 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import custom_commands
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
-
-from utils import auto_so, random_bot_reply, random_reply, check_for_bot
-import custom_commands
+from utils import auto_so, check_for_bot, random_bot_reply, random_reply
 
 
 class LeixBot(commands.Bot):
