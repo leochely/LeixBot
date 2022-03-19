@@ -143,7 +143,7 @@ class LeixBot(commands.Bot):
             time = datetime.now() + timedelta(minutes=minutes)
             await self.channel.send(f"/me Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
             await asyncio.sleep(minutes * 60)
-            await channel.send("/me @Leix34 tu peux maintenant retirer le casque")
+            await self.channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
