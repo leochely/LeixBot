@@ -185,7 +185,7 @@ class LeixBot(commands.Bot):
         games = random.shuffle(['SUPERHOT', 'Slay the spire',
                                 'Tooth and Tail', 'Dear Esther', 'Max Payne 3'])
         for winner, game in winners, games:
-            await ctx.send(f'Félicitations {}! Tu as remporté {game}! SeemsGood')
+            await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
 
 
 if __name__ == "__main__":
