@@ -32,6 +32,7 @@ class LeixBot(commands.Bot):
             x: {} for x in os.environ['INITIAL_CHANNELS'].split(', ')
         }
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
+        self.giveaway = set()
 
     def setup(self):
         random.seed()
@@ -145,6 +146,9 @@ class LeixBot(commands.Bot):
             await asyncio.sleep(minutes * 60)
             await self.channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
+        if event.reward.title == "Giveaway":
+            giveaway.add(event.user.name)
+
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
     async def links(self):
@@ -154,19 +158,8 @@ class LeixBot(commands.Bot):
         await asyncio.sleep(60 * 30)
         await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
         await asyncio.sleep(60 * 30)
-
-        ## MDSR ##
-        # await self.channel.send("Vous pouvez faire un don pour le fond dédié aux enfants victimes "
-        #                         "de la guerre en Ukraine par l'association Save The Children ici:")
-        # await asyncio.sleep(60 * 30)
-        # await self.channel.send("MDSR '22 est un événement caritatif de speedrun des jeux "
-        #                         "Doom modernes et autres Doom-like au profit de l'association "
-        #                         "Save The Children! Le marathon dure 2 x 12h a partir de samedi 17h, "
-        #                         "retrouvez le planning ici: https://oengus.io/en-GB/marathon/mdsrspring/schedule")
-        # await asyncio.sleep(60 * 30)
-        # await self.channel.send("To watch the marathon in English, the main stream is on the MDSR channel: "
-        #                         "https://www.twitch.tv/moderndoomspeedrunning")
-        # await asyncio.sleep(60 * 30)
+        await self.channel.send("Un giveaway de jeux est en cours! Pour 15k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
+        await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
     @commands.command(name="git")
@@ -184,6 +177,15 @@ class LeixBot(commands.Bot):
         # Remove last comma and space
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
+
+    @commands.command(name="draw")
+    async def draw(self, ctx: commands.Context):
+        giveaway = list(self.giveaway)
+        winners = random.sample(giveaway, k=5)
+        games = random.shuffle(['SUPERHOT', 'Slay the spire',
+                                'Tooth and Tail', 'Dear Esther', 'Max Payne 3'])
+        for winner, game in winners, games:
+            await ctx.send(f'Félicitations {}! Tu as remporté {game}! SeemsGood')
 
 
 if __name__ == "__main__":
