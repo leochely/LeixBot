@@ -148,8 +148,7 @@ class LeixBot(commands.Bot):
 
         if event.reward.title == "Giveaway":
             logging.info(f'{event.user.name} entered the giveaway!')
-        self.giveaway
-.add(event.user.name)
+            self.giveaway.add(event.user.name)
 
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
