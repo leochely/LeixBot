@@ -147,6 +147,7 @@ class LeixBot(commands.Bot):
             await self.channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
         if event.reward.title == "Giveaway":
+            logging.info(f'{event.user.name} entered the giveaway!')
             giveaway.add(event.user.name)
 
     ## ROUTINES ##
@@ -186,6 +187,11 @@ class LeixBot(commands.Bot):
                                 'Tooth and Tail', 'Dear Esther', 'Max Payne 3'])
         for winner, game in winners, games:
             await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
+
+    @commands.command(name="giveawayadd")
+    async def giveawayadd(self, ctx: commands.Context, user: User = None):
+        logging.info(f'{user.name} entered the giveaway!')
+        self.giveaway.add(user.name)
 
 
 if __name__ == "__main__":
