@@ -25,7 +25,7 @@ game_replies = {
                                             '#FixTheClaw',
                                             'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
                                             "RisE C'eSt B1",
-                                            'Tu peux rejoindre la session et carry grâce a la commande !id SeemsGood'],
+                                            'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood'],
     'DOOM Eternal':                        ['RIP AND TEAR leix34Trigerred',
                                             'Meurs démon SwiftRage',
                                             '#BloodPunchFixed', ],
@@ -38,7 +38,12 @@ game_replies = {
                                             "Comment s'appelle ton doggo? <3",
                                             '#TeamMarteau'],
     'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
-                                            'Je suis enragé par ton message SwiftRage']
+                                            'Je suis enragé par ton message SwiftRage'],
+    'Elden Ring':                          ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
+                                            '#TeamClaymore',
+                                            '#TeamEspadon',
+                                            "Le cheval magique c'est vraiment génial!",
+                                            "Répète ça et j'invoque Mimi 2 SwiftRage"]
 }
 
 vip_replies = [
