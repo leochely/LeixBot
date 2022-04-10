@@ -185,7 +185,7 @@ class LeixBot(commands.Bot):
         winners = random.sample(giveaway, k=5)
         games = random.shuffle(['SUPERHOT', 'Slay the spire',
                                 'Tooth and Tail', 'Dear Esther', 'Max Payne 3'])
-        for winner, game in winners, games:
+        for winner, game in zip(winners, games):
             await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
 
     @commands.command(name="giveawayadd")
