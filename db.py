@@ -102,3 +102,76 @@ def validate(token, refresh_token):
                 conn.close()
                 logging.info('Database connection closed.')
         return new_token
+
+
+def init_channels():
+    """ Connects to the PostgreSQL database server and initializes the channels list """
+    conn = None
+    try:
+        # read connection parameters
+        channels = []
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info('Initializing channels')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"SELECT name FROM channels"
+        )
+        channels_raw = cur.fetchall()
+        for channel in channels_raw:
+            channels.append(channel[0])
+
+        # close the communication with the PostgreSQL
+        cur.close()
+        logging.info(channels)
+
+        return channels
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def add_channel(channel):
+    """ Connects to the PostgreSQL database server and initializes the channels list """
+    conn = None
+    try:
+        # read connection parameters
+        channels = []
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info('Initializing channels')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"INSERT INTO channels VALUES ('{channel}')"
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
+        logging.info(channels)
+
+        return channels
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')

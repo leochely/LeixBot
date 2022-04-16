@@ -10,7 +10,9 @@ from pathlib import Path
 import custom_commands
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
+
 from utils import auto_so, check_for_bot, random_bot_reply, random_reply
+from db import init_channels, add_channel
 
 
 class LeixBot(commands.Bot):
@@ -20,7 +22,7 @@ class LeixBot(commands.Bot):
             token=os.environ['ACCESS_TOKEN'],
             prefix=os.environ['BOT_PREFIX'],
             client_id=os.environ['CLIENT_ID'],
-            initial_channels=os.environ['INITIAL_CHANNELS'].split(', '),
+            initial_channels=init_channels(),
             case_insensitive=True
         )
         self.pubsub_client = None
@@ -29,7 +31,7 @@ class LeixBot(commands.Bot):
             p.stem for p in Path(".").glob("./cogs/*.py")
         ]
         self.vip_so = {
-            x: {} for x in os.environ['INITIAL_CHANNELS'].split(', ')
+            x: {} for x in init_channels()
         }
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
         self.giveaway = set()
@@ -178,6 +180,15 @@ class LeixBot(commands.Bot):
         # Remove last comma and space
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
+
+    @commands.command(name="join")
+    async def join(self, ctx: commands.Context, channel):
+        if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
+            logging.info(f'Joining channel {channel}')
+
+            await self.join_channels({channel})
+            self.vip_so[channel] = None
+            add_channel(channel)
 
     @commands.command(name="draw")
     async def draw(self, ctx: commands.Context):
