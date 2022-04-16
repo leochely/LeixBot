@@ -129,7 +129,6 @@ def init_channels():
 
         # close the communication with the PostgreSQL
         cur.close()
-        logging.info(channels)
 
         return channels
 
@@ -150,7 +149,7 @@ def add_channel(channel):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing channels')
+        logging.info(f'Adding channel {channel} to db')
         conn = psycopg2.connect(**params)
 
         # create a cursor
