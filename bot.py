@@ -187,7 +187,7 @@ class LeixBot(commands.Bot):
             logging.info(f'Joining channel {channel}')
 
             await self.join_channels({channel})
-            self.vip_so[channel] = None
+            self.vip_so[channel] = []
             add_channel(channel)
 
     @commands.command(name="draw")

@@ -42,7 +42,7 @@ class Mod(commands.Cog):
         user = await ctx.author.channel.user()
         success = modify_stream(title=' '.join(title), user=user)
         if success:
-            await ctx.send('Game updated SeemsGood')
+            await ctx.send('Title updated SeemsGood')
         else:
             await ctx.send('Error MrDestructoid')
 
