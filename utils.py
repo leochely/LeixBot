@@ -43,7 +43,12 @@ game_replies = {
                                             '#TeamClaymore',
                                             '#TeamEspadon',
                                             "Le cheval magique c'est vraiment génial!",
-                                            "Répète ça et j'invoque Mimi 2 SwiftRage"]
+                                            "Répète ça et j'invoque Mimi 2 SwiftRage"],
+    'League of Legends':                    ['poignepoignepoignepoignepoignepoignepoignepoignepoignepoignepoigne',
+                                             '#TeamPoigne',
+                                             'Petite aram? PogChamp',
+                                             'Enfin sad la commu :(',
+                                             "T'as bien nourri le poro?"]
 }
 
 vip_replies = [
