@@ -14,9 +14,7 @@ humanize.i18n.activate("fr_FR")
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.mh_id = {
-            x: "id not set!" for x in os.environ['INITIAL_CHANNELS'].split(', ')
-        }
+        self.id = {}
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
@@ -101,13 +99,15 @@ class Misc(commands.Cog):
 
     @commands.command(name="id")
     async def id(self, ctx: commands.Context):
-        await ctx.send(self.mh_id[ctx.author.channel.name])
+        if not self.id[ctx.author.channel.name]:
+            await ctx.send("Il n'y a pas d'id :(")
+        else:
+            await ctx.send(self.id[ctx.author.channel.name])
 
-    @commands.command(name="setId")
-    async def setId(self, ctx: commands.Context, id):
-        print(self.mh_id)
+    @ commands.command(name="setId")
+    async def setId(self, ctx: commands.Context, *id):
         if ctx.author.is_mod:
-            self.mh_id[ctx.author.channel.name] = id
+            self.id[ctx.author.channel.name] = ' '.join(id)
             await ctx.send('id set SeemsGood')
 
 

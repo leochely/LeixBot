@@ -92,7 +92,7 @@ async def random_reply(bot, message):
         "wsh t ki",
         "DONT LOOK BACK",
         "leix34Trigerred",
-        f"Ah ouais {msg_clean}??",
+        f"Ah ouais {msg_clean} ??",
         'Bip boup, je suis un robot'
     ]
     if channel_info.game_name in game_replies:
