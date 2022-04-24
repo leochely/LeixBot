@@ -67,7 +67,8 @@ def add_command(command, channel, text):
 
         # execute a statement
         cur.execute(
-            f"""INSERT INTO commands VALUES ("{command}", "{channel}", "{text}")"""
+            f"""INSERT INTO commands VALUES (%s, %s, %s)""",
+            (command, channel, text)
         )
 
         conn.commit()
@@ -105,7 +106,8 @@ def edit_command(command, channel, text):
 
         # execute a statement
         cur.execute(
-            f"""UPDATE commands SET text="{text}" WHERE command="{command}" AND channel="{channel}" """
+            f"""UPDATE commands SET text=%s WHERE command=%s AND channel=%s """,
+            (command, channel, text)
         )
 
         conn.commit()
