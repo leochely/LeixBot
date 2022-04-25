@@ -14,7 +14,7 @@ humanize.i18n.activate("fr_FR")
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.id = {}
+        self.game_id = {}
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
@@ -97,17 +97,17 @@ class Misc(commands.Cog):
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
 
-    @commands.command(name="id")
+    @commands.command()
     async def id(self, ctx: commands.Context):
-        if not self.id[ctx.author.channel.name]:
+        if ctx.author.channel.name not in self.game_id:
             await ctx.send("Il n'y a pas d'id :(")
         else:
-            await ctx.send(self.id[ctx.author.channel.name])
+            await ctx.send(self.game_id[ctx.author.channel.name])
 
-    @ commands.command(name="setId")
+    @commands.command(name="setId")
     async def setId(self, ctx: commands.Context, *id):
         if ctx.author.is_mod:
-            self.id[ctx.author.channel.name] = ' '.join(id)
+            self.game_id[ctx.author.channel.name] = ' '.join(id)
             await ctx.send('id set SeemsGood')
 
 
