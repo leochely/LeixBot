@@ -5,6 +5,8 @@ import os
 
 import wikiquote
 import humanize
+import random
+
 from twitchio import User
 from twitchio.ext import commands
 
@@ -16,6 +18,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.game_id = {}
+        random.seed(datetime.datetime.now())
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
@@ -99,10 +102,18 @@ class Misc(commands.Cog):
         await ctx.send('MET LA CAM')
 
     @commands.command(name="citation", aliases=['quote'])
-    async def citation(self, ctx: commands.Context):
-        author = wikiquote.random_titles(max_titles=1, lang='fr')[0]
-        quote = wikiquote.quotes(author, lang='fr')[0]
-        await ctx.send(f'{quote} - {author}')
+    async def citation(self, ctx: commands.Context, *author):
+        if not author:
+            author = wikiquote.random_titles(max_titles=1, lang='fr')[0]
+        else:
+            author = ' '.join(author)
+            author = wikiquote.search(author, lang='fr')
+
+        if author:
+            quote = random.choice(wikiquote.quotes(author[0], lang='fr'))
+            await ctx.send(f'{quote} - {author[0]}')
+        else:
+            await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
     @commands.command()
     async def id(self, ctx: commands.Context):
