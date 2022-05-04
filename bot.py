@@ -12,7 +12,7 @@ from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
 
 from utils import auto_so, check_for_bot, random_bot_reply, random_reply
-from db import init_channels, add_channel
+from db import init_channels, add_channel, leave_channel
 
 
 class LeixBot(commands.Bot):
@@ -184,24 +184,34 @@ class LeixBot(commands.Bot):
     @commands.command(name="join")
     async def join(self, ctx: commands.Context, channel):
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
-            logging.info(f'Joining channel {channel}')
+            await ctx.send(f'Joining channel {channel}')
 
             await self.join_channels({channel})
             self.vip_so[channel] = {}
             add_channel(channel)
 
+    @commands.command(name="leave")
+    async def leave(self, ctx: commands.Context, channel):
+        if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
+            await ctx.send(f'Leaving channel {channel}')
+
+            logging.info(f"PART #{channel}\r\n")
+            await self._connection.send(f"PART #{channel}\r\n")
+            leave_channel(channel)
+
     @commands.command(name="draw")
     async def draw(self, ctx: commands.Context):
         giveaway = list(self.giveaway)
         winners = random.sample(giveaway, k=5)
-        games = random.shuffle(['SUPERHOT', 'Slay the spire',
-                                'Tooth and Tail', 'Dear Esther', 'Max Payne 3'])
+        games = ['SUPERHOT', 'Slay the spire',
+                 'Tooth and Tail', 'Dear Esther', 'Max Payne 3']
+        random.shuffle(games)
         for winner, game in zip(winners, games):
             await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
 
     @commands.command(name="giveawayadd")
     async def giveawayadd(self, ctx: commands.Context, user: User = None):
-        logging.info(f'{user.name} entered the giveaway!')
+        await ctx.send(f'{user.name} entered the giveaway!')
         self.giveaway.add(user.name)
 
 

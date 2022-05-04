@@ -40,7 +40,7 @@ class Mod(commands.Cog):
     @commands.command(name="title")
     async def title(self, ctx: commands.Context, *title):
         user = await ctx.author.channel.user()
-        success = modify_stream(title=' '.join(title), user=user)
+        success = await modify_stream(title=' '.join(title), user=user)
         if success:
             await ctx.send('Title updated SeemsGood')
         else:
@@ -52,7 +52,7 @@ class Mod(commands.Cog):
         game: Game = g[0]
         user = await ctx.author.channel.user()
 
-        success = modify_stream(game_id=game.id, user=user)
+        success = await modify_stream(game_id=game.id, user=user)
         if success:
             await ctx.send('Game updated SeemsGood')
         else:

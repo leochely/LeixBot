@@ -1,8 +1,10 @@
 import random
 import logging
-import requests
+import aiohttp
+import asyncio
 import os
 import re
+import json
 
 from datetime import datetime, timedelta, timezone
 from db import get_token
@@ -126,9 +128,9 @@ def check_for_bot(message):
 base_url = "https://api.twitch.tv/helix/channels?broadcaster_id="
 
 
-def modify_stream(user, game_id: int = None, language: str = None, title: str = None):
+async def modify_stream(user, game_id: int = None, language: str = None, title: str = None):
     url = base_url + str(user.id)
-    auth = "Bearer " + get_token(user.name)
+    auth = "Bearer " + await get_token(user.name)
     id = os.environ['CLIENT_ID']
 
     headers = {
@@ -141,6 +143,10 @@ def modify_stream(user, game_id: int = None, language: str = None, title: str = 
         for k, v in {"game_id": game_id, "broadcaster_language": language, "title": title}.items()
         if v is not None
     }
+    user_encode_data = json.dumps(data).encode('utf-8')
 
-    resp = requests.patch(url, headers=headers, data=data)
-    return resp.status_code == 204
+    logging.info('Updating stream')
+
+    async with aiohttp.ClientSession() as session:
+        async with session.patch(url, data=data, headers=headers) as resp:
+            return resp.status == 204

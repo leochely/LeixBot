@@ -1,5 +1,6 @@
 import psycopg2
-import requests
+import aiohttp
+import asyncio
 import logging
 import os
 from configparser import ConfigParser
@@ -24,7 +25,7 @@ def config(filename='./database_auth.ini', section='postgresql'):
     return db
 
 
-def get_token(user):
+async def get_token(user):
     """ Connects to the PostgreSQL database server and returns user token """
     conn = None
     try:
@@ -54,53 +55,69 @@ def get_token(user):
             conn.close()
             logging.info('Database connection closed.')
 
-    return validate(token[0], token[1])
+    return await validate(token[0], token[1])
 
 
-def validate(token, refresh_token):
+async def validate(token, refresh_token):
     """ Checks if token is valid and refreshes if needed """
-    url = 'https://id.twitch.tv/oauth2/validate'
+    logging.info('Validating token')
+
+    url = 'https://id.twitch.tv/oauth2'
     auth = "Bearer " + token
     id = os.environ['CLIENT_ID']
     headers = {
         "Client-Id": id,
         "Authorization": auth
     }
-    resp = requests.get(url, headers=headers)
-    if resp.status_code == 200:
-        return token
-    else:
-        # Requests new access token
-        refresh_url = f"https://id.twitch.tv/oauth2/token?grant_type=refresh_token&client_id={os.environ['CLIENT_ID']}&client_secret={os.environ['CLIENT_SECRET']}&refresh_token={refresh_token}"
-        refresh_resp = requests.post(refresh_url)
-        new_token = refresh_resp.json().get('access_token')
+    params = {
+        'grant_type': 'refresh_token',
+        'client_id': os.environ['CLIENT_ID'],
+        'client_secret': os.environ['CLIENT_SECRET'],
+        'refresh_token': refresh_token
+    }
 
-        # Updates db
-        try:
-            # read connection parameters
-            params = config()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url + '/validate', headers=headers) as resp:
+            # logging.info(resp)
+            if resp.status == 200:
+                return token
+            else:
+                pass
 
-            # connect to the PostgreSQL server
-            logging.info('Updating access token')
-            conn = psycopg2.connect(**params)
+        async with session.post(url + '/token', params=params) as refresh_resp:
+            # Requests new access token
+            # logging.info(await refresh_resp.json())
+            data = await refresh_resp.json()
+            new_token = data['access_token']
 
-            # create a cursor
-            cur = conn.cursor()
+            # Updates db
+            try:
+                # read connection parameters
+                params = config()
 
-            # execute a statement
-            cur.execute(
-                f"UPDATE users SET token = '{new_token}' WHERE token = '{token}' AND refresh_token = '{refresh_token}'"
-            )
+                # connect to the PostgreSQL server
+                logging.info('Updating access token')
+                conn = psycopg2.connect(**params)
 
-            conn.commit()
-            # close the communication with the PostgreSQL
-            cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
-            logging.error(error)
-        finally:
-            if conn is not None:
-                conn.close()
-                logging.info('Database connection closed.')
+                # create a cursor
+                cur = conn.cursor()
+
+                # execute a statement
+                cur.execute(
+                    f"UPDATE users SET token = '{new_token}' WHERE token = '{token}' AND refresh_token = '{refresh_token}'"
+                )
+
+                conn.commit()
+                # close the communication with the PostgreSQL
+                cur.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                logging.error(error)
+            finally:
+                await session.close()
+                if conn is not None:
+                    conn.close()
+                    logging.info('Database connection closed.')
+
         return new_token
 
 
@@ -164,9 +181,39 @@ def add_channel(channel):
 
         # close the communication with the PostgreSQL
         cur.close()
-        logging.info(channels)
 
-        return channels
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def leave_channel(channel):
+    """ Connects to the PostgreSQL database server and initializes the channels list """
+    conn = None
+    try:
+        # read connection parameters
+        channels = []
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(f'Removing channel {channel} to db')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""DELETE FROM channels WHERE name=%s""", (channel)
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
         logging.error(error)
