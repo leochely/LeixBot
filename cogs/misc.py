@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 
+import wikiquote
 import humanize
 from twitchio import User
 from twitchio.ext import commands
@@ -96,6 +97,12 @@ class Misc(commands.Cog):
     @commands.command(name="cam")
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
+
+    @commands.command(name="citation", aliases=['quote'])
+    async def citation(self, ctx: commands.Context):
+        author = wikiquote.random_titles(max_titles=1, lang='fr')[0]
+        quote = wikiquote.quotes(author, lang='fr')[0]
+        await ctx.send(f'{quote} - {author}')
 
     @commands.command()
     async def id(self, ctx: commands.Context):

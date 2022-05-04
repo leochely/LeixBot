@@ -11,10 +11,11 @@ async-timeout==3.0.1
 attrs==21.2.0
 certifi==2021.10.8
 chardet==4.0.0
-charset-normalizer==2.0.12; python_version >= '3'
+charset-normalizer==2.0.12
 humanize==3.13.1
 idna==3.3
 iso8601==1.0.0
+lxml==4.8.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 multidict==5.2.0
 playsound==1.2.2
 psycopg2==2.9.3
@@ -22,5 +23,6 @@ pyserial==3.5
 requests==2.27.1
 twitchio==2.1.5
 typing-extensions==3.10.0.2
-urllib3==1.26.8; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'
+urllib3==1.26.8
+wikiquote==0.1.16
 yarl==1.7.0
