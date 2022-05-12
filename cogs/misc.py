@@ -104,15 +104,19 @@ class Misc(commands.Cog):
     @commands.command(name="citation", aliases=['quote'])
     async def citation(self, ctx: commands.Context, *author):
         if not author:
-            author = wikiquote.random_titles(max_titles=1, lang='fr')[0]
+            author = wikiquote.random_titles(max_titles=1, lang='fr')
         else:
             author = ' '.join(author)
             author = wikiquote.search(author, lang='fr')
 
-        if author:
-            quote = random.choice(wikiquote.quotes(author[0], lang='fr'))
-            await ctx.send(f'{quote} - {author[0]}')
-        else:
+        author = random.choice(author)
+        quotes = [
+            x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
+        ]
+        quote = random.choice(quotes)
+        await ctx.send(f'{quote} - {author[0]}')
+
+        if not quote:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
     @commands.command()

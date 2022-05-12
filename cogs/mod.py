@@ -1,7 +1,7 @@
 import logging
 import os
 
-from twitchio import Channel, Game
+from twitchio import Channel, Game, User
 from twitchio.ext import commands
 from utils import modify_stream
 
@@ -22,20 +22,20 @@ class Mod(commands.Cog):
         )
 
     @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user, *reason):
-        logging.info(f'User {user} has been banned')
+    async def ban(self, ctx: commands.Context, user: User = None, *reason):
+        logging.info(f'User {user.name} has been banned')
         if not reason:
             reason = 'Rise of the machines'
         else:
             reason = ' '.join(reason)
-        await ctx.send(f"/ban {user} {reason}")
-        await ctx.send(f"Au revoir {user} HeyGuys")
+        await ctx.send(f"/ban {user.name} {reason}")
+        await ctx.send(f"Au revoir {user.name} HeyGuys")
 
     @commands.command(name="unban")
-    async def unban(self, ctx: commands.Context, user):
-        logging.info(f'User {user} has been unbanned')
-        await ctx.send(f"/unban {user}")
-        await ctx.send(f"Bon retour parmi nous {user} HeyGuys !")
+    async def unban(self, ctx: commands.Context, user: User = None):
+        logging.info(f'User {user.name} has been unbanned')
+        await ctx.send(f"/unban {user.name}")
+        await ctx.send(f"Bon retour parmi nous {user.name} HeyGuys !")
 
     @commands.command(name="title")
     async def title(self, ctx: commands.Context, *title):
