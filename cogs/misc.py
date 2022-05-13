@@ -114,7 +114,7 @@ class Misc(commands.Cog):
             x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
         ]
         quote = random.choice(quotes)
-        await ctx.send(f'{quote} - {author[0]}')
+        await ctx.send(f'{quote} - {author}')
 
         if not quote:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
