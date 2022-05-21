@@ -71,14 +71,22 @@ async def auto_so(bot, message, vip_info):
             message.author.channel.name
         ])
 
-    if len(stream) == 0 or (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or ('vip' not in message.author.badges and 'moderator' not in message.author.badges):
+    if (len(stream) == 0 or
+        (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
+        ('vip' not in message.author.badges and
+         'moderator' not in message.author.badges and
+         'artist' not in message.author.badges)):
         return
 
     # Update last automatic shoutout time
     vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
-    if vip_channel_info.game_name:
+    if 'artist' in message.author.badges:
+        await message.author.channel.send(
+            f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}'
+        )
+    elif vip_channel_info.game_name:
         await message.author.channel.send(
             f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
         )
