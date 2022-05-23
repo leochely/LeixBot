@@ -82,7 +82,7 @@ async def auto_so(bot, message, vip_info):
     vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
-    if 'artist' in message.author.badges:
+    if 'artist-badge' in message.author.badges:
         await message.author.channel.send(
             f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}'
         )
