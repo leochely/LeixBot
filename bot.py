@@ -35,11 +35,10 @@ class LeixBot(commands.Bot):
         }
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
         self.giveaway = set()
+        self.routines = {}
 
     def setup(self):
         random.seed()
-
-        logging.info(f'{self._http.client_id}')
         logging.info("Chargement des cogs...")
 
         for cog in self._cogs_names:
@@ -72,6 +71,9 @@ class LeixBot(commands.Bot):
 
         # Retrieving custom commands from db
         custom_commands.init_commands()
+
+        # Retrieving routines from db
+        self.routines = custom_commands.init_routines(self)
 
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
@@ -111,7 +113,6 @@ class LeixBot(commands.Bot):
         await self.handle_commands(message)
 
     async def event_raw_usernotice(self, channel, tags):
-        logging.debug(tags)
         if tags["msg-id"] == "sub":
             await channel.send(f"/me PogChamp {tags['display-name']} rejoint la légion! Merci pour le sub PogChamp")
         elif tags["msg-id"] == "resub":
@@ -161,7 +162,7 @@ class LeixBot(commands.Bot):
         await asyncio.sleep(60 * 30)
         await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
         await asyncio.sleep(60 * 30)
-        await self.channel.send("Un giveaway de jeux est en cours! Pour 15k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
+        await self.channel.send("Un giveaway de jeux est en cours! Pour 5k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
         await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
@@ -184,6 +185,7 @@ class LeixBot(commands.Bot):
     @commands.command(name="join")
     async def join(self, ctx: commands.Context, channel):
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
+            channel = channel.lower()
             await ctx.send(f'Joining channel {channel}')
 
             await self.join_channels({channel})
@@ -193,6 +195,7 @@ class LeixBot(commands.Bot):
     @commands.command(name="leave")
     async def leave(self, ctx: commands.Context, channel):
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
+            channel = channel.lower()
             await ctx.send(f'Leaving channel {channel}')
 
             logging.info(f"PART #{channel}\r\n")

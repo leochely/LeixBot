@@ -78,7 +78,6 @@ async def validate(token, refresh_token):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url + '/validate', headers=headers) as resp:
-            # logging.info(resp)
             if resp.status == 200:
                 return token
             else:
