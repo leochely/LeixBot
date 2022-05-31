@@ -165,6 +165,49 @@ class LeixBot(commands.Bot):
         await self.channel.send("Un giveaway de jeux est en cours! Pour 5k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
         await asyncio.sleep(60 * 30)
 
+    @commands.command(name="routine_add")
+    async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):
+        if not ctx.author.is_mod:
+            return
+
+        routine_text = ' '.join(text)
+
+        channel = self.get_channel(ctx.author.channel.name)
+
+        logging.info(channel)
+
+        @routines.routine(seconds=int(seconds), minutes=int(minutes), hours=int(hours), wait_first=False)
+        async def temp_routine():
+            await channel.send(routine_text)
+
+        # Starts routine
+        self.routines[ctx.author.channel.name + '_' + name] = temp_routine
+        self.routines[ctx.author.channel.name + '_' + name].start()
+
+        # Adds routine to db
+        custom_commands.add_routine(
+            ctx.author.channel.name,
+            name,
+            seconds,
+            minutes,
+            hours,
+            routine_text
+        )
+        await ctx.send('Routine créée avec succès SeemsGood')
+
+    @commands.command(name="routine_stop")
+    async def routine_stop(self, ctx: commands.Context, name):
+        if not ctx.author.is_mod:
+            return
+
+        # Stops routine
+        logging.info(self.routines)
+        self.routines[ctx.author.channel.name + '_' + name].cancel()
+        logging.info(self.routines)
+
+        custom_commands.remove_routine(ctx.author.channel.name, name)
+        await ctx.send('Routine stoppée avec succès MrDestructoid')
+
     ## GENERAL FUNCTIONS ##
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
