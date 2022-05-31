@@ -78,23 +78,22 @@ class Visuals(commands.Cog):
     async def kappagen(self, ctx: commands.Context, value=None):
         channel = ctx.author.channel.name
         await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
-        if not value.isnumeric():
+        if not value or not value.isnumeric():
             value = None
 
         # Parsing emote tags to generate URLs
         emotes_raw = ctx.message.tags['emotes']
-        emotes = re.findall('(.*?):', emotes_raw)
-        logging.info(emotes)
-        emote_urls = None
-        if emotes:
+        emotes_urls = None
+        if len(emotes_raw) > 0:
             emotes_urls = []
+            emotes = re.findall('(.*?):', emotes_raw)
             for emote in emotes:
                 emote_clean = re.sub(".*/", "", emote)
-                logging.info(emote_clean)
                 emotes_urls.append(
                     "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/static/light/1.0"
                 )
 
+        logging.info(value)
         data = {
             'channel': channel,
             'params': {
