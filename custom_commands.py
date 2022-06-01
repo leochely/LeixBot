@@ -168,6 +168,14 @@ def remove_command(command, channel):
 
 
 ### ROUTINES ###
+def routine_factory(channel, seconds, minutes, hours, routine_text):
+    @routines.routine(seconds=seconds, minutes=minutes, hours=hours, wait_first=False)
+    async def temp_routine():
+        await channel.send(routine_text)
+
+    return temp_routine
+
+
 def add_routine(
         channel, name, seconds, minutes,
         hours, routine_text):
@@ -227,11 +235,13 @@ def init_routines(bot):
 
         for routine in routines_raw:
             chan = bot.get_channel(routine[0])
-
-            @routines.routine(seconds=int(routine[2]), minutes=int(routine[3]), hours=int(routine[4]), wait_first=False)
-            async def temp_routine():
-                await chan.send(routine[5])
-            routines_db[routine[0] + '_' + routine[1]] = temp_routine
+            routines_db[routine[0] + '_' + routine[1]] = routine_factory(
+                channel=chan,
+                seconds=int(routine[2]),
+                minutes=int(routine[3]),
+                hours=int(routine[4]),
+                routine_text=routine[5]
+            )
             routines_db[routine[0] + '_' + routine[1]].start()
 
         # close the communication with the PostgreSQL

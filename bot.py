@@ -201,10 +201,9 @@ class LeixBot(commands.Bot):
             return
 
         # Stops routine
-        logging.info(self.routines)
         self.routines[ctx.author.channel.name + '_' + name].cancel()
-        logging.info(self.routines)
 
+        # Removes routine from db
         custom_commands.remove_routine(ctx.author.channel.name, name)
         await ctx.send('Routine stoppée avec succès MrDestructoid')
 

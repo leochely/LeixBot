@@ -31,6 +31,7 @@ class Visuals(commands.Cog):
         await ctx.send(f"@{user.name} tu n'es pas modérateur ou VIP!")
 
     ### COUNTERS ###
+    @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command(name="rip")
     async def rip(self, ctx: commands.Context):
         channel = ctx.author.channel.name
@@ -74,6 +75,7 @@ class Visuals(commands.Cog):
         await sio.emit('leixbot.rip', data)
 
     ### KAPPAGEN ###
+    @commands.cooldown(1, 30, commands.Bucket.user)
     @commands.command(name="kappagen")
     async def kappagen(self, ctx: commands.Context, value=None):
         channel = ctx.author.channel.name
@@ -90,7 +92,7 @@ class Visuals(commands.Cog):
             for emote in emotes:
                 emote_clean = re.sub(".*/", "", emote)
                 emotes_urls.append(
-                    "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/static/light/1.0"
+                    "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/1.0"
                 )
 
         logging.info(value)
