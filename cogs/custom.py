@@ -16,6 +16,9 @@ class CustomCommand(commands.Cog):
 
     @commands.command(name="cmdadd")
     async def cmdadd(self, ctx: commands.Context, command, *text):
+        """Ajoute une commande a la base de données.
+        Ex: !cmdadd !test ma commande
+        """
         channel = ctx.author.channel.name.lower()
         text = ' '.join(text)
 
@@ -25,6 +28,9 @@ class CustomCommand(commands.Cog):
 
     @commands.command(name="cmdedit")
     async def cmdedit(self, ctx: commands.Context, command, *text):
+        """Edite une commande presente dans la base de données.
+        Ex: !cmdedit !test mon nouveau texte de commande
+        """
         channel = ctx.author.channel.name.lower()
         text = ' '.join(text)
 
@@ -34,6 +40,10 @@ class CustomCommand(commands.Cog):
 
     @commands.command(name="cmdremove")
     async def cmdremove(self, ctx: commands.Context, command):
+        """
+        Retire une commande de la base de données.
+        Ex: !cmdremove !test
+        """
         channel = ctx.author.channel.name.lower()
 
         custom_commands.remove_command(command, channel)

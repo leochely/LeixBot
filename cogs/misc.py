@@ -22,22 +22,28 @@ class Misc(commands.Cog):
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
+        """ 'Banni' un utilisateur... pour de faux.
+        Ex: !leixban Leix34
+        """
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
 
     @commands.command(name="salut", aliases=['slt'])
     async def salut(self, ctx: commands.Context, user: User = None):
+        """Transmet vos salutations a un utilisateur. Ex: !slt leix34"""
         if not user:
             user = ctx.author
         await ctx.send(f'Mes salutations les plus distinguées @{user.name}! <3')
 
     @commands.command(name="bn")
     async def bn(self, ctx: commands.Context, user: User = None):
+        """Souhaite bonne nuit a un utilisateur. Ex: !bn leix34"""
         if not user:
             user = ctx.author
         await ctx.send(f'Fais de beaux rêves @{user.name} <3')
 
     @commands.command(name="uptime")
     async def uptime(self, ctx: commands.bot.Context):
+        """Donne le temps du live actuel. Ex: !uptime"""
         stream = await self.bot.fetch_streams(
             user_logins=[
                 ctx.author.channel.name
@@ -52,6 +58,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="dblade")
     async def dblade(self, ctx: commands.Context):
+        """Dédicace une destroyer blade a l'utilisateur. Ex: !dblade"""
         await ctx.send(f'Je te dédicace cette dblade {ctx.author.name}!')
 
     @commands.command(name="cursed")
@@ -68,10 +75,12 @@ class Misc(commands.Cog):
 
     @commands.command(name="lurk")
     async def lurk(self, ctx: commands.Context):
+        """Indique que vous devenez un lurkeur"""
         await ctx.send(f'{ctx.author.name} devient un lurkeur fou!')
 
     @commands.command(name='shoutout', aliases=['so'])
     async def shoutout(self, ctx: commands.Context, broadcaster: User):
+        """Shoutout l'utilisateur choisi. Ex: !so leix34"""
         await ctx.send('yapadeso')
         if 'vip' in ctx.author.badges or ctx.author.is_mod:
             channel_info = await self.bot.fetch_channel(broadcaster.name)
@@ -95,7 +104,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="ref")
     async def ref(self, ctx: commands.Context):
-        await ctx.send('glaref leix34Trigerred')
+        await ctx.send('glaref SwiftRage')
 
     @commands.command(name="cam")
     async def cam(self, ctx: commands.Context):
@@ -103,6 +112,10 @@ class Misc(commands.Cog):
 
     @commands.command(name="citation", aliases=['quote'])
     async def citation(self, ctx: commands.Context, *author):
+        """Renvoie une citation aléatoire depuis wikiquote. L'auteur peut etre
+        spécifié.
+        Ex: !quote Kojima
+        """
         if not author:
             author = wikiquote.random_titles(max_titles=1, lang='fr')
         else:
@@ -121,6 +134,7 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def id(self, ctx: commands.Context):
+        """Renvoie l'id de la session (si existant). Ex: !id"""
         if ctx.author.channel.name not in self.game_id:
             await ctx.send("Il n'y a pas d'id :(")
         else:
@@ -128,6 +142,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="setId")
     async def setId(self, ctx: commands.Context, *id):
+        """Regle l'id de la session. Ex: !id abc 1234"""
         if ctx.author.is_mod:
             self.game_id[ctx.author.channel.name] = ' '.join(id)
             await ctx.send('id set SeemsGood')

@@ -165,8 +165,11 @@ class LeixBot(commands.Bot):
         await self.channel.send("Un giveaway de jeux est en cours! Pour 5k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
         await asyncio.sleep(60 * 30)
 
-    @commands.command(name="routine_add")
+    @commands.command(name="routineAdd")
     async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):
+        """Ajoute de demarre une routine une routine. Requiert privilege modérateur.
+        Ex: !routineAdd mon_nom_de_routine 1 2 3 Mon texte de routine
+        """
         if not ctx.author.is_mod:
             return
 
@@ -195,8 +198,11 @@ class LeixBot(commands.Bot):
         )
         await ctx.send('Routine créée avec succès SeemsGood')
 
-    @commands.command(name="routine_stop")
+    @commands.command(name="routineStop")
     async def routine_stop(self, ctx: commands.Context, name):
+        """Arrete et supprime une routine. Requiert privilege modérateur.
+        Ex: !routineStop ma_routine
+        """
         if not ctx.author.is_mod:
             return
 
@@ -210,12 +216,17 @@ class LeixBot(commands.Bot):
     ## GENERAL FUNCTIONS ##
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
+        """Renvoie le lien vers le repo GitHub de LeixBot. Ex: !git"""
         await ctx.send(
             f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
         )
 
     @commands.command(name="list")
     async def list(self, ctx: commands.Context):
+        """
+        Retourne la liste des commandes globales de LeixBot
+        """
+
         list = ""
         for command in self.commands:
             list += command + ", "
@@ -224,8 +235,17 @@ class LeixBot(commands.Bot):
         list = list[:-2]
         await ctx.send(f'La liste des commandes de LeixBot: {list}')
 
-    @commands.command(name="join")
+    @commands.command(name="help")
+    async def help(self, ctx: commands.Context, name):
+        """Fourni l'aide d'une commande globale. Ex: !help help"""
+        if name in self.commands:
+            await ctx.send(self.commands[name]._callback.__doc__)
+        else:
+            await ctx.send("Désolé, ce n'est pas une de mes commande globale :(")
+
+    @ commands.command(name="join")
     async def join(self, ctx: commands.Context, channel):
+        """Envoie LeixBot sur votre chaine. Ex: !join ma_chaine"""
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
             channel = channel.lower()
             await ctx.send(f'Joining channel {channel}')
@@ -234,8 +254,9 @@ class LeixBot(commands.Bot):
             self.vip_so[channel] = {}
             add_channel(channel)
 
-    @commands.command(name="leave")
+    @ commands.command(name="leave")
     async def leave(self, ctx: commands.Context, channel):
+        """Retire LeixBot de votre chaine. Ex: !leave ma_chaine"""
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
             channel = channel.lower()
             await ctx.send(f'Leaving channel {channel}')
@@ -244,7 +265,7 @@ class LeixBot(commands.Bot):
             await self._connection.send(f"PART #{channel}\r\n")
             leave_channel(channel)
 
-    @commands.command(name="draw")
+    @ commands.command(name="draw")
     async def draw(self, ctx: commands.Context):
         giveaway = list(self.giveaway)
         winners = random.sample(giveaway, k=5)
@@ -254,7 +275,7 @@ class LeixBot(commands.Bot):
         for winner, game in zip(winners, games):
             await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
 
-    @commands.command(name="giveawayadd")
+    @ commands.command(name="giveawayadd")
     async def giveawayadd(self, ctx: commands.Context, user: User = None):
         await ctx.send(f'{user.name} entered the giveaway!')
         self.giveaway.add(user.name)
@@ -278,7 +299,7 @@ if __name__ == "__main__":
 
     client.pubsub = pubsub.PubSubPool(client)
 
-    @client.event()
+    @ client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
         await bot.event_pubsub_channel_points(event)
 

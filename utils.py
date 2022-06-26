@@ -5,6 +5,7 @@ import asyncio
 import os
 import re
 import json
+import socketio
 
 from datetime import datetime, timedelta, timezone
 from db import get_token
@@ -38,7 +39,8 @@ game_replies = {
     'Monster Hunter Rise':                 ['World > Rise Kappa',
                                             "Comment s'appelle ton palico? <3",
                                             "Comment s'appelle ton doggo? <3",
-                                            '#TeamMarteau'],
+                                            '#TeamMarteau',
+                                            'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood'],
     'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
                                             'Je suis enragé par ton message SwiftRage'],
     'Elden Ring':                          ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
@@ -52,7 +54,10 @@ game_replies = {
                                              '#TeamPoigne',
                                              'Petite aram? PogChamp',
                                              'Enfin sad la commu :(',
-                                             "T'as bien nourri le poro?"]
+                                             "T'as bien nourri le poro?"],
+    "Baldur's Gate: Enhanced Edition":      ['Un gaspillage de talent',
+                                             ],
+    "Risk of Rain 2":                       ['#TeamSpallieres']
 }
 
 vip_replies = [
@@ -158,3 +163,23 @@ async def modify_stream(user, game_id: int = None, language: str = None, title: 
     async with aiohttp.ClientSession() as session:
         async with session.patch(url, data=data, headers=headers) as resp:
             return resp.status == 204
+
+
+### SOUNDS ###
+sio = socketio.AsyncClient()
+
+
+@sio.event
+def disconnect():
+    logging.info('disconnected')
+
+
+async def play_alert(channel, event='default'):
+    await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
+    data = {
+        'channel': channel,
+        'params': {
+            'value': event,
+        }
+    }
+    await sio.emit('leixbot.alert', data)
