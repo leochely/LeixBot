@@ -179,7 +179,7 @@ async def play_alert(channel, event='default'):
     data = {
         'channel': channel,
         'params': {
-            'value': event,
+            'event': event,
         }
     }
     await sio.emit('leixbot.alert', data)

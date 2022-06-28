@@ -11,7 +11,7 @@ import custom_commands
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
 
-from utils import auto_so, check_for_bot, random_bot_reply, random_reply
+from utils import auto_so, check_for_bot, random_bot_reply, random_reply, play_alert
 from db import init_channels, add_channel, leave_channel
 
 
@@ -131,6 +131,7 @@ class LeixBot(commands.Bot):
             await channel.send(
                 f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
             )
+            await play_alert(channel.name, tags["msg-id"])
 
     async def event_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.CommandNotFound):
@@ -243,7 +244,7 @@ class LeixBot(commands.Bot):
         else:
             await ctx.send("Désolé, ce n'est pas une de mes commande globale :(")
 
-    @ commands.command(name="join")
+    @commands.command(name="join")
     async def join(self, ctx: commands.Context, channel):
         """Envoie LeixBot sur votre chaine. Ex: !join ma_chaine"""
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
@@ -254,7 +255,7 @@ class LeixBot(commands.Bot):
             self.vip_so[channel] = {}
             add_channel(channel)
 
-    @ commands.command(name="leave")
+    @commands.command(name="leave")
     async def leave(self, ctx: commands.Context, channel):
         """Retire LeixBot de votre chaine. Ex: !leave ma_chaine"""
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
@@ -265,7 +266,7 @@ class LeixBot(commands.Bot):
             await self._connection.send(f"PART #{channel}\r\n")
             leave_channel(channel)
 
-    @ commands.command(name="draw")
+    @commands.command(name="draw")
     async def draw(self, ctx: commands.Context):
         giveaway = list(self.giveaway)
         winners = random.sample(giveaway, k=5)
@@ -275,10 +276,14 @@ class LeixBot(commands.Bot):
         for winner, game in zip(winners, games):
             await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
 
-    @ commands.command(name="giveawayadd")
+    @commands.command(name="giveawayadd")
     async def giveawayadd(self, ctx: commands.Context, user: User = None):
         await ctx.send(f'{user.name} entered the giveaway!')
         self.giveaway.add(user.name)
+
+    @commands.command(name="temp")
+    async def temp(self, ctx: commands.Context, event):
+        await play_alert(ctx.author.name, event)
 
 
 if __name__ == "__main__":
