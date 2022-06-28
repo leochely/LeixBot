@@ -115,18 +115,22 @@ class LeixBot(commands.Bot):
     async def event_raw_usernotice(self, channel, tags):
         if tags["msg-id"] == "sub":
             await channel.send(f"/me PogChamp {tags['display-name']} rejoint la légion! Merci pour le sub PogChamp")
+            await play_alert(channel.name, tags["msg-id"])
         elif tags["msg-id"] == "resub":
             await channel.send(
                 f"/me PogChamp Le resub de {tags['display-name']}!! Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
             )
+            await play_alert(channel.name, tags["msg-id"])
         elif tags['msg-id'] == 'subgift':
             await channel.send(
                 f'/me {tags["display-name"]} est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
+            await play_alert(channel.name, tags["msg-id"])
         elif tags['msg-id'] == 'anonsubgift':
             await channel.send(
                 f'/me Un donateur anonyme est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
+            await play_alert(channel.name, tags["msg-id"])
         elif tags["msg-id"] == "raid":
             await channel.send(
                 f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
@@ -153,6 +157,12 @@ class LeixBot(commands.Bot):
         if event.reward.title == "Giveaway":
             logging.info(f'{event.user.name} entered the giveaway!')
             self.giveaway.add(event.user.name)
+
+    async def event_pubsub_bits_message(self, event: pubsub.PubSubBitsMessage):
+        logging.info(
+            f'{event.user} redeemed {event.bits_used} with message {event.message}'
+        )
+        await self.channel.send(f'Merci pour les {event.bits_used} bits @ {event.user} <3')
 
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
@@ -304,9 +314,13 @@ if __name__ == "__main__":
 
     client.pubsub = pubsub.PubSubPool(client)
 
-    @ client.event()
+    @client.event()
     async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
         await bot.event_pubsub_channel_points(event)
+
+    @client.event()
+    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
+        await bot.event_pubsub_bits_message(event)
 
     bot = LeixBot()
     bot.pubsub_client = client
