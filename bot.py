@@ -273,8 +273,7 @@ class LeixBot(commands.Bot):
             channel = channel.lower()
             await ctx.send(f'Leaving channel {channel}')
 
-            logging.info(f"PART #{channel}\r\n")
-            await self._connection.send(f"PART #{channel}\r\n")
+            await self.part_channels({channel})
             leave_channel(channel)
 
     @commands.command(name="draw")

@@ -206,7 +206,7 @@ def leave_channel(channel):
 
         # execute a statement
         cur.execute(
-            f"""DELETE FROM channels WHERE name=%s""", (channel)
+            "DELETE FROM channels WHERE name=%s", (channel, )
         )
 
         conn.commit()
