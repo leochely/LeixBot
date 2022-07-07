@@ -40,7 +40,10 @@ game_replies = {
                                             "Comment s'appelle ton palico? <3",
                                             "Comment s'appelle ton doggo? <3",
                                             '#TeamMarteau',
-                                            'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood'],
+                                            'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood',
+                                            'Tiens, prend ce filoptère <3',
+                                            '#TeamGS',
+                                            'Fais gaffe, il y a un narga malaisant derrière toi!'],
     'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
                                             'Je suis enragé par ton message SwiftRage'],
     'Elden Ring':                          ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
@@ -87,18 +90,17 @@ async def auto_so(bot, message, vip_info):
     vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
+    message = ''
     if 'artist-badge' in message.author.badges:
-        await message.author.channel.send(
-            f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}'
-        )
+        message = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}!'
+        if vip_channel_info.game_name:
+            message += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
     elif vip_channel_info.game_name:
-        await message.author.channel.send(
-            f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
-        )
+        message = f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
     else:
-        await message.author.channel.send(
-            f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
-        )
+        message = f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
+
+    await message.author.channel.send(message)
 
 
 async def random_reply(bot, message):
