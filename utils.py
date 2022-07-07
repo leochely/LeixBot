@@ -90,17 +90,17 @@ async def auto_so(bot, message, vip_info):
     vip_info[message.author.name] = datetime.now(timezone.utc)
 
     # Send message
-    message = ''
+    reply = ''
     if 'artist-badge' in message.author.badges:
-        message = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}!'
+        reply = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}!'
         if vip_channel_info.game_name:
-            message += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
+            reply += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
     elif vip_channel_info.game_name:
-        message = f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
+        reply = f'Allez voir @{vip_name} sur www.twitch.tv/{vip_name} pour du gaming de qualitay sur {vip_channel_info.game_name}'
     else:
-        message = f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
+        reply = f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
 
-    await message.author.channel.send(message)
+    await message.author.channel.send(reply)
 
 
 async def random_reply(bot, message):
