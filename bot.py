@@ -59,7 +59,8 @@ class LeixBot(commands.Bot):
         uu: User = u[0]
 
         topics = [
-            pubsub.channel_points(self.pubsub_client._http.token)[uu.id]
+            pubsub.channel_points(self.pubsub_client._http.token)[uu.id],
+            pubsub.bits(self.pubsub_client._http.token)[uu.id]
         ]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
@@ -308,7 +309,6 @@ if __name__ == "__main__":
 
     client = Client(
         token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        initial_channels=os.environ['CHANNEL'],
         client_secret=os.environ['CLIENT_SECRET']
     )
 

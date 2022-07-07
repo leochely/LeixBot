@@ -81,7 +81,7 @@ class Visuals(commands.Cog):
         await sio.emit('leixbot.rip', data)
 
     ### KAPPAGEN ###
-    @commands.cooldown(1, 30, commands.Bucket.user)
+    @commands.cooldown(1, 15, commands.Bucket.member)
     @commands.command(name="kappagen")
     async def kappagen(self, ctx: commands.Context, value=None):
         """Lance l'animation de kappagen avec le nombre d'emotes (max 999) et
@@ -105,7 +105,6 @@ class Visuals(commands.Cog):
                     "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/1.0"
                 )
 
-        logging.info(value)
         data = {
             'channel': channel,
             'params': {
