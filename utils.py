@@ -6,15 +6,16 @@ import os
 import re
 import json
 import socketio
+import time
 
 from datetime import datetime, timedelta, timezone
-from db import get_token
+from db import get_token, init_channels
+from custom_commands import get_kappagen_cooldown
 
 from twitchio.ext import commands
 
 
 ### Replies ###
-
 game_replies = {
     'Guilty Gear: Strive':                 ['#10HitPetitPoingCombo',
                                             'MET TA GARDE',
@@ -137,6 +138,28 @@ async def random_bot_reply(message):
 def check_for_bot(message):
     # TODO: Add a bot detection system
     return True
+
+
+used = {}
+
+
+def check_cooldown(channel, user):
+    cooldownlength = get_kappagen_cooldown(channel)
+    try:
+        if ((channel not in used or user not in used[channel]) or (time.time() - used[channel][user]) > cooldownlength):
+            used[channel][user] = time.time()
+            return True
+        else:
+            logging.info(
+                f'Command was used in the last {cooldownlength} seconds'
+            )
+            return False
+    except KeyError:
+        if channel in used:
+            used[channel][user] = time.time()
+        else:
+            used[channel] = {user: time.time()}
+        return True
 
 
 ### API ###

@@ -5,6 +5,7 @@ import re
 from twitchio.ext import commands
 
 import custom_commands
+from utils import check_cooldown
 
 sio = socketio.AsyncClient()
 
@@ -31,7 +32,6 @@ class Visuals(commands.Cog):
         await ctx.send(f"@{user.name} tu n'es pas modérateur ou VIP!")
 
     ### COUNTERS ###
-    @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command(name="rip", aliases=['counter'])
     async def rip(self, ctx: commands.Context):
         """Incrémente le compteur et lance une animation."""
@@ -81,7 +81,6 @@ class Visuals(commands.Cog):
         await sio.emit('leixbot.rip', data)
 
     ### KAPPAGEN ###
-    @commands.cooldown(1, 15, commands.Bucket.member)
     @commands.command(name="kappagen")
     async def kappagen(self, ctx: commands.Context, value=None):
         """Lance l'animation de kappagen avec le nombre d'emotes (max 999) et
@@ -89,6 +88,11 @@ class Visuals(commands.Cog):
         Ex: !kappagen 123 emote1 emote2 ...
         """
         channel = ctx.author.channel.name
+
+        # Exits if the user is on cooldown
+        if not (check_cooldown(channel, ctx.author.name)):
+            return
+
         await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
         if not value or not value.isnumeric():
             value = None
@@ -114,6 +118,19 @@ class Visuals(commands.Cog):
         }
 
         await sio.emit('leixbot.kappagen', data)
+
+    @commands.command(name="kappagenCooldown")
+    async def kappagen_cooldown(self, ctx: commands.Context, value: int):
+        """Règle le cooldown du kappagen (en secondes) pour les utilisateurs non modérateurs.
+        Ex: !kappagenCooldown 123
+        """
+        if not ctx.author.is_mod:
+            return
+
+        if value > 0:
+            logging.info('test')
+            custom_commands.set_kappagen_cooldown(
+                ctx.author.channel.name, value)
 
 
 def prepare(bot: commands.Bot):

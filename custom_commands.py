@@ -325,8 +325,6 @@ def set_counter(channel, counter):
 
 
 def get_counter(channel):
-
-    # Now adds it to db
     conn = None
     try:
         # read connection parameters
@@ -359,3 +357,72 @@ def get_counter(channel):
             return counter[0]
         else:
             return 0
+
+
+### COOLDOWNS ###
+def get_kappagen_cooldown(channel):
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(
+            f'Getting kappagen cooldown for channel {channel} from db'
+        )
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""SELECT kappagen_cooldown FROM channels WHERE name=%s""",
+            (channel,)
+        )
+        cooldown = cur.fetchone()
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+        if cooldown:
+            return cooldown[0]
+        else:
+            return 0
+
+
+def set_kappagen_cooldown(channel, cooldown):
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info('Setting counter in db')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""INSERT INTO channels VALUES (%(channel)s, %(cooldown)s) ON CONFLICT (name) DO UPDATE SET kappagen_cooldown=%(cooldown)s""",
+            {'cooldown': cooldown, 'channel': channel}
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
