@@ -99,8 +99,8 @@ class LeixBot(commands.Bot):
         if message.content[0] == os.environ['BOT_PREFIX']:
             reply = custom_commands.find_command(message)
             if reply is not None:
-                await message.author.channel.send(reply)
-                return
+                ctx = await self.get_context(message)
+                await ctx.reply(reply)
 
         if "@leixbot" in message.content.lower():
             await random_reply(self, message)
