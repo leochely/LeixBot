@@ -101,6 +101,7 @@ class LeixBot(commands.Bot):
             if reply is not None:
                 ctx = await self.get_context(message)
                 await ctx.reply(reply)
+                return
 
         if "@leixbot" in message.content.lower():
             await random_reply(self, message)

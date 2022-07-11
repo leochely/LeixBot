@@ -43,6 +43,7 @@ def init_commands():
 
 
 def find_command(message):
+    logging.info(commands)
     command = message.content.split()[0]
     channel = message.author.channel.name
 
@@ -151,10 +152,6 @@ def remove_command(command, channel):
         )
 
         conn.commit()
-
-        for command in commands_raw:
-            logging.info(command[1])
-            commands[(command[0], command[1])] = command[2]
 
         # close the communication with the PostgreSQL
         cur.close()
