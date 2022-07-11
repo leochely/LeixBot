@@ -43,7 +43,6 @@ def init_commands():
 
 
 def find_command(message):
-    logging.info(commands)
     command = message.content.split()[0]
     channel = message.author.channel.name
 
