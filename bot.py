@@ -47,6 +47,9 @@ class LeixBot(commands.Bot):
 
         logging.info("Chargement terminé")
 
+        # Retrieving custom commands from db
+        custom_commands.init_commands()
+
     def run(self):
         self.setup()
         super().run()
@@ -69,9 +72,6 @@ class LeixBot(commands.Bot):
         # Starting timers
         logging.info("Starting routines...")
         self.links.start()
-
-        # Retrieving custom commands from db
-        custom_commands.init_commands()
 
         # Retrieving routines from db
         self.routines = custom_commands.init_routines(self)
