@@ -91,6 +91,8 @@ class LeixBot(commands.Bot):
             f'{message.content}'
         )
 
+        ctx = await self.get_context(message)
+
         # if check_for_bot(message.content):
         #     logging.info("BOT DETECTED")
         #     message.author.channel.send(
@@ -99,13 +101,12 @@ class LeixBot(commands.Bot):
         if message.content[0] == os.environ['BOT_PREFIX']:
             reply = custom_commands.find_command(message)
             if reply is not None:
-                ctx = await self.get_context(message)
                 await ctx.reply(reply)
                 return
 
         if "@leixbot" in message.content.lower():
             await random_reply(self, message)
-        elif message.author.name.lower() in self.bot_to_reply:
+        elif message.author.name.lower() in self.bot_to_reply and custom_commands.is_bot_reply(ctx.author.channel.name):
             await random_bot_reply(message)
         else:
             await auto_so(self, message, self.vip_so[message.author.channel.name])

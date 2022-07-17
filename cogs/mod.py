@@ -45,22 +45,6 @@ class Mod(commands.Cog):
         await ctx.send(f"/unban {user.name}")
         await ctx.send(f"Bon retour parmi nous {user.name} HeyGuys !")
 
-    @commands.command(name="disableautosovip")
-    async def disableautosovip(self, ctx: commands.Context):
-        """TODO"""
-
-    @commands.command(name="enableautosovip")
-    async def enableautosovip(self, ctx: commands.Context):
-        """TODO"""
-
-    @commands.command(name="addso")
-    async def unban(self, ctx: commands.Context, user: User = None):
-        """TODO"""
-
-    @commands.command(name="removeso")
-    async def unban(self, ctx: commands.Context, user: User = None):
-        """TODO"""
-
     @commands.command(name="title")
     async def title(self, ctx: commands.Context, *title):
         """Change le titre du stream. Le streamer doit avoir donné l'autorisation a LeixBot.

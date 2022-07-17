@@ -422,3 +422,144 @@ def set_kappagen_cooldown(channel, cooldown):
         if conn is not None:
             conn.close()
             logging.info('Database connection closed.')
+
+
+### CHANNEL PROPERTIES ###
+def update_bot_replies(channel, bot_reply):
+    """Enables or disables automatic bot replies"""
+    conn = None
+    try:
+        # read connection parameters
+        channels = []
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(f'Updating bot replies for channel {channel}')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""UPDATE channels SET bot_reply=%(bot_reply)s WHERE name=%(channel)s""",
+            {'bot_reply': bot_reply, 'channel': channel}
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def is_bot_reply(channel) -> bool:
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(
+            f'Getting bot reply status for channel {channel} from db'
+        )
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""SELECT bot_reply FROM channels WHERE name=%s""",
+            (channel,)
+        )
+        cooldown = cur.fetchone()
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+        if cooldown:
+            return cooldown[0]
+        else:
+            return 0
+
+
+def update_vip_so(channel, vip_so):
+    """Enables or disables automatic vip shoutouts"""
+    conn = None
+    try:
+        # read connection parameters
+        channels = []
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(f'Updating auto VIP shoutout for channel {channel}')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""UPDATE channels SET vip_so=%(vip_so)s WHERE name=%(channel)s""",
+            {'vip_so': vip_so, 'channel': channel}
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def is_vip_so(channel) -> bool:
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(
+            f'Getting vip shoutout status for channel {channel} from db'
+        )
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            f"""SELECT vip_so FROM channels WHERE name=%s""",
+            (channel,)
+        )
+        cooldown = cur.fetchone()
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+        if cooldown:
+            return cooldown[0]
+        else:
+            return 0

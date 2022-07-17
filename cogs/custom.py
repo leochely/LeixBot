@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 
+from twitchio import User
 from twitchio.ext import commands
 
 import custom_commands
@@ -49,6 +50,38 @@ class CustomCommand(commands.Cog):
         custom_commands.remove_command(command, channel)
 
         await ctx.send(f"Commande {command} retirée avec succes SeemsGood")
+
+    @commands.command(name="disableautosovip")
+    async def disableautosovip(self, ctx: commands.Context):
+        """Désactive le shoutout automatique pour les VIP et modérateurs"""
+        custom_commands.update_vip_so(ctx.author.channel.name, False)
+        await ctx.send('Le so automatique a été désactivé SeemsGood')
+
+    @commands.command(name="enableautosovip")
+    async def enableautosovip(self, ctx: commands.Context):
+        """Active le shoutout automatique pour les VIP et modérateurs"""
+        custom_commands.update_vip_so(ctx.author.channel.name, True)
+        await ctx.send('Le so automatique a été activé SeemsGood')
+
+    @commands.command(name="addso")
+    async def unban(self, ctx: commands.Context, user: User = None):
+        """TODO"""
+
+    @commands.command(name="removeso")
+    async def unban(self, ctx: commands.Context, user: User = None):
+        """TODO"""
+
+    @commands.command(name="disablebotreplies")
+    async def disablebotreplies(self, ctx: commands.Context):
+        """Désactive les réponses automatiques aux bots"""
+        custom_commands.update_bot_replies(ctx.author.channel.name, False)
+        await ctx.send('Les réponses automatiques aux bots ont été désactivées SeemsGood')
+
+    @commands.command(name="enablebotreplies")
+    async def enablebotreplies(self, ctx: commands.Context):
+        """Active les réponses automatiques aux bots"""
+        custom_commands.update_bot_replies(ctx.author.channel.name, True)
+        await ctx.send('Les réponses automatiques aux bots ont été activées SeemsGood')
 
 
 def prepare(bot: commands.Bot):

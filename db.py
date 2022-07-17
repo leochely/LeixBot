@@ -157,7 +157,7 @@ def init_channels():
 
 
 def add_channel(channel):
-    """ Connects to the PostgreSQL database server and initializes the channels list """
+    """ Connects to the PostgreSQL database server and adds a channel"""
     conn = None
     try:
         # read connection parameters
@@ -190,7 +190,7 @@ def add_channel(channel):
 
 
 def leave_channel(channel):
-    """ Connects to the PostgreSQL database server and initializes the channels list """
+    """ Connects to the PostgreSQL database server and removes a channel"""
     conn = None
     try:
         # read connection parameters
