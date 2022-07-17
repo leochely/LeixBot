@@ -39,7 +39,7 @@ def init_commands():
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def find_command(message):
@@ -87,7 +87,7 @@ def add_command(command, channel, text):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def edit_command(command, channel, text):
@@ -126,7 +126,7 @@ def edit_command(command, channel, text):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def remove_command(command, channel):
@@ -160,7 +160,7 @@ def remove_command(command, channel):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 ### ROUTINES ###
@@ -205,7 +205,7 @@ def add_routine(
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def init_routines(bot):
@@ -248,7 +248,7 @@ def init_routines(bot):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
         return routines_db
 
 
@@ -282,7 +282,7 @@ def remove_routine(channel, name):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 ### COUNTERS ###
@@ -317,7 +317,7 @@ def set_counter(channel, counter):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def get_counter(channel):
@@ -348,7 +348,7 @@ def get_counter(channel):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
         if counter:
             return counter[0]
         else:
@@ -385,7 +385,7 @@ def get_kappagen_cooldown(channel):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
@@ -421,7 +421,7 @@ def set_kappagen_cooldown(channel, cooldown):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 ### CHANNEL PROPERTIES ###
@@ -456,7 +456,7 @@ def update_bot_replies(channel, bot_reply):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def is_bot_reply(channel) -> bool:
@@ -488,7 +488,7 @@ def is_bot_reply(channel) -> bool:
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
@@ -526,7 +526,7 @@ def update_vip_so(channel, vip_so):
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
 
 
 def is_vip_so(channel) -> bool:
@@ -536,7 +536,7 @@ def is_vip_so(channel) -> bool:
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(
+        logging.debug(
             f'Getting vip shoutout status for channel {channel} from db'
         )
         conn = psycopg2.connect(**params)
@@ -558,7 +558,7 @@ def is_vip_so(channel) -> bool:
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            logging.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
