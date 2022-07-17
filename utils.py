@@ -10,7 +10,7 @@ import time
 
 from datetime import datetime, timedelta, timezone
 from db import get_token, init_channels
-from custom_commands import get_kappagen_cooldown
+from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
 from twitchio.ext import commands
 
@@ -61,7 +61,13 @@ game_replies = {
                                              "T'as bien nourri le poro?"],
     "Baldur's Gate: Enhanced Edition":      ['Un gaspillage de talent',
                                              ],
-    "Risk of Rain 2":                       ['#TeamSpallieres']
+    "Risk of Rain 2":                       ['#TeamSpallieres'],
+    'Roboquest':                            ['Human Maggot SwiftRage'],
+    'ULTRAKILL':                            [],
+    'PowerWash Simulator':                  ['On va vous nettoyer tout ca au karsher SwiftRage',
+                                             'Mate ma dédicrasse <3',
+                                             '#TeamLanceCourte']
+
 }
 
 vip_replies = [
@@ -82,6 +88,7 @@ async def auto_so(bot, message, vip_info):
 
     if (len(stream) == 0 or
         (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
+        not custom_commands.is_vip_so(message.author.channel.name) or
         ('vip' not in message.author.badges and
          'moderator' not in message.author.badges and
          'artist' not in message.author.badges)):
