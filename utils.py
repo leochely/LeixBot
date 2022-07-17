@@ -88,7 +88,7 @@ async def auto_so(bot, message, vip_info):
 
     if (len(stream) == 0 or
         (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
-        not custom_commands.is_vip_so(message.author.channel.name) or
+        not is_vip_so(message.author.channel.name) or
         ('vip' not in message.author.badges and
          'moderator' not in message.author.badges and
          'artist' not in message.author.badges)):
