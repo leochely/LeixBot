@@ -17,6 +17,8 @@ class Mod(commands.Cog):
         """
         Not functional yet. Waiting for a twitchio fix.
         """
+        await ctx.reply('Wsh t pas modo')
+
         logging.info(
             'User not moderator'
         )
@@ -24,7 +26,7 @@ class Mod(commands.Cog):
     @commands.command(name="ban")
     async def ban(self, ctx: commands.Context, user: User = None, *reason):
         """Banni un utilisateur avec possibilité d'ajouter une raison. Requiert
-        privilege modérateur.
+        privilège modérateur.
         Ex: !ban leix34 motif du ban
         """
         logging.info(f'User {user.name} has been banned')
@@ -38,7 +40,7 @@ class Mod(commands.Cog):
     @commands.command(name="unban")
     async def unban(self, ctx: commands.Context, user: User = None):
         """Retire le banissement d'un utilisateur. Requiert
-        privilege modérateur.
+        privilège modérateur.
         Ex: !unban leix34
         """
         logging.info(f'User {user.name} has been unbanned')
@@ -47,8 +49,8 @@ class Mod(commands.Cog):
 
     @commands.command(name="title")
     async def title(self, ctx: commands.Context, *title):
-        """Change le titre du stream. Le streamer doit avoir donné l'autorisation a LeixBot.
-        Requiert privilege modérateur.
+        """Change le titre du stream. Le streamer doit avoir donné l'autorisation à LeixBot.
+        Requiert privilège modérateur.
         Ex: !title Nouveau titre de stream
         """
         user = await ctx.author.channel.user()
@@ -60,8 +62,8 @@ class Mod(commands.Cog):
 
     @commands.command(name="game")
     async def game(self, ctx: commands.Context, *game_name):
-        """Change le jeu du stream. Le streamer doit avoir donné l'autorisation a LeixBot.
-        Requiert privilege modérateur.
+        """Change le jeu du stream. Le streamer doit avoir donné l'autorisation à LeixBot.
+        Requiert privilège modérateur.
         Ex: !title Nouveau titre de stream
         """
         g: List["Games"] = await self.bot.fetch_games(names=[' '.join(game_name)])
