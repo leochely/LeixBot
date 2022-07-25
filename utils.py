@@ -66,7 +66,9 @@ game_replies = {
     'ULTRAKILL':                            [],
     'PowerWash Simulator':                  ['On va vous nettoyer tout ca au karsher SwiftRage',
                                              'Mate ma dédicrasse <3',
-                                             '#TeamLanceCourte']
+                                             '#TeamLanceCourte'],
+    'Sekiro: Shadows Die Twice':            ['Ikuzo Sekiro!',
+                                             'ROBERTOOOOOO']
 
 }
 
