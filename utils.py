@@ -68,7 +68,13 @@ game_replies = {
                                              'Mate ma dédicrasse <3',
                                              '#TeamLanceCourte'],
     'Sekiro: Shadows Die Twice':            ['Ikuzo Sekiro!',
-                                             'ROBERTOOOOOO']
+                                             'ROBERTOOOOOO',
+                                             "N'oublie pas sekiro, si tu hésites tu perds SwiftRage"],
+    'Dark Souls III':                       ['hmmm hmmmm hmmmm?',
+                                             'Looong may the sun shiiiine',
+                                             'Touch the darkness within me',
+                                             'Gimme that thing, your dark soul...',
+                                             'Ashen one PogChamp']
 
 }
 
