@@ -45,10 +45,6 @@ class LeixBot(commands.Bot):
             logging.info(f"Loading `{cog}` cog.")
             self.load_module(f"cogs.{cog}")
 
-        # Starting timers
-        logging.info("Starting routines...")
-        self.links.start()
-
         logging.info("Chargement terminé")
 
         # Retrieving custom commands from db
@@ -72,6 +68,10 @@ class LeixBot(commands.Bot):
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
         self.channel = self.get_channel(os.environ['CHANNEL'])
+
+        # Starting timers
+        logging.info("Starting routines...")
+        self.links.start()
 
         # Retrieving routines from db
         self.routines = custom_commands.init_routines(self)
