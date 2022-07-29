@@ -165,7 +165,7 @@ class LeixBot(commands.Bot):
         logging.info(
             f'{event.user} redeemed {event.bits_used} with message {event.message}'
         )
-        await self.channel.send(f'Merci pour les {event.bits_used} bits @ {event.user} <3')
+        await self.channel.send(f'Merci pour les {event.bits_used} bits @ {event.user.name} <3')
 
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
