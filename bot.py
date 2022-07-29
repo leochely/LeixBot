@@ -57,10 +57,6 @@ class LeixBot(commands.Bot):
     async def event_ready(self):
         # Notify us when everything is ready!
 
-        # Starting timers
-        logging.info("Starting routines...")
-        self.links.start()
-
         # Subscribes through pubsub to topics
         u: List["User"] = await self.fetch_users(names=[os.environ['CHANNEL']])
         uu: User = u[0]
@@ -75,6 +71,10 @@ class LeixBot(commands.Bot):
 
         # Retrieving routines from db
         self.routines = custom_commands.init_routines(self)
+
+        # Starting timers
+        logging.info("Starting routines...")
+        self.links.start()
 
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
