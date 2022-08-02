@@ -34,7 +34,6 @@ class LeixBot(commands.Bot):
             x: {} for x in init_channels()
         }
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
-        self.giveaway = set()
         self.routines = {}
 
     def setup(self):
@@ -157,10 +156,6 @@ class LeixBot(commands.Bot):
             await asyncio.sleep(minutes * 60)
             await self.channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
-        if event.reward.title == "Giveaway":
-            logging.info(f'{event.user.name} entered the giveaway!')
-            self.giveaway.add(event.user.name)
-
     async def event_pubsub_bits_message(self, event: pubsub.PubSubBitsMessage):
         logging.info(
             f'{event.user} redeemed {event.bits_used} with message {event.message}'
@@ -175,8 +170,6 @@ class LeixBot(commands.Bot):
         await self.channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
         await asyncio.sleep(60 * 30)
         await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
-        await asyncio.sleep(60 * 30)
-        await self.channel.send("Un giveaway de jeux est en cours! Pour 5k slayer points, vous pouvez avoir une chance de remporter un des jeux du giveaway (liste complete dans la recompense de chaine)")
         await asyncio.sleep(60 * 30)
 
     @commands.command(name="routineAdd")
@@ -277,21 +270,6 @@ class LeixBot(commands.Bot):
 
             await self.part_channels({channel})
             leave_channel(channel)
-
-    @commands.command(name="draw")
-    async def draw(self, ctx: commands.Context):
-        giveaway = list(self.giveaway)
-        winners = random.sample(giveaway, k=5)
-        games = ['SUPERHOT', 'Slay the spire',
-                 'Tooth and Tail', 'Dear Esther', 'Max Payne 3']
-        random.shuffle(games)
-        for winner, game in zip(winners, games):
-            await ctx.send(f'Félicitations {winner}! Tu as remporté {game}! SeemsGood')
-
-    @commands.command(name="giveawayadd")
-    async def giveawayadd(self, ctx: commands.Context, user: User = None):
-        await ctx.send(f'{user.name} entered the giveaway!')
-        self.giveaway.add(user.name)
 
     @commands.command(name="temp")
     async def temp(self, ctx: commands.Context, event):

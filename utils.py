@@ -59,8 +59,7 @@ game_replies = {
                                              'Petite aram? PogChamp',
                                              'Enfin sad la commu :(',
                                              "T'as bien nourri le poro?"],
-    "Baldur's Gate: Enhanced Edition":      ['Un gaspillage de talent',
-                                             ],
+    "Baldur's Gate: Enhanced Edition":      ['Un gaspillage de talent', ],
     "Risk of Rain 2":                       ['#TeamSpallieres'],
     'Roboquest':                            ['Human Maggot SwiftRage'],
     'ULTRAKILL':                            [],
@@ -74,8 +73,15 @@ game_replies = {
                                              'Looong may the sun shiiiine',
                                              'Touch the darkness within me',
                                              'Gimme that thing, your dark soul...',
-                                             'Ashen one PogChamp']
-
+                                             'Ashen one PogChamp'],
+    'Hollow Knight':                        ["Precept Five: 'Strength Beats Strength'. Is your opponent strong? No matter! Simply overcome their strength with even more strength, and they'll soon be defeated.",
+                                             'Doma, doma doma domaaaaaaa',
+                                             "Precept One: 'Always Win Your Battles'. Losing a battle earns you nothing and teaches you nothing. Win your battles, or don't engage in them at all!",
+                                             "Prove yourself ready to face it. I'll not hold back. My needle is lethal and I'd feel no sadness in a weakling's demise.",
+                                             'Too weak, little ghost...',
+                                             'No cost too great. No mind to think. No will to break. No voice to cry suffering. Born of God and Void.',
+                                             "Once you've made a decision, carry it out and don't look back. You'll achieve much more this way.",
+                                             "Fighting for 'honour' or for 'loyalty'... You might as well be fighting for dust. If you want to kill, do it for your own sake."],
 }
 
 vip_replies = [
