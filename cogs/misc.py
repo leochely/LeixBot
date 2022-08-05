@@ -132,7 +132,7 @@ class Misc(commands.Cog):
         if not quote:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
-    @commands.command()
+    @commands.command(name='id')
     async def id(self, ctx: commands.Context):
         """Renvoie l'id de la session (si existant). Ex: !id"""
         if ctx.author.channel.name not in self.game_id:

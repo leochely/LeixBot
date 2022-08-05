@@ -19,10 +19,10 @@ class Visuals(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx: commands.Context):
         return ctx.author.is_mod or 'vip' in ctx.author.badges
 
-    async def cog_command_error(self, ctx, error):
+    async def cog_command_error(self, ctx: commands.Context, error):
         """
         Not functional yet. Waiting for a twitchio fix.
         """
@@ -66,7 +66,7 @@ class Visuals(commands.Cog):
         await sio.emit('leixbot.rip', data)
 
     @commands.command(name="setRip", aliases=['setCounter'])
-    async def set_rip(self, ctx: commands.Context, value):
+    async def set_rip(self, ctx: commands.Context, value: int):
         """Règle le compteur à la valeur donnée et lance une animation."""
 
         channel = ctx.author.channel.name

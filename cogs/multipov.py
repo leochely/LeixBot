@@ -7,7 +7,7 @@ class Multipov(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.multipov_channels = {
-            x: [] for x in os.environ['INITIAL_CHANNELS'].split(', ')
+            x.name: [] for x in self.bot.connected_channels
         }
 
     @commands.command(name="multipov", aliases=[])
@@ -18,7 +18,7 @@ class Multipov(commands.Cog):
 
     @commands.command(name="multiadd", aliases=[])
     async def multiadd(self, ctx: commands.bot.Context, *channels):
-        """Ajoute un streamer au lien multipov. Requiert privilege modérateur. 
+        """Ajoute un streamer au lien multipov. Requiert privilege modérateur.
         Ex: !multiadd leix34
         """
         if ctx.author.is_mod:
