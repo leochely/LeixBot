@@ -81,7 +81,10 @@ game_replies = {
                                              'Too weak, little ghost...',
                                              'No cost too great. No mind to think. No will to break. No voice to cry suffering. Born of God and Void.',
                                              "Once you've made a decision, carry it out and don't look back. You'll achieve much more this way.",
-                                             "Fighting for 'honour' or for 'loyalty'... You might as well be fighting for dust. If you want to kill, do it for your own sake."],
+                                             "Fighting for 'honor' or for 'loyalty'... You might as well be fighting for dust. If you want to kill, do it for your own sake."],
+    'Metal Gear Solid':                     ["Je vous l'ai déjà dit je suis pas une bleue !"],
+    'Blasphemous':                          ['Le pénitent le passe SwiftRage',
+                                             'Fais gaffe au pics en dessous Kappa'],
 }
 
 vip_replies = [
