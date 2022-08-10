@@ -98,7 +98,7 @@ class LeixBot(commands.Bot):
         #         f'/ban {message.author.name} Vilain Bot')
 
         if message.content[0] == os.environ['BOT_PREFIX']:
-            reply = custom_commands.find_command(message)
+            reply = custom_commands.get_command(message)
             if reply is not None:
                 await ctx.reply(reply)
                 return
@@ -228,27 +228,47 @@ class LeixBot(commands.Bot):
             f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
         )
 
+    @commands.command(name='commandes', aliases=['commands'])
+    async def commandes(self, ctx: commands.Context):
+        """
+        Retourne la liste des commandes de LeixBot sur cette chaine
+        """
+        channel = ctx.author.channel.name
+        commands = custom_commands.find_commands_channel(channel)
+
+        logging.info(commands)
+
+        cmd_list = ""
+        for command in commands:
+            cmd_list += command[0] + ", "
+
+        # Remove last comma and space
+        cmd_list = cmd_list[:-2]
+        await ctx.send(
+            f'La liste de mes commandes sur ce chat: {cmd_list}'
+        )
+
     @commands.command(name="list")
     async def list(self, ctx: commands.Context):
         """
         Retourne la liste des commandes globales de LeixBot
         """
 
-        list = ""
+        cmd_list = ""
         for command in self.commands:
-            list += command + ", "
+            cmd_list += command + ", "
 
         # Remove last comma and space
-        list = list[:-2]
-        await ctx.send(f'La liste des commandes de LeixBot: {list}')
+        cmd_list = cmd_list[:-2]
+        await ctx.send(f'La liste des commandes globales de LeixBot: {cmd_list}')
 
     @commands.command(name="help")
     async def help(self, ctx: commands.Context, name):
-        """Fourni l'aide d'une commande globale. Ex: !help help"""
+        """Fournit l'aide d'une commande globale. Ex: !help help"""
         if name in self.commands:
             await ctx.send(self.commands[name]._callback.__doc__)
         else:
-            await ctx.send("Désolé, ce n'est pas une de mes commande globale :(")
+            await ctx.send("Désolé, ce n'est pas une de mes commandes globales :(")
 
     @commands.command(name="join")
     async def join(self, ctx: commands.Context, channel):
@@ -270,10 +290,6 @@ class LeixBot(commands.Bot):
 
             await self.part_channels({channel})
             leave_channel(channel)
-
-    @commands.command(name="temp")
-    async def temp(self, ctx: commands.Context, event):
-        await play_alert(ctx.author.name, event)
 
 
 if __name__ == "__main__":

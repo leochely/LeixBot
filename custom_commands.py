@@ -42,13 +42,19 @@ def init_commands():
             logging.debug('Database connection closed.')
 
 
-def find_command(message):
+def get_command(message):
     command = message.content.split()[0]
     channel = message.author.channel.name
 
     command_text = commands.get((command, channel))
 
     return command_text
+
+
+def find_commands_channel(channel):
+    channel_commands = [x for x in commands if x[1] == channel]
+
+    return channel_commands
 
 
 def add_command(command, channel, text):
