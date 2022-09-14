@@ -174,7 +174,7 @@ class LeixBot(commands.Bot):
 
     @commands.command(name="routineAdd")
     async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):
-        """Ajoute de demarre une routine une routine. Requiert privilege modérateur.
+        """Ajoute et démarre une routine. Requiert privilege modérateur.
         Ex: !routineAdd mon_nom_de_routine 1 2 3 Mon texte de routine
         """
         if not ctx.author.is_mod:

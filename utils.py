@@ -142,7 +142,8 @@ async def random_reply(bot, message):
         "DONT LOOK BACK",
         "leix34Trigerred",
         f"Ah ouais {msg_clean} ??",
-        'Bip boup, je suis un robot'
+        'Bip boup, je suis un robot',
+        '#FreeKingostone'
     ]
     if channel_info.game_name in game_replies:
         reply_pool += game_replies[channel_info.game_name]
