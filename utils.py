@@ -99,6 +99,11 @@ vip_replies = [
     '<3'
 ]
 
+artist_replies = [
+    ' "... moi je suis ingénieur, tant que ça marche je suis content" - Un grand concepteur de bots',
+    'Ah ces artistes, toujours à la recherche de la perfection'
+]
+
 
 async def auto_so(bot, message, vip_info):
     vip_name = message.author.name
@@ -150,6 +155,8 @@ async def random_reply(bot, message):
 
     if 'vip' in message.author.badges:
         reply_pool += vip_replies
+    if 'artist' in message.author.badges:
+        reply_pool += artist_replies
 
     reply = random.choice(reply_pool)
     await message.author.channel.send(f"@{message.author.name} {reply}")
