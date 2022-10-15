@@ -12,11 +12,12 @@ humanize.i18n.activate("fr_FR")
 
 
 class Run():
-    def __init__(self, runner, game, category, expected_time):
+    def __init__(self, runner, game, category, expected_time, casters):
         self.runner = runner
         self.game = game
         self.category = category
         self.expected_time = expected_time
+        self.casters = casters
 
     def __str__(self):
         return f'{self.runner} sur {self.game} (catégorie {self.category}) en {self.expected_time}'
@@ -26,26 +27,31 @@ class Event(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.planning = [
-            Run('Kalderinofeross',
+            Run('KalderinoFeross',
                 'DOOM Eternal',
                 'Exuden et Mars Den Core',
-                datetime.timedelta(hours=1)),
-            Run('Potdechoucroute',
+                datetime.timedelta(hours=1),
+                ['Leix34', 'payoyo5150']),
+            Run('potdechoucroute',
                 'Doom Eternal',
                 'Reclaimden et World Spear ML',
-                datetime.timedelta(hours=1)),
+                datetime.timedelta(hours=1),
+                ['Leix34', 'payoyo5150']),
             Run('Haurkrix',
                 'Sekiro: Shadows Die Twice',
                 'Any% Shura Résurrection Mod',
-                datetime.timedelta(hours=1)),
+                datetime.timedelta(hours=1),
+                ['OkamiKaz26', 'Lickers__']),
             Run('Fight_Like_Hell',
                 'UILTRAKILL',
                 'Full Game P-Rank Violent',
-                datetime.timedelta(hours=1)),
+                datetime.timedelta(hours=1),
+                ['potdechoucroute', 'kiojin999']),
             Run('Kali_Tay',
                 'Elden Ring',
                 'Malenia%',
-                datetime.timedelta(hours=1)),
+                datetime.timedelta(hours=1),
+                ['Lickers__', 'KalderinoFeross']),
         ]
         self.current_run = 0
 
@@ -59,8 +65,8 @@ class Event(commands.Cog):
             "DenFest! Retrouvons-nous le 5 Novembre à 18h sur la DenTVfr pour "
             "une soirée de mods et de runs à challenge sur vos jeux préférés "
             "qui font vivre le serveur depuis déjà 2 ans. Au menu des runs Doom "
-            "Eternal (kald et potdechoucroute), Sekiro (haurkrix), Ultrakill "
-            "(fightlikehell) et Elden Ring (kali_tay)!"
+            "Eternal (Kald et potdechoucroute), Sekiro (Haurkrix), Ultrakill "
+            "(Fight_Like_Hell) et Elden Ring (Kali_Tay)!"
         )
         await ctx.send(
             "/announce Pour le lancement de la "
@@ -103,6 +109,23 @@ class Event(commands.Cog):
         for run in self.planning[self.current_run:]:
             runs_restantes += str(run) + ', '
         await ctx.send(runs_restantes[:-2])
+
+    @commands.command(name='runner')
+    async def runner(self, ctx: commands.Context):
+        run = self.planning[self.current_run]
+        await ctx.send(
+            f"Tu aimes le gameplay? Retrouve {run.runner}"
+            f" sur twitch.tv/{run.runner}!"
+        )
+
+    @commands.command(name='caster', aliases=['casters', 'cast'])
+    async def caster(self, ctx: commands.Context):
+        run = self.planning[self.current_run]
+        await ctx.send(
+            f"Tu aimes les casters? Retrouve {run.casters[0]}"
+            f" sur twitch.tv/{run.casters[0]} et {run.casters[1]} "
+            f" sur twitch.tv/{run.casters[1]}"
+        )
 
 
 def prepare(bot: commands.Bot):
