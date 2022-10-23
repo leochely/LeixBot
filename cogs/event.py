@@ -73,8 +73,12 @@ class Event(commands.Cog):
             "chaîne The Den, nous aurons également des goodies à vous faire "
             "gagner! Tous les follows au cours de l'événement vous donneront "
             "une entrée pour le tirage au sort des clés de jeux et des posters "
-            "du Denfest."
+            "du Denfest. Le trailer: https://youtu.be/S3QvlAVLfmo"
         )
+
+    @commands.command(name="trailer")
+    async def trailer(self, ctx: commands.Context):
+        await ctx.send('Le trailer du DenFest: https://youtu.be/S3QvlAVLfmo')
 
     @commands.command(name='run', aliases='encours')
     async def run(self, ctx: commands.Context):
