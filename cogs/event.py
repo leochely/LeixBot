@@ -27,14 +27,14 @@ class Event(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.planning = [
-            Run('KalderinoFeross',
-                'DOOM Eternal',
-                'Exuden et Mars Den Core',
-                datetime.timedelta(hours=1),
-                ['Leix34', 'payoyo5150']),
             Run('potdechoucroute',
                 'Doom Eternal',
                 'Reclaimden et World Spear ML',
+                datetime.timedelta(hours=1),
+                ['Leix34', 'payoyo5150']),
+            Run('KalderinoFeross',
+                'DOOM Eternal',
+                'Exuden et Mars Den Core',
                 datetime.timedelta(hours=1),
                 ['Leix34', 'payoyo5150']),
             Run('Haurkrix',
@@ -133,5 +133,5 @@ class Event(commands.Cog):
 
 
 def prepare(bot: commands.Bot):
-    # logging.warning("Pas d'evenement alors skip")
-    bot.add_cog(Event(bot))
+    logging.warning("Pas d'evenement alors skip")
+    # bot.add_cog(Event(bot))

@@ -4,6 +4,7 @@ import logging
 import os
 
 import wikiquote
+import wikipediaapi
 import humanize
 import random
 
@@ -12,6 +13,7 @@ from twitchio.ext import commands
 
 # Sets humanize to French language
 humanize.i18n.activate("fr_FR")
+wiki = wikipediaapi.Wikipedia('fr')
 
 
 class Misc(commands.Cog):
@@ -132,7 +134,23 @@ class Misc(commands.Cog):
         if not quote:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
-    @commands.command(name='id')
+    @commands.command(name="wikipedia", aliases=['wiki'])
+    async def citation(self, ctx: commands.Context, *query):
+        """Renvoie la definition wikipedia d'un mot.
+        Ex: !wikipedia Kojima
+        """
+        query = '_'.join(query)
+        page = wiki.page(query)
+        print(page.summary.splitlines()[0])
+        if page.exists():
+            if len(page.summary.splitlines()[0]) > 450:
+                await ctx.send(f'Il y a tant a dire! La page pour cette recherche: {page.fullurl }')
+            else:
+                await ctx.send('. '.join(page.summary.splitlines()[0][:450].split(".")[:-1]) + '. ' + page.fullurl)
+        else:
+            await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
+
+    @ commands.command(name='id')
     async def id(self, ctx: commands.Context):
         """Renvoie l'id de la session (si existant). Ex: !id"""
         if ctx.author.channel.name not in self.game_id:
@@ -140,7 +158,7 @@ class Misc(commands.Cog):
         else:
             await ctx.send(self.game_id[ctx.author.channel.name])
 
-    @commands.command(name="setId")
+    @ commands.command(name="setId")
     async def setId(self, ctx: commands.Context, *id):
         """Regle l'id de la session. Ex: !id abc 1234"""
         if ctx.author.is_mod:
