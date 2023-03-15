@@ -16,7 +16,7 @@ pyserial==3.5
 python-engineio==4.3.2
 python-socketio==5.6.0
 requests==2.27.1
-twitchio==2.4.0
+twitchio==2.5.0
 typing-extensions==3.10.0.2
 urllib3==1.26.8
 Wikipedia-API==0.5.4

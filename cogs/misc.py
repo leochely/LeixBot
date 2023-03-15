@@ -112,8 +112,8 @@ class Misc(commands.Cog):
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
 
-    @commands.command(name="citation", aliases=['quote'])
-    async def citation(self, ctx: commands.Context, *author):
+    @commands.command(name="quote", aliases=["citation"])
+    async def quote(self, ctx: commands.Context, *author):
         """Renvoie une citation aléatoire depuis wikiquote. L'auteur peut etre
         spécifié.
         Ex: !quote Kojima
