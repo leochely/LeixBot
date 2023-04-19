@@ -148,7 +148,7 @@ async def random_reply(bot, message):
         "leix34Trigerred",
         f"Ah ouais {msg_clean} ??",
         'Bip boup, je suis un robot',
-        '#FreeKingostone',
+        "J'ai libéré Kingo SeemsGood",
         'Tu as entendu parler du Denfest? PogChamp'
     ]
     if channel_info.game_name in game_replies:
@@ -237,12 +237,13 @@ def disconnect():
     logging.info('disconnected')
 
 
-async def play_alert(channel, event='default'):
+async def play_alert(channel, event='default', msg=None):
     await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
     data = {
         'channel': channel,
         'params': {
             'event': event,
+            'viewer_message': msg
         }
     }
     await sio.emit('leixbot.alert', data)
