@@ -127,7 +127,7 @@ async def auto_so(bot, message, vip_info):
     # Send message
     reply = ''
     if 'artist-badge' in message.author.badges:
-        reply = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name}!'
+        reply = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name} !'
         if vip_channel_info.game_name:
             reply += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
     elif vip_channel_info.game_name:
