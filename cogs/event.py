@@ -72,9 +72,9 @@ class Event(commands.Cog):
             "pour le cast en anglais."
         )
 
-        @commands.command(name="trailer")
-        async def trailer(self, ctx: commands.Context):
-            await ctx.send("Le trailer de MDSR '23: https://youtu.be/oG827fmr4t4")
+    @commands.command(name="trailer")
+    async def trailer(self, ctx: commands.Context):
+        await ctx.send("Le trailer de MDSR '23: https://youtu.be/oG827fmr4t4")
 
         # @commands.command(name='run', aliases='encours')
         # async def run(self, ctx: commands.Context):
