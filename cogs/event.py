@@ -162,6 +162,15 @@ class Event(commands.Cog):
             f" sur twitch.tv/{run.casters[1]}"
         )
 
+    ## ROUTINES ##
+    @routines.routine(minutes=30.0, wait_first=False)
+    async def links(self):
+        denTV = self.bot.get_channel('DenTVfr')
+        await denTV.send("Vous voulez voir le stream principal en Anglais? C'est par ici: https://www.twitch.tv/moderndoomspeedrunning")
+        await asyncio.sleep(60 * 30)
+        await denTV.send("Ce marathon est au profit de l'association 988 Crisis and Suicide Lifeline. !don pour en savoir plus!")
+        await asyncio.sleep(60 * 30)
+
 
 def prepare(bot: commands.Bot):
     # logging.warning("Pas d'evenement alors skip")
