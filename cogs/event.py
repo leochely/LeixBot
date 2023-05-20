@@ -5,7 +5,7 @@ import os
 
 import humanize
 from twitchio import User
-from twitchio.ext import commands
+from twitchio.ext import commands, routines
 
 # Sets humanize to French language
 humanize.i18n.activate("fr_FR")
