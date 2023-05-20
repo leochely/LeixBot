@@ -171,6 +171,9 @@ class Event(commands.Cog):
         await denTV.send("Ce marathon est au profit de l'association 988 Crisis and Suicide Lifeline. !don pour en savoir plus!")
         await asyncio.sleep(60 * 30)
 
+    @commands.Cog.event()
+    async def event_ready(self):
+        self.links.start()
 
 def prepare(bot: commands.Bot):
     # logging.warning("Pas d'evenement alors skip")
