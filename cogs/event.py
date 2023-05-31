@@ -166,5 +166,5 @@ class Event(commands.Cog):
         self.links.start()
 
 def prepare(bot: commands.Bot):
-    # logging.warning("Pas d'evenement alors skip")
-    bot.add_cog(Event(bot))
+    logging.warning("Pas d'evenement alors skip")
+    # bot.add_cog(Event(bot))
