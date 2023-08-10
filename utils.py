@@ -1,7 +1,6 @@
 import random
 import logging
 import aiohttp
-import asyncio
 import os
 import re
 import json
@@ -9,7 +8,7 @@ import socketio
 import time
 
 from datetime import datetime, timedelta, timezone
-from db import get_token, init_channels
+from db import get_token
 from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
 from twitchio.ext import commands

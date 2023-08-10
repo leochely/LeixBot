@@ -1,18 +1,22 @@
-import socketio
 import logging
 import re
 
 from twitchio.ext import commands
+from websockets import connect
 
 import custom_commands
 from utils import check_cooldown
 
-sio = socketio.AsyncClient()
 
+KAPPAGEN_DEFAULT_VALUE = 500
 
-@sio.event
-def disconnect():
-    logging.info('disconnected')
+# Websocket connection parameters
+WS_URL = "ws://57.128.22.87/externalwebsocket"
+headers = {
+    "api-key": "myKey"
+}
+protocols = ["external"]
+
 
 
 class Visuals(commands.Cog):
@@ -29,25 +33,29 @@ class Visuals(commands.Cog):
         logging.info(
             'User not moderator'
         )
-        await ctx.send(f"@{user.name} tu n'es pas modérateur ou VIP!")
+        await ctx.send(f"@{ctx.author.name} tu n'es pas modérateur ou VIP!")
 
     ### COUNTERS ###
     @commands.command(name="rip", aliases=['counter'])
     async def rip(self, ctx: commands.Context):
         """Incrémente le compteur et lance une animation."""
         channel = ctx.author.channel.name
-        await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
+
         value = custom_commands.get_counter(channel)
-        logging.info(value)
         value += 1
         custom_commands.set_counter(channel, value)
-        data = {
-            'channel': channel,
-            'params': {
-                'value': value,
-            }
-        }
-        await sio.emit('leixbot.rip', data)
+        
+        data = {'command' : 'PLAY',
+                'page' : 'RIP',
+                'content': {
+                    'value': value
+                },
+                'channel': channel}
+        
+        async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
+            await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
+            await session.send(str(data))
+            await session.close()
 
     @commands.command(name="resetRip", aliases=['counterReset'])
     async def reset_rip(self, ctx: commands.Context):
@@ -55,30 +63,39 @@ class Visuals(commands.Cog):
         Ex: !setRip 123
         """
         channel = ctx.author.channel.name
-        await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
+        
         custom_commands.set_counter(channel, 0)
-        data = {
-            'channel': channel,
-            'params': {
-                'value': 0,
-            }
-        }
-        await sio.emit('leixbot.rip', data)
+
+        data = {'command' : 'PLAY',
+        'page' : 'RIP',
+        'content': {
+            'value': 0
+        },
+        'channel': channel}
+        
+        async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
+            await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
+            await session.send(str(data))
+            await session.close()
 
     @commands.command(name="setRip", aliases=['setCounter'])
     async def set_rip(self, ctx: commands.Context, value: int):
         """Règle le compteur à la valeur donnée et lance une animation."""
 
         channel = ctx.author.channel.name
-        await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
         custom_commands.set_counter(channel, int(value))
-        data = {
-            'channel': channel,
-            'params': {
-                'value': int(value),
-            }
-        }
-        await sio.emit('leixbot.rip', data)
+
+        data = {'command' : 'PLAY',
+                'page' : 'RIP',
+                'content': {
+                    'value': int(value)
+                },
+                'channel': channel}
+        
+        async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
+            await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
+            await session.send(str(data))
+            await session.close()
 
     ### KAPPAGEN ###
     @commands.command(name="kappagen")
@@ -92,10 +109,10 @@ class Visuals(commands.Cog):
         # Exits if the user is on cooldown
         if not (check_cooldown(channel, ctx.author.name)):
             return
-
-        await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
+        
+        # Sets default value if not passed or invalid
         if not value or not value.isnumeric():
-            value = None
+            value = KAPPAGEN_DEFAULT_VALUE
 
         # Parsing emote tags to generate URLs
         emotes_raw = ctx.message.tags['emotes']
@@ -109,15 +126,18 @@ class Visuals(commands.Cog):
                     "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/1.0"
                 )
 
-        data = {
-            'channel': channel,
-            'params': {
-                'value': value,
-                'emotes': emotes_urls,
-            }
-        }
-
-        await sio.emit('leixbot.kappagen', data)
+        data = {'command' : 'PLAY',
+                'page' : 'KAPPAGEN',
+                'content': {
+                    'emotes': emotes_urls,
+                    'value': value
+                },
+                'channel': channel}
+        
+        async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
+            await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
+            await session.send(str(data))
+            await session.close()
 
     @commands.command(name="kappagenCooldown")
     async def kappagen_cooldown(self, ctx: commands.Context, value: int):
