@@ -11,7 +11,7 @@ import custom_commands
 from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
 
-from utils import auto_so, check_for_bot, random_bot_reply, random_reply, play_alert
+from utils import auto_so, random_bot_reply, random_reply, play_alert
 from db import init_channels, add_channel, leave_channel
 
 
@@ -117,27 +117,27 @@ class LeixBot(commands.Bot):
     async def event_raw_usernotice(self, channel, tags):
         if tags["msg-id"] == "sub":
             await channel.send(f"/me PogChamp {tags['display-name']} rejoint la légion! Merci pour le sub PogChamp")
-            await play_alert(channel.name, tags["msg-id"])
+            await play_alert(channel.name, 'subscription', tags['display-name'])
         elif tags["msg-id"] == "resub":
             await channel.send(
                 f"/me PogChamp Le resub de {tags['display-name']}!! Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
             )
-            await play_alert(channel.name, tags["msg-id"])
+            await play_alert(channel.name, 'subscription', tags['display-name'])
         elif tags['msg-id'] == 'subgift':
             await channel.send(
                 f'/me {tags["display-name"]} est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
-            await play_alert(channel.name, tags["msg-id"])
+            await play_alert(channel.name, 'subscription', tags['msg-param-recipient-display-name'])
         elif tags['msg-id'] == 'anonsubgift':
             await channel.send(
                 f'/me Un donateur anonyme est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
             )
-            await play_alert(channel.name, tags["msg-id"])
+            await play_alert(channel.name, 'subscription', tags['msg-param-recipient-display-name'])
         elif tags["msg-id"] == "raid":
             await channel.send(
                 f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
             )
-            await play_alert(channel.name, tags["msg-id"])
+            await play_alert(channel.name, tags["msg-id"], tags['msg-param-displayName'])
 
     async def event_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.CommandNotFound):

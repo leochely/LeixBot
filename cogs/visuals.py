@@ -5,7 +5,7 @@ from twitchio.ext import commands
 from websockets import connect
 
 import custom_commands
-from utils import check_cooldown
+from utils import check_cooldown, get_emote_list
 
 
 KAPPAGEN_DEFAULT_VALUE = 500
@@ -104,10 +104,10 @@ class Visuals(commands.Cog):
         les emotes spécifiées.
         Ex: !kappagen 123 emote1 emote2 ...
         """
-        channel = ctx.author.channel.name
+        user = await ctx.author.channel.user()
 
         # Exits if the user is on cooldown
-        if not (check_cooldown(channel, ctx.author.name)):
+        if not (check_cooldown(user.name, ctx.author.name)):
             return
         
         # Sets default value if not passed or invalid
@@ -123,8 +123,10 @@ class Visuals(commands.Cog):
             for emote in emotes:
                 emote_clean = re.sub(".*/", "", emote)
                 emotes_urls.append(
-                    "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/1.0"
+                    "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/3.0"
                 )
+        else:
+            emotes_urls = await get_emote_list(user)
 
         data = {'command' : 'PLAY',
                 'page' : 'KAPPAGEN',
@@ -132,7 +134,7 @@ class Visuals(commands.Cog):
                     'emotes': emotes_urls,
                     'value': value
                 },
-                'channel': channel}
+                'channel': user.name}
         
         async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
             await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))

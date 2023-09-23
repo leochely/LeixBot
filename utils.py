@@ -4,13 +4,14 @@ import aiohttp
 import os
 import re
 import json
-import socketio
+from websockets import connect
 import time
 
 from datetime import datetime, timedelta, timezone
 from db import get_token
 from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
+from twitchio import User
 from twitchio.ext import commands
 
 
@@ -200,11 +201,11 @@ def check_cooldown(channel, user):
 
 
 ### API ###
-base_url = "https://api.twitch.tv/helix/channels?broadcaster_id="
+BASE_URL = "https://api.twitch.tv/helix"
 
 
-async def modify_stream(user, game_id: int = None, language: str = None, title: str = None):
-    url = base_url + str(user.id)
+async def modify_stream(user: User, game_id: int = None, language: str = None, title: str = None):
+    url = BASE_URL + "/channels?broadcaster_id=" + str(user.id)
     auth = "Bearer " + await get_token(user.name)
     id = os.environ['CLIENT_ID']
 
@@ -226,23 +227,44 @@ async def modify_stream(user, game_id: int = None, language: str = None, title: 
         async with session.patch(url, data=data, headers=headers) as resp:
             return resp.status == 204
 
-
-### SOUNDS ###
-sio = socketio.AsyncClient()
-
-
-@sio.event
-def disconnect():
-    logging.info('disconnected')
-
-
-async def play_alert(channel, event='default', msg=None):
-    await sio.connect('http://195.201.111.178:3000', wait_timeout=10)
-    data = {
-        'channel': channel,
-        'params': {
-            'event': event,
-            'viewer_message': msg
-        }
+async def get_emote_list(user: User) -> [str]:  
+    url = BASE_URL + "/chat/emotes?broadcaster_id=" + str(user.id)
+    headers = {
+        "Client-Id": os.environ['CLIENT_ID'],
+        "Authorization": "Bearer " + os.environ['ACCESS_TOKEN']
     }
-    await sio.emit('leixbot.alert', data)
+    logging.info(f"Getting emotes list for channel {user}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as resp:
+            data = await resp.json()
+            emotes = [url['images']['url_4x'] for url in data['data']]
+    return emotes
+
+### ALERTS ###
+# Websocket connection parameters
+WS_URL = "ws://57.128.22.87/externalwebsocket"
+headers = {
+    "api-key": "myKey"
+}
+protocols = ["external"]
+
+async def play_alert(channel, event='default', viewer=None, msg=None):
+    data = {'command' : 'PLAY',
+        'page' : 'TWITCH_EVENT',
+        'content':{
+            "alert": {
+                "layout": "",
+                "message": msg,
+                "image": event + ".png",
+                "sound": event + ".mp3",
+                "soundVolume": 50,
+                "viewer": viewer
+            }
+        },
+        'channel': channel}
+
+    async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
+        await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
+        await session.send(str(data))
+        await session.close()
+
