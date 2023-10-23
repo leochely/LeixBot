@@ -81,85 +81,77 @@ class Event(commands.Cog):
         self.current_run = 0
 
     @commands.cooldown(rate=1, per=360, bucket=commands.Bucket.channel)
-    @commands.command(name="mdsr")
-    async def mdsr(self, ctx: commands.Context):
-        """Annonce pour MDSR 2023. Ex: !mdsr"""
+    @commands.command(aliases=["denfest"])
+    async def event(self, ctx: commands.Context):
+        """Annonce pour l'evenement a venir. Ex: !mdsr"""
 
         await ctx.send(
-            "MDSR 2023 est un événement caritatif de speedrun au profit "
-            "l'association 988 Lifeline. Le marathon démarre le 20 Mai a 17h et "
-            "se termine dans la nuit du 21 au 22. Au programme: du Doom classique "
-            "et moderne, Ultrakill, DUSK et plein d'autres Doom like!"
-        )
-        await ctx.send(
-            "Venez nous rejoindre sur le restream francais "
-            "https://www.twitch.tv/dentvfr ou sur https://www.twitch.tv/moderndoomspeedrunning "
-            "pour le cast en anglais."
+            "La deuxieme edition du Denfest arrive! Plus d'infos a venir soon!"
         )
 
-    @commands.command(name="trailer")
-    async def trailer(self, ctx: commands.Context):
-        await ctx.send("Le trailer de MDSR '23: https://youtu.be/oG827fmr4t4")
+    # @commands.command(name="trailer")
+    # async def trailer(self, ctx: commands.Context):
+    #     await ctx.send("Le trailer de MDSR '23: https://youtu.be/oG827fmr4t4")
 
-    @commands.command(name='run', aliases='encours')
-    async def run(self, ctx: commands.Context):
-        run = self.planning[self.current_run]
-        await ctx.send(
-            f'{run.runner} flex sur {run.game} dans la catégorie '
-            f'{run.category}. Le temps estimé de la run est de '
-            f"{humanize.precisedelta(run.expected_time, minimum_unit='seconds')}"
-        )
+    # @commands.command(name='run', aliases='encours')
+    # async def run(self, ctx: commands.Context):
+    #     run = self.planning[self.current_run]
+    #     await ctx.send(
+    #         f'{run.runner} flex sur {run.game} dans la catégorie '
+    #         f'{run.category}. Le temps estimé de la run est de '
+    #         f"{humanize.precisedelta(run.expected_time, minimum_unit='seconds')}"
+    #     )
     
-    @commands.command(name='suivant', aliases=['next'])
-    async def suivant(self, ctx: commands.Context):
-        self.current_run += 1
-        run = self.planning[self.current_run]
-        await ctx.send(
-            f"La run suivante vient de commencer! C'est au tour de "
-            f"{run.runner} de flex sur {run.game}"
-        )
+    # @commands.command(name='suivant', aliases=['next'])
+    # async def suivant(self, ctx: commands.Context):
+    #     self.current_run += 1
+    #     run = self.planning[self.current_run]
+    #     await ctx.send(
+    #         f"La run suivante vient de commencer! C'est au tour de "
+    #         f"{run.runner} de flex sur {run.game}"
+    #     )
     
-    @commands.command(name='precedent', aliases=['previous', 'prev'])
-    async def precedent(self, ctx: commands.Context):
-        self.current_run = max(0, self.current_run - 1)
-        run = self.planning[self.current_run]
-        await ctx.send(
-            f"Oups, la run d'avant n'est pas encore finie! "
-            f"{run.runner} flex sur {run.game}"
-        )
+    # @commands.command(name='precedent', aliases=['previous', 'prev'])
+    # async def precedent(self, ctx: commands.Context):
+    #     self.current_run = max(0, self.current_run - 1)
+    #     run = self.planning[self.current_run]
+    #     await ctx.send(
+    #         f"Oups, la run d'avant n'est pas encore finie! "
+    #         f"{run.runner} flex sur {run.game}"
+    #     )
     
-    @commands.command(name='runs', aliases=['avenir'])
-    async def runs(self, ctx: commands.Context):
-        runs_restantes = "Les runs à venir: "
-        for run in self.planning[self.current_run:]:
-            runs_restantes += str(run) + ', '
-        await ctx.send(runs_restantes[:-2])
+    # @commands.command(name='runs', aliases=['avenir'])
+    # async def runs(self, ctx: commands.Context):
+    #     runs_restantes = "Les runs à venir: "
+    #     for run in self.planning[self.current_run:]:
+    #         runs_restantes += str(run) + ', '
+    #     await ctx.send(runs_restantes[:-2])
     
-    @commands.command(name='runner')
-    async def runner(self, ctx: commands.Context):
-        run = self.planning[self.current_run]
-        await ctx.send(
-            f"Tu aimes le gameplay? Retrouve {run.runner}"
-            f" sur twitch.tv/{run.runner}!"
-        )
+    # @commands.command(name='runner')
+    # async def runner(self, ctx: commands.Context):
+    #     run = self.planning[self.current_run]
+    #     await ctx.send(
+    #         f"Tu aimes le gameplay? Retrouve {run.runner}"
+    #         f" sur twitch.tv/{run.runner}!"
+    #     )
     
-    @commands.command(name='caster', aliases=['casters', 'cast'])
-    async def caster(self, ctx: commands.Context):
-        run = self.planning[self.current_run]
-        await ctx.send(
-            f"Tu aimes les casters? Retrouve {run.casters[0]}"
-            f" sur twitch.tv/{run.casters[0]} et {run.casters[1]} "
-            f" sur twitch.tv/{run.casters[1]}"
-        )
+    # @commands.command(name='caster', aliases=['casters', 'cast'])
+    # async def caster(self, ctx: commands.Context):
+    #     run = self.planning[self.current_run]
+    #     await ctx.send(
+    #         f"Tu aimes les casters? Retrouve {run.casters[0]}"
+    #         f" sur twitch.tv/{run.casters[0]} et {run.casters[1]} "
+    #         f" sur twitch.tv/{run.casters[1]}"
+    #     )
 
     ## ROUTINES ##
-    @routines.routine(minutes=30.0, wait_first=False)
-    async def links(self):
-        denTV = self.bot.get_channel('dentvfr')
-        await denTV.send("Vous voulez voir le stream principal en Anglais? C'est par ici: https://www.twitch.tv/moderndoomspeedrunning")
-        await asyncio.sleep(60 * 30)
-        await denTV.send("Ce marathon est au profit de l'association 988 Crisis and Suicide Lifeline. !don pour en savoir plus!")
-        await asyncio.sleep(60 * 30)
+    # @routines.routine(minutes=30.0, wait_first=False)
+    # async def links(self):
+    #     denTV = self.bot.get_channel('dentvfr')
+    #     await denTV.send("Vous voulez voir le stream principal en Anglais? C'est par ici: https://www.twitch.tv/moderndoomspeedrunning")
+    #     await asyncio.sleep(60 * 30)
+    #     await denTV.send("Ce marathon est au profit de l'association 988 Crisis and Suicide Lifeline. !don pour en savoir plus!")
+    #     await asyncio.sleep(60 * 30)
 
     @commands.Cog.event()
     async def event_ready(self):
@@ -167,4 +159,4 @@ class Event(commands.Cog):
 
 def prepare(bot: commands.Bot):
     logging.warning("Pas d'evenement alors skip")
-    # bot.add_cog(Event(bot))
+    bot.add_cog(Event(bot))

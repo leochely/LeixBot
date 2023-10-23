@@ -11,6 +11,7 @@ from utils import check_cooldown, get_emote_list
 KAPPAGEN_DEFAULT_VALUE = 500
 
 # Websocket connection parameters
+# WS_URL = "ws://localhost/externalwebsocket"
 WS_URL = "ws://57.128.22.87/externalwebsocket"
 headers = {
     "api-key": "myKey"
