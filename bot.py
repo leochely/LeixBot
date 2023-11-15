@@ -171,6 +171,8 @@ class LeixBot(commands.Bot):
         await asyncio.sleep(60 * 30)
         await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
         await asyncio.sleep(60 * 30)
+        await self.channel.send("La radio Guilty, 24h/24 et 7j/7 sur https://www.youtube.com/@leix34/live ")
+        await asyncio.sleep(60 * 30)
 
     @commands.command(name="routineAdd")
     async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):

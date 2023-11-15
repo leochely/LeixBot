@@ -86,7 +86,7 @@ class Event(commands.Cog):
         """Annonce pour l'evenement a venir. Ex: !mdsr"""
 
         await ctx.send(
-            "La deuxieme edition du Denfest arrive! Plus d'infos a venir soon!"
+            "La deuxieme edition du Denfest arrive debut decembre! Plus d'infos a venir soon!"
         )
 
     # @commands.command(name="trailer")
