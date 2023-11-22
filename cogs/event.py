@@ -83,10 +83,12 @@ class Event(commands.Cog):
     @commands.cooldown(rate=1, per=360, bucket=commands.Bucket.channel)
     @commands.command(aliases=["denfest"])
     async def event(self, ctx: commands.Context):
-        """Annonce pour l'evenement a venir. Ex: !mdsr"""
+        """Annonce pour l'événement a venir. Ex: !mdsr"""
 
         await ctx.send(
-            "La deuxieme edition du Denfest arrive debut decembre! Plus d'infos a venir soon!"
+            "La deuxieme édition du Denfest arrive le 9 décembre! Au programme: "
+            "du Doom-like a toute vitesse et des runs de Souls frame perfect! "
+            "Venez nombreux sur https://www.twitch.tv/dentvfr !"
         )
 
     # @commands.command(name="trailer")
