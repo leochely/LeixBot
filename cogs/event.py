@@ -91,9 +91,9 @@ class Event(commands.Cog):
             "Venez nombreux sur https://www.twitch.tv/dentvfr !"
         )
 
-    # @commands.command(name="trailer")
-    # async def trailer(self, ctx: commands.Context):
-    #     await ctx.send("Le trailer de MDSR '23: https://youtu.be/oG827fmr4t4")
+    @commands.command(name="trailer")
+    async def trailer(self, ctx: commands.Context):
+        await ctx.send("Le trailer du Denfest: https://youtu.be/q49eZNtYW80?si=e_-42RroS1dx8ZgU")
 
     # @commands.command(name='run', aliases='encours')
     # async def run(self, ctx: commands.Context):
