@@ -134,7 +134,7 @@ class Event(commands.Cog):
     @routines.routine(minutes=30.0, wait_first=False)
     async def giveaway(self):
         denTV = self.bot.get_channel('dentvfr')
-        await denTV.send("N'hesitex pas a follow! Les nouveaux followers sont automatiquement inscrits au giveaway! A gagner: des cles pour Mortal Kombat X, B4B et Mad Max!")
+        await denTV.send("N'hesitez pas de follow! Les followers sont automatiquement inscrits au giveaway! A gagner: des cles pour Mortal Kombat X, B4B et Mad Max!")
         await asyncio.sleep(60 * 60)
 
     @commands.Cog.event()
