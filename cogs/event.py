@@ -58,7 +58,7 @@ class Event(commands.Cog):
                 ['kiojin999', 'Fight_Like_Hell']),
             Run('Zenoxyde',
                 'Dark Souls 3',
-                'Epee droite brisée only',
+                'Armes discutables',
                 datetime.timedelta(hours=2, minutes=45),
                 ['kalderinofeross', 'SmallPinkPanda']),
         ]
