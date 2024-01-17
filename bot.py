@@ -9,7 +9,7 @@ from pathlib import Path
 
 import custom_commands
 from twitchio import Channel, Client, User
-from twitchio.ext import commands, pubsub, routines
+from twitchio.ext import commands, pubsub, routines, eventsub
 
 from utils import auto_so, random_bot_reply, random_reply, play_alert
 from db import init_channels, add_channel, leave_channel
@@ -35,6 +35,7 @@ class LeixBot(commands.Bot):
         }
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
         self.routines = {}
+        self.esclient = eventsub.EventSubWSClient(self)
 
     def setup(self):
         random.seed()
@@ -56,16 +57,6 @@ class LeixBot(commands.Bot):
     async def event_ready(self):
         # Notify us when everything is ready!
 
-        # Subscribes through pubsub to topics
-        u: List["User"] = await self.fetch_users(names=[os.environ['CHANNEL']])
-        uu: User = u[0]
-
-        topics = [
-            pubsub.channel_points(self.pubsub_client._http.token)[uu.id],
-            pubsub.bits(self.pubsub_client._http.token)[uu.id]
-        ]
-        await self.pubsub_client.pubsub.subscribe_topics(topics)
-        await self.pubsub_client.connect()
         self.channel = self.get_channel(os.environ['CHANNEL'])
 
         # Retrieving routines from db
@@ -143,24 +134,36 @@ class LeixBot(commands.Bot):
         if isinstance(error, commands.CommandNotFound):
             logging.error("Command does not exist")
 
-    ## PUBSUB FUNCTIONS ##
-    async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
-        logging.info(
-            f'Redemption by {event.user.name} of reward {event.reward.title} '
-            f'with input {event.input} done'
-        )
-        if event.reward.title == "Hats off to you":
-            minutes = 5
-            time = datetime.now() + timedelta(minutes=minutes)
-            await self.channel.send(f"/me Met le casque jusqu'à {time.strftime('%H:%M:%S')}")
-            await asyncio.sleep(minutes * 60)
-            await self.channel.send("/me @Leix34 tu peux maintenant retirer le casque")
 
-    async def event_pubsub_bits_message(self, event: pubsub.PubSubBitsMessage):
-        logging.info(
-            f'{event.user} redeemed {event.bits_used} with message {event.message}'
-        )
-        await self.channel.send(f'Merci pour les {event.bits_used} bits @ {event.user.name} <3')
+    ## EVENTSUB WS FUNCTIONS ##
+    async def event_eventsub_notification(self, payload: eventsub.NotificationEvent) -> None:
+        print('Received event!')
+        print(payload.headers.message_id)   
+        
+    async def event_eventsub_notification_channel_reward_redeem(self, payload: eventsub.CustomRewardRedemptionAddUpdateData) -> None:
+        print('Received event!')
+        print(payload.data.id)   
+
+
+    async def event_eventsub_notification_stream_start(self, payload: eventsub.StreamOnlineData) -> None:
+        print('Received event!')
+        print(payload)
+              
+
+    async def event_eventsub_notification_followV2(self, payload: eventsub.ChannelFollowData) -> None:
+        print('Received event!')
+        print(f'{payload.data.user.name} followed woohoo!')
+
+    async def event_eventsub_notification_channel_update(self, payload: eventsub.ChannelUpdateData) -> None:
+        print('Received event!')
+        print(payload)
+
+
+    async def sub(self):
+        await self.esclient.subscribe_channel_points_redeemed(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'],)
+        await self.esclient.subscribe_channel_stream_start(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
+        await self.esclient.subscribe_channel_update(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
+        await self.esclient.subscribe_channel_follows_v2(broadcaster=self.channel, moderator=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
 
     ## ROUTINES ##
     @routines.routine(minutes=30.0, wait_first=False)
@@ -321,4 +324,5 @@ if __name__ == "__main__":
 
     bot = LeixBot()
     bot.pubsub_client = client
+    bot.loop.create_task(bot.sub())
     bot.run()

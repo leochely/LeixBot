@@ -10,6 +10,7 @@ import random
 
 from twitchio import User
 from twitchio.ext import commands
+from howlongtobeatpy import HowLongToBeat
 
 # Sets humanize to French language
 humanize.i18n.activate("fr_FR")
@@ -149,6 +150,25 @@ class Misc(commands.Cog):
                 await ctx.send('. '.join(page.summary.splitlines()[0][:450].split(".")[:-1]) + '. ' + page.fullurl)
         else:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
+
+    @commands.command(name='howlong', aliases=['hl2b'])
+    async def howlong(self, ctx: commands.Context, *game):
+        """Renvoie la durée moyenne d'un jeu sur howlongtobeat.com
+        Ex: !howlong The Witcher 3
+        """
+        game = ' '.join(game)
+        results = await HowLongToBeat().async_search(game)
+        logging.info(results)
+        if results is not None and len(results) > 0:
+            game_entry = max(results, key=lambda element: element.similarity)
+            logging.info(game_entry)
+            main_story = game_entry.main_story
+            extra = game_entry.main_extra
+            completionist = game_entry.completionist
+            all_styles = game_entry.all_styles
+
+            await ctx.send(f'{game_entry.game_name} - Main Story: {main_story}h - Main + Extra: {extra}h - Completionist: {completionist}h - All Styles: {all_styles}h')
+
 
     @ commands.command(name='id')
     async def id(self, ctx: commands.Context):
