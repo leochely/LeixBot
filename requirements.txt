@@ -42,8 +42,6 @@ humanize==3.13.1
 
 idna==3.3
 
-importlib-resources==6.1.1; python_version < '3.10'
-
 iso8601==1.0.0
 
 lxml==4.8.0
