@@ -31,6 +31,7 @@ class AI(commands.Cog):
                     "messages": self.chat_history[user],
                     "model": "leixbot",
                     "stream":False,
+                    "num_ctx": 200,
                     "use_mlock":True}) as resp:
                 data = await resp.json()
                 logging.info(data['message']['content'])
