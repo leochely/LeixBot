@@ -1,5 +1,6 @@
 import logging
 import os
+from textwrap import wrap
 
 import aiohttp
 
@@ -23,7 +24,7 @@ class AI(commands.Cog):
             "content":prompt
             },
         )
-        logging.info(self.chat_history[user])
+        logging.debug(self.chat_history[user])
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f"{LLM_API_URL}/api/chat", 
@@ -34,15 +35,17 @@ class AI(commands.Cog):
                     "num_ctx": 200,
                     "use_mlock":True}) as resp:
                 data = await resp.json()
-                logging.info(data['message']['content'])
+                logging.debug(data['message']['content'])
                 response = data['message']['content']
-                await ctx.send(response)
                 self.chat_history[user].append(
                     {
-                    "role": "assistant",
-                    "content":response
+                        "role": "assistant",
+                        "content":response
                     },
                 )
+                response_chunked = wrap(response, 500)
+                for chunk in response_chunked:
+                    await ctx.send(chunk)
 
 
 def prepare(bot: commands.Bot):
