@@ -32,8 +32,11 @@ class AI(commands.Cog):
                     "messages": self.chat_history[user],
                     "model": "leixbot",
                     "stream":False,
-                    "num_ctx": 200,
-                    "use_mlock":True}) as resp:
+                    "options": {
+                        "use_mlock":True,
+                        "num_predict": 120
+                        }
+                    }) as resp:
                 data = await resp.json()
                 logging.debug(data['message']['content'])
                 response = data['message']['content']
@@ -46,6 +49,11 @@ class AI(commands.Cog):
                 response_chunked = wrap(response, 500)
                 for chunk in response_chunked:
                     await ctx.send(chunk)
+
+    @commands.command(name="reset")
+    async def reset(self, ctx: commands.Context):
+        self.chat_history[ctx.author.name] = []
+        ctx.send("J'ai effacé notre conversation. Nous pouvons repartir de zéro! :)")
 
 
 def prepare(bot: commands.Bot):

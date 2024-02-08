@@ -19,7 +19,7 @@ To generate the access token, go to the twitch [token generator](https://twitcht
 To generate the channel access token, go to the [token generator](https://twitchtokengenerator.com/), login as your **own account** and choose "custom scope token". Select all the permissions and generate the token.
 
 
-I recommend making a virtual environment using python 3.11.x or above:
+I recommend making a virtual environment using python 3.10.x or above:
 
 ```
 pipenv --python 3.11
