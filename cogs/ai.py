@@ -51,6 +51,7 @@ class AI(commands.Cog):
 
     @commands.command(name="reset")
     async def reset(self, ctx: commands.Context):
+        """Efface l'historique de conversation avec l'IA. Ex: !reset"""
         self.chat_history[ctx.author.name] = []
         ctx.send("J'ai effacé notre conversation. Nous pouvons repartir de zéro! :)")
 
