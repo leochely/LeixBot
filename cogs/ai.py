@@ -33,8 +33,7 @@ class AI(commands.Cog):
                     "model": "leixbot",
                     "stream":False,
                     "options": {
-                        "use_mlock":True,
-                        "num_predict": 120
+                        "use_mlock":True
                         }
                     }) as resp:
                 data = await resp.json()
