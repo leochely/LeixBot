@@ -31,18 +31,28 @@ class Misc(commands.Cog):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
 
     @commands.command(name="salut", aliases=['slt'])
-    async def salut(self, ctx: commands.Context, user: User = None):
+    async def salut(self, ctx: commands.Context, user: User):
         """Transmet vos salutations a un utilisateur. Ex: !slt leix34"""
         if not user:
             user = ctx.author
-        await ctx.send(f'Mes salutations les plus distinguées @{user.name}! <3')
+            await ctx.send(f'Mes salutations les plus distinguées @{user.display_name}! <3')
+        elif len(user) == 1:
+            await ctx.send(f'Mes salutations les plus distinguées @{user[0].display_name} <3')
+        else:
+            names = " et ".join(", ".join([x.display_name for x in user]).rsplit(', ', 1))
+            await ctx.send(f'Mes salutations les plus distinguées {names} <3')
 
     @commands.command(name="bn")
-    async def bn(self, ctx: commands.Context, user: User = None):
+    async def bn(self, ctx: commands.Context, *user: User):
         """Souhaite bonne nuit a un utilisateur. Ex: !bn leix34"""
         if not user:
             user = ctx.author
-        await ctx.send(f'Fais de beaux rêves @{user.name} <3')
+            await ctx.send(f'Fais de beaux rêves @{user.display_name} <3')
+        elif len(user) == 1:
+            await ctx.send(f'Fais de beaux rêves @{user[0].display_name} <3')
+        else:
+            names = " et ".join(", ".join([x.display_name for x in user]).rsplit(', ', 1))
+            await ctx.send(f'Faites de beaux rêves {names} <3')
 
     @commands.command(name="uptime")
     async def uptime(self, ctx: commands.bot.Context):
