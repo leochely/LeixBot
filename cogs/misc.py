@@ -31,7 +31,7 @@ class Misc(commands.Cog):
         await ctx.send(f"Non t'abuses {ctx.author.name}, on va pas ban {user} quand meme BibleThump")
 
     @commands.command(name="salut", aliases=['slt'])
-    async def salut(self, ctx: commands.Context, user: User):
+    async def salut(self, ctx: commands.Context, *user: User):
         """Transmet vos salutations a un utilisateur. Ex: !slt leix34"""
         if not user:
             user = ctx.author
