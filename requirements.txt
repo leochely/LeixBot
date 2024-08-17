@@ -36,7 +36,7 @@ fake-useragent==1.4.0
 
 frozenlist==1.4.1; python_version >= '3.8'
 
-howlongtobeatpy==1.0.5
+howlongtobeatpy==1.0.7
 
 humanize==3.13.1
 
