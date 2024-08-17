@@ -146,7 +146,7 @@ class Misc(commands.Cog):
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
     @commands.command(name="wikipedia", aliases=['wiki'])
-    async def citation(self, ctx: commands.Context, *query):
+    async def wikipedia(self, ctx: commands.Context, *query):
         """Renvoie la definition wikipedia d'un mot.
         Ex: !wikipedia Kojima
         """
