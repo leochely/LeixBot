@@ -100,11 +100,11 @@ class Misc(commands.Cog):
             await asyncio.sleep(5)
             if channel_info.game_name:
                 await ctx.send(
-                    f'Je plaisante haha, allez voir @{broadcaster.name} sur www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
+                    f'Je plaisante haha, allez voir @{broadcaster.display_name} sur www.twitch.tv/{broadcaster.name} pour du gaming de qualitay sur {channel_info.game_name}'
                 )
             else:
                 await ctx.send(
-                    f"Je plaisante haha, @{broadcaster.name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
+                    f"Je plaisante haha, @{broadcaster.display_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
                 )
 
     @commands.command(name="porte")

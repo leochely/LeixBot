@@ -161,7 +161,6 @@ def add_channel(channel):
     conn = None
     try:
         # read connection parameters
-        channels = []
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
@@ -207,6 +206,75 @@ def leave_channel(channel):
         # execute a statement
         cur.execute(
             "DELETE FROM channels WHERE name=%s", (channel, )
+        )
+
+        conn.commit()
+
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def get_channels_info()->dict:
+    """ Connects to the PostgreSQL database server and removes a channel"""
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(f'Getting channel ids')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            "SELECT id, name FROM channels"
+        )
+
+        infos = cur.fetchall()
+        di = {}
+        for id, name in infos:
+            di.setdefault(id, name)
+        
+        # close the communication with the PostgreSQL
+        cur.close()
+
+        return di
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        logging.error(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+
+def update_name(id: int, channel: str):
+    """ Connects to the PostgreSQL database server and removes a channel"""
+    conn = None
+    try:
+        # read connection parameters
+        params = config(filename='database_commands.ini')
+
+        # connect to the PostgreSQL server
+        logging.info(f'Updating channel {id} with name {channel}')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        cur.execute(
+            "UPDATE channels SET name=%s WHERE id=%s", (channel, id)
         )
 
         conn.commit()

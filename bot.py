@@ -9,10 +9,10 @@ from pathlib import Path
 
 import custom_commands
 from twitchio import Channel, Client, User
-from twitchio.ext import commands, pubsub, routines, eventsub
+from twitchio.ext import commands, routines, eventsub
 
 from utils import auto_so, random_bot_reply, random_reply, play_alert
-from db import init_channels, add_channel, leave_channel
+from db import init_channels, add_channel, leave_channel, get_channels_info, update_name
 
 
 class LeixBot(commands.Bot):
@@ -25,7 +25,6 @@ class LeixBot(commands.Bot):
             initial_channels=init_channels(),
             case_insensitive=True
         )
-        self.pubsub_client = None
         self.channel = None
         self._cogs_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./cogs/*.py")
@@ -65,6 +64,7 @@ class LeixBot(commands.Bot):
         # Starting timers
         logging.info("Starting routines...")
         self.links.start()
+        self.id_updater.start()
 
         # We are logged in and ready to chat and use commands...
         logging.info(f'Logged in as | {self.nick}')
@@ -177,6 +177,15 @@ class LeixBot(commands.Bot):
         await self.channel.send("La radio Guilty, 24h/24 et 7j/7 sur https://www.youtube.com/@leix34/live ")
         await asyncio.sleep(60 * 30)
 
+    @routines.routine(hours=1.0, wait_first=False)
+    async def id_updater(self):
+        channels_info = get_channels_info()
+        channels = await self.fetch_channels(channels_info.keys())
+        for channel in channels:
+            user = await channel.user.fetch()
+            if user.name != channels_info[channel.user.id]:
+                update_name(channel.user.id, user.name)
+
     @commands.command(name="routineAdd")
     async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):
         """Ajoute et démarre une routine. Requiert privilege modérateur.
@@ -240,8 +249,6 @@ class LeixBot(commands.Bot):
         """
         channel = ctx.author.channel.name
         commands = custom_commands.find_commands_channel(channel)
-
-        logging.info(commands)
 
         cmd_list = ""
         for command in commands:
@@ -312,17 +319,7 @@ if __name__ == "__main__":
         client_secret=os.environ['CLIENT_SECRET']
     )
 
-    client.pubsub = pubsub.PubSubPool(client)
-
-    @client.event()
-    async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
-        await bot.event_pubsub_channel_points(event)
-
-    @client.event()
-    async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
-        await bot.event_pubsub_bits_message(event)
 
     bot = LeixBot()
-    bot.pubsub_client = client
     bot.loop.create_task(bot.sub())
     bot.run()
