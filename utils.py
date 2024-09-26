@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from db import get_token
 from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
-from twitchio import User
+from twitchio import User, Message
 from twitchio.ext import commands
 
 
@@ -90,6 +90,8 @@ game_replies = {
                                              'HMMF HMMF BWA'],
     'Blasphemous':                          ['Le pénitent le passe SwiftRage',
                                              'Fais gaffe au pics en dessous Kappa'],
+    'God of War Ragnarök':                  ['A gauche!', 'A droite!'],
+    'Star Citizen':                         ['Pyro est inclus dans la prochaine maj de LeixBot PogChamp'],
 }
 
 vip_replies = [
@@ -105,8 +107,8 @@ artist_replies = [
 ]
 
 
-async def auto_so(bot, message, vip_info):
-    vip_name = message.author.name
+async def auto_so(bot: commands.Bot, message: Message, vip_info):
+    vip_name = message.author.display_name
     vip_channel_info = await bot.fetch_channel(message.author.name)
     stream = await bot.fetch_streams(
         user_logins=[
@@ -138,7 +140,7 @@ async def auto_so(bot, message, vip_info):
     await message.author.channel.send(reply)
 
 
-async def random_reply(bot, message):
+async def random_reply(bot, message: Message):
     channel_info = await bot.fetch_channel(message.channel.name)
     compiled_msg = re.compile(re.escape('@leixbot'), re.IGNORECASE)
     msg_clean = compiled_msg.sub('', message.content)
@@ -160,7 +162,7 @@ async def random_reply(bot, message):
         reply_pool += artist_replies
 
     reply = random.choice(reply_pool)
-    await message.author.channel.send(f"@{message.author.name} {reply}")
+    await message.author.channel.send(f"@{message.author.display_name} {reply}")
 
 
 async def random_bot_reply(message):
