@@ -47,13 +47,13 @@ class AI(commands.Cog):
                 )
                 response_chunked = wrap(response, 500)
                 for chunk in response_chunked:
-                    await ctx.send(chunk)
+                    await ctx.reply(chunk)
 
     @commands.command(name="reset")
     async def reset(self, ctx: commands.Context):
         """Efface l'historique de conversation avec l'IA. Ex: !reset"""
         self.chat_history[ctx.author.name] = []
-        await ctx.send("J'ai effacé notre conversation. Nous pouvons repartir de zéro! :)")
+        await ctx.reply("J'ai effacé notre conversation. Nous pouvons repartir de zéro! :)")
 
 
 def prepare(bot: commands.Bot):
