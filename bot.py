@@ -99,7 +99,7 @@ class LeixBot(commands.Bot):
         elif message.author.name.lower() in self.bot_to_reply and custom_commands.is_bot_reply(ctx.author.channel.name):
             await random_bot_reply(message)
         else:
-            await auto_so(self, message, self.vip_so[message.author.display_name])
+            await auto_so(self, message, self.vip_so[message.author.channel.name])
 
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...

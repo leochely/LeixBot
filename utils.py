@@ -92,6 +92,9 @@ game_replies = {
                                              'Fais gaffe au pics en dessous Kappa'],
     'God of War Ragnarök':                  ['A gauche!', 'A droite!'],
     'Star Citizen':                         ['Pyro est inclus dans la prochaine maj de LeixBot PogChamp'],
+    'Space Marine 2':                       ['FOR THE EMPEROR!',
+                                             'Guys, full heal at drop pod',
+                                             'Emmenez ce genogerme au bout mon frere!'],
 }
 
 vip_replies = [
@@ -124,7 +127,7 @@ async def auto_so(bot: commands.Bot, message: Message, vip_info):
         return
 
     # Update last automatic shoutout time
-    vip_info[message.author.name] = datetime.now(timezone.utc)
+    vip_info[message.author.display_name] = datetime.now(timezone.utc)
 
     # Send message
     reply = ''

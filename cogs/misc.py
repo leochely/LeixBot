@@ -161,13 +161,22 @@ class Misc(commands.Cog):
         else:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
+
+    @commands.command(name="pileouface", aliases=['pile', 'face', 'coinflip'])
+    async def pileouface(self, ctx: commands.Context, *query):
+        """Fait un pile ou face.
+        Ex: !pileouface
+        """
+        flip = random.choice(['pile', 'face'])
+        await ctx.send(f'''C'est {flip}!''')
+
     @commands.command(name='howlong', aliases=['hl2b'])
     async def howlong(self, ctx: commands.Context, *game):
         """Renvoie la durée moyenne d'un jeu sur howlongtobeat.com
         Ex: !howlong The Witcher 3
         """
         game = ' '.join(game)
-        results = await HowLongToBeat().async_search(game)
+        results = await HowLongToBeat().async_search(game, similarity_case_sensitive=False)
         logging.info(results)
         if results is not None and len(results) > 0:
             game_entry = max(results, key=lambda element: element.similarity)
