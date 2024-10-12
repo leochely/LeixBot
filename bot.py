@@ -288,10 +288,11 @@ class LeixBot(commands.Bot):
         if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
             channel = channel.lower()
             await ctx.send(f'Joining channel {channel}')
-
+            user = await ctx.channel.user()
+            id = user.id
             await self.join_channels({channel})
             self.vip_so[channel] = {}
-            add_channel(channel)
+            add_channel(channel, id)
 
     @commands.command(name="leave")
     async def leave(self, ctx: commands.Context, channel):

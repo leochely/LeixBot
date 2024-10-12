@@ -156,7 +156,7 @@ def init_channels():
             logging.info('Database connection closed.')
 
 
-def add_channel(channel):
+def add_channel(channel, id):
     """ Connects to the PostgreSQL database server and adds a channel"""
     conn = None
     try:
@@ -172,7 +172,7 @@ def add_channel(channel):
 
         # execute a statement
         cur.execute(
-            f"INSERT INTO channels VALUES ('{channel}')"
+            "INSERT INTO channels (name, id) VALUES (%s, %s)," (channel, id)
         )
 
         conn.commit()
