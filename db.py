@@ -172,7 +172,7 @@ def add_channel(channel, id):
 
         # execute a statement
         cur.execute(
-            "INSERT INTO channels (name, id) VALUES (%s, %s)," (channel, id)
+            "INSERT INTO channels (name, id) VALUES (%s, %s),", (channel, id)
         )
 
         conn.commit()
