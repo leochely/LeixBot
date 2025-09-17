@@ -22,7 +22,10 @@ OWNER_ID = "109173981"  # Your personal User ID..
 class LeixBot(commands.AutoBot):
     def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
         self.token_database = token_database
-        super().__init__(*args, **kwargs, subscriptions=subs, adapter = web.AiohttpAdapter(host="0.0.0.0"))
+        super().__init__(*args, **kwargs, 
+                         subscriptions=subs,
+                         adapter = web.AiohttpAdapter(host="0.0.0.0", domain="leixbot.onrender.com")
+                        )
 
     async def setup_hook(self) -> None:
         # Add our component which contains our commands...
