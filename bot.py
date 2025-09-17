@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import twitchio
 from twitchio.ext import commands
-from twitchio import eventsub
+from twitchio import eventsub, web
 
 if TYPE_CHECKING:
     import sqlite3
@@ -21,8 +21,8 @@ OWNER_ID = "109173981"  # Your personal User ID..
 
 class LeixBot(commands.AutoBot):
     def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
-        self.token_database = token_database   
-        super().__init__(*args, **kwargs, subscriptions=subs)
+        self.token_database = token_database
+        super().__init__(*args, **kwargs, subscriptions=subs, adapter = web.AiohttpAdapter(host="0.0.0.0"))
 
     async def setup_hook(self) -> None:
         # Add our component which contains our commands...
