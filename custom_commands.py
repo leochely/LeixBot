@@ -1,6 +1,6 @@
 from db import config
 from twitchio.ext import routines
-import psycopg2
+import psycopg
 import os
 import logging
 
@@ -17,7 +17,7 @@ def init_commands():
 
         # connect to the PostgreSQL server
         logging.info('Initializing commands')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -34,7 +34,7 @@ def init_commands():
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -68,7 +68,7 @@ def add_command(command, channel, text):
 
         # connect to the PostgreSQL server
         logging.info('Initializing commands')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -88,7 +88,7 @@ def add_command(command, channel, text):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -107,7 +107,7 @@ def edit_command(command, channel, text):
 
         # connect to the PostgreSQL server
         logging.info('Initializing commands')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -127,7 +127,7 @@ def edit_command(command, channel, text):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -146,7 +146,7 @@ def remove_command(command, channel):
 
         # connect to the PostgreSQL server
         logging.info('Initializing commands')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -161,7 +161,7 @@ def remove_command(command, channel):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -190,7 +190,7 @@ def add_routine(
 
         # connect to the PostgreSQL server
         logging.info('Adding new routine to db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -206,7 +206,7 @@ def add_routine(
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -224,7 +224,7 @@ def init_routines(bot):
 
         # connect to the PostgreSQL server
         logging.info('Initializing routines')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -249,7 +249,7 @@ def init_routines(bot):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -267,7 +267,7 @@ def remove_routine(channel, name):
 
         # connect to the PostgreSQL server
         logging.info('Removing routine from db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -283,7 +283,7 @@ def remove_routine(channel, name):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -302,7 +302,7 @@ def set_counter(channel, counter):
 
         # connect to the PostgreSQL server
         logging.info('Setting counter in db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -318,7 +318,7 @@ def set_counter(channel, counter):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -334,7 +334,7 @@ def get_counter(channel):
 
         # connect to the PostgreSQL server
         logging.info('Getting counter from db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -349,7 +349,7 @@ def get_counter(channel):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -372,7 +372,7 @@ def get_kappagen_cooldown(channel):
         logging.info(
             f'Getting kappagen cooldown for channel {channel} from db'
         )
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -386,7 +386,7 @@ def get_kappagen_cooldown(channel):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -406,7 +406,7 @@ def set_kappagen_cooldown(channel, cooldown):
 
         # connect to the PostgreSQL server
         logging.info('Setting counter in db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -422,7 +422,7 @@ def set_kappagen_cooldown(channel, cooldown):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -441,7 +441,7 @@ def update_bot_replies(channel, bot_reply):
 
         # connect to the PostgreSQL server
         logging.info(f'Updating bot replies for channel {channel}')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -457,7 +457,7 @@ def update_bot_replies(channel, bot_reply):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -475,7 +475,7 @@ def is_bot_reply(channel) -> bool:
         logging.info(
             f'Getting bot reply status for channel {channel} from db'
         )
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -489,7 +489,7 @@ def is_bot_reply(channel) -> bool:
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -511,7 +511,7 @@ def update_vip_so(channel, vip_so):
 
         # connect to the PostgreSQL server
         logging.info(f'Updating auto VIP shoutout for channel {channel}')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -527,7 +527,7 @@ def update_vip_so(channel, vip_so):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -545,7 +545,7 @@ def is_vip_so(channel) -> bool:
         logging.debug(
             f'Getting vip shoutout status for channel {channel} from db'
         )
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -559,7 +559,7 @@ def is_vip_so(channel) -> bool:
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:

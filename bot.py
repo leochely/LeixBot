@@ -1,326 +1,174 @@
-# bot.py
 import asyncio
 import logging
-import os  # for importing env vars for the bot to use
-import random
-import sys
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
+import asqlite
+import os
+from typing import TYPE_CHECKING
 
-import custom_commands
-from twitchio import Channel, Client, User
-from twitchio.ext import commands, routines, eventsub
+import twitchio
+from twitchio.ext import commands
+from twitchio import eventsub
 
-from utils import auto_so, random_bot_reply, random_reply, play_alert
-from db import init_channels, add_channel, leave_channel, get_channels_info, update_name
+if TYPE_CHECKING:
+    import sqlite3
+
+LOGGER: logging.Logger = logging.getLogger("Bot")
+
+CLIENT_ID: str = os.environ['CLIENT_ID'] # The CLIENT ID from the Twitch Dev Console
+CLIENT_SECRET: str = os.environ['CLIENT_SECRET'] # The CLIENT SECRET from the Twitch Dev Console
+BOT_ID = "734769203"  # The Account ID of the bot user...
+OWNER_ID = "109173981"  # Your personal User ID..
 
 
-class LeixBot(commands.Bot):
+class LeixBot(commands.AutoBot):
+    def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
+        self.token_database = token_database   
+        super().__init__(*args, **kwargs, subscriptions=subs)
 
-    def __init__(self):
-        super().__init__(
-            token=os.environ['ACCESS_TOKEN'],
-            prefix=os.environ['BOT_PREFIX'],
-            client_id=os.environ['CLIENT_ID'],
-            initial_channels=init_channels(),
-            case_insensitive=True
-        )
-        self.channel = None
-        self._cogs_names: t.Dict[str] = [
-            p.stem for p in Path(".").glob("./cogs/*.py")
+    async def setup_hook(self) -> None:
+        # Add our component which contains our commands...
+        await self.add_component(MyComponent(self))
+
+    async def event_oauth_authorized(self, payload: twitchio.authentication.UserTokenPayload) -> None:
+        await self.add_token(payload.access_token, payload.refresh_token)
+
+        if not payload.user_id:
+            return
+
+        # A list of subscriptions we would like to make to the newly authorized channel...
+        subs: list[eventsub.SubscriptionPayload] = [
+            eventsub.ChatMessageSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
+            # TODO: Add more subscriptions here...
         ]
-        self.vip_so = {
-            x: {} for x in init_channels()
-        }
-        self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
-        self.routines = {}
-        self.esclient = eventsub.EventSubWSClient(self)
 
-    def setup(self):
-        random.seed()
-        logging.info("Chargement des cogs...")
+        resp: twitchio.MultiSubscribePayload = await self.multi_subscribe(subs)
+        if resp.errors:
+            LOGGER.warning("Failed to subscribe to: %r, for user: %s", resp.errors, payload.user_id)
 
-        for cog in self._cogs_names:
-            logging.info(f"Loading `{cog}` cog.")
-            self.load_module(f"cogs.{cog}")
+    async def add_token(self, token: str, refresh: str) -> twitchio.authentication.ValidateTokenPayload:
+        # Make sure to call super() as it will add the tokens interally and return us some data...
+        resp: twitchio.authentication.ValidateTokenPayload = await super().add_token(token, refresh)
 
-        logging.info("Chargement terminé")
+        # Store our tokens in a simple SQLite Database when they are authorized...
+        query = """
+        INSERT INTO tokens (user_id, token, refresh)
+        VALUES (?, ?, ?)
+        ON CONFLICT(user_id)
+        DO UPDATE SET
+            token = excluded.token,
+            refresh = excluded.refresh;
+        """
 
-        # Retrieving custom commands from db
-        custom_commands.init_commands()
+        async with self.token_database.acquire() as connection:
+            await connection.execute(query, (resp.user_id, token, refresh))
 
-    def run(self):
-        self.setup()
-        super().run()
+        LOGGER.info("Added token to the database for user: %s", resp.user_id)
+        return resp
 
-    async def event_ready(self):
-        # Notify us when everything is ready!
+    async def event_ready(self) -> None:
+        LOGGER.info("Successfully logged in as: %s", self.bot_id)
 
-        self.channel = self.get_channel(os.environ['CHANNEL'])
+class MyComponent(commands.Component):
+    def __init__(self, bot: LeixBot):
+        # Passing args is not required...
+        # We pass bot here as an example...
+        self.bot = bot
 
-        # Retrieving routines from db
-        self.routines = custom_commands.init_routines(self)
+    # We use a listener in our Component to display the messages received.
+    @commands.Component.listener()
+    async def event_message(self, payload: twitchio.ChatMessage) -> None:
+        print(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
 
-        # Starting timers
-        logging.info("Starting routines...")
-        self.links.start()
-        self.id_updater.start()
+    @commands.command(aliases=["hello", "howdy", "hey"])
+    async def hi(self, ctx: commands.Context) -> None:
+        """Simple command that says hello!
 
-        # We are logged in and ready to chat and use commands...
-        logging.info(f'Logged in as | {self.nick}')
+        !hi, !hello, !howdy, !hey
+        """
+        await ctx.reply(f"Coucou {ctx.chatter.mention}! Ca faisait si longtemps!")
 
-    async def event_message(self, message):
-        # Messages with echo set to True are messages sent by the bot...
-        # For now we just want to ignore them...
-        if message.echo:
-            return
+    @commands.group(invoke_fallback=True)
+    async def socials(self, ctx: commands.Context) -> None:
+        """Group command for our social links.
 
-        # Print the contents of our message to console...
-        logging.info(
-            f'{message.author.name} on channel {message.author.channel.name}: '
-            f'{message.content}'
+        !socials
+        """
+        await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")
+
+    @socials.command(name="discord")
+    async def socials_discord(self, ctx: commands.Context) -> None:
+        """Sub command of socials that sends only our discord invite.
+
+        !socials discord
+        """
+        await ctx.send("discord.gg/...")
+
+    @commands.command(aliases=["repeat"])
+    @commands.is_moderator()
+    async def say(self, ctx: commands.Context, *, content: str) -> None:
+        """Moderator only command which repeats back what you say.
+
+        !say hello world, !repeat I am cool LUL
+        """
+        await ctx.send(content)
+
+    @commands.Component.listener()
+    async def event_stream_online(self, payload: twitchio.StreamOnline) -> None:
+        # Event dispatched when a user goes live from the subscription we made above...
+        await payload.broadcaster.send_message(
+            sender=self.bot.bot_id,
+            message=f"Hi... {payload.broadcaster}! You are live!",
         )
 
-        ctx = await self.get_context(message)
 
-        # if check_for_bot(message.content):
-        #     logging.info("BOT DETECTED")
-        #     message.author.channel.send(
-        #         f'/ban {message.author.name} Vilain Bot')
+async def setup_database(db: asqlite.Pool) -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
+    # Create our token table, if it doesn't exist..
+    # You should add the created files to .gitignore or potentially store them somewhere safer
+    # This is just for example purposes...
 
-        if message.content[0] == os.environ['BOT_PREFIX']:
-            reply = custom_commands.get_command(message)
-            if reply is not None:
-                await ctx.reply(reply)
-                return
+    query = """CREATE TABLE IF NOT EXISTS tokens(user_id TEXT PRIMARY KEY, token TEXT NOT NULL, refresh TEXT NOT NULL)"""
+    async with db.acquire() as connection:
+        await connection.execute(query)
 
-        if "@leixbot" in message.content.lower():
-            await random_reply(self, message)
-        elif message.author.name.lower() in self.bot_to_reply and custom_commands.is_bot_reply(ctx.author.channel.name):
-            await random_bot_reply(message)
-        else:
-            await auto_so(self, message, self.vip_so[message.author.channel.name])
+        # Fetch any existing tokens...
+        rows: list[sqlite3.Row] = await connection.fetchall("""SELECT * from tokens""")
 
-        # Since we have commands and are overriding the default `event_message`
-        # We must let the bot know we want to handle and invoke our commands...
-        await self.handle_commands(message)
+        tokens: list[tuple[str, str]] = []
+        subs: list[eventsub.SubscriptionPayload] = []
 
-    async def event_raw_usernotice(self, channel, tags):
-        if tags["msg-id"] == "sub":
-            await channel.send(f"/me PogChamp {tags['display-name']} rejoint la légion! Merci pour le sub PogChamp")
-            await play_alert(channel.name, 'subscription', tags['display-name'])
-        elif tags["msg-id"] == "resub":
-            await channel.send(
-                f"/me PogChamp Le resub de {tags['display-name']}!! Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} mois <3"
-            )
-            await play_alert(channel.name, 'subscription', tags['display-name'])
-        elif tags['msg-id'] == 'subgift':
-            await channel.send(
-                f'/me {tags["display-name"]} est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
-            )
-            await play_alert(channel.name, 'subscription', tags['msg-param-recipient-display-name'])
-        elif tags['msg-id'] == 'anonsubgift':
-            await channel.send(
-                f'/me Un donateur anonyme est vraiment trop sympa, il régale {tags["msg-param-recipient-display-name"]} avec un sub!'
-            )
-            await play_alert(channel.name, 'subscription', tags['msg-param-recipient-display-name'])
-        elif tags["msg-id"] == "raid":
-            await channel.send(
-                f"/me Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et ses {tags['msg-param-viewerCount']} margoulins!"
-            )
-            await play_alert(channel.name, tags["msg-id"], tags['msg-param-displayName'])
+        for row in rows:
+            tokens.append((row["token"], row["refresh"]))
 
-    async def event_command_error(self, ctx: commands.Context, error: Exception):
-        if isinstance(error, commands.CommandNotFound):
-            logging.error("Command does not exist")
+            if row["user_id"] == BOT_ID:
+                continue
+
+            subs.extend([eventsub.ChatMessageSubscription(broadcaster_user_id=row["user_id"], user_id=BOT_ID)])
+
+    return tokens, subs
 
 
-    ## EVENTSUB WS FUNCTIONS ##
-    async def event_eventsub_notification(self, payload: eventsub.NotificationEvent) -> None:
-        print('Received event!')
-        print(payload.headers.message_id)   
-        
-    async def event_eventsub_notification_channel_reward_redeem(self, payload: eventsub.CustomRewardRedemptionAddUpdateData) -> None:
-        print('Received event!')
-        print(payload.data.id)   
+def main() -> None:
+    twitchio.utils.setup_logging(level=logging.INFO)
 
+    subs = [
+        eventsub.ChatMessageSubscription(broadcaster_user_id=OWNER_ID, user_id=BOT_ID),
+        eventsub.ChatMessageSubscription(broadcaster_user_id=BOT_ID, user_id=BOT_ID),
+    ]
 
-    async def event_eventsub_notification_stream_start(self, payload: eventsub.StreamOnlineData) -> None:
-        print('Received event!')
-        print(payload)
-              
+    async def runner() -> None:
+        async with asqlite.create_pool("tokens.db") as tdb:
+            tokens, subs = await setup_database(tdb)
 
-    async def event_eventsub_notification_followV2(self, payload: eventsub.ChannelFollowData) -> None:
-        print('Received event!')
-        print(f'{payload.data.user.name} followed woohoo!')
+            async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, prefix='!', token_database=tdb) as bot:
+                for pair in tokens:
+                    await bot.add_token(*pair)
 
-    async def event_eventsub_notification_channel_update(self, payload: eventsub.ChannelUpdateData) -> None:
-        print('Received event!')
-        print(payload)
+                await bot.start(load_tokens=False)
 
-
-    async def sub(self):
-        await self.esclient.subscribe_channel_points_redeemed(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'],)
-        await self.esclient.subscribe_channel_stream_start(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
-        await self.esclient.subscribe_channel_update(broadcaster=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
-        await self.esclient.subscribe_channel_follows_v2(broadcaster=self.channel, moderator=self.channel, token=os.environ['CHANNEL_ACCESS_TOKEN'])
-
-    ## ROUTINES ##
-    @routines.routine(minutes=30.0, wait_first=False)
-    async def links(self):
-        await self.channel.send("Mon YouTube: https://youtube.com/leix34")
-        await asyncio.sleep(60 * 30)
-        await self.channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
-        await asyncio.sleep(60 * 30)
-        await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
-        await asyncio.sleep(60 * 30)
-        await self.channel.send("La radio Guilty, 24h/24 et 7j/7 sur https://www.youtube.com/@leix34/live ")
-        await asyncio.sleep(60 * 30)
-
-    @routines.routine(hours=1.0, wait_first=False)
-    async def id_updater(self):
-        channels_info = get_channels_info()
-        channels = await self.fetch_channels(channels_info.keys())
-        for channel in channels:
-            user = await channel.user.fetch()
-            if user.name != channels_info[channel.user.id]:
-                update_name(channel.user.id, user.name)
-
-    @commands.command(name="routineAdd")
-    async def routine_add(self, ctx: commands.Context, name, seconds, minutes, hours, *text):
-        """Ajoute et démarre une routine. Requiert privilege modérateur.
-        Ex: !routineAdd mon_nom_de_routine 1 2 3 Mon texte de routine
-        """
-        if not ctx.author.is_mod:
-            return
-
-        routine_text = ' '.join(text)
-
-        channel = self.get_channel(ctx.author.channel.name)
-
-        logging.info(channel)
-
-        @routines.routine(seconds=int(seconds), minutes=int(minutes), hours=int(hours), wait_first=False)
-        async def temp_routine():
-            await channel.send(routine_text)
-
-        # Starts routine
-        self.routines[ctx.author.channel.name + '_' + name] = temp_routine
-        self.routines[ctx.author.channel.name + '_' + name].start()
-
-        # Adds routine to db
-        custom_commands.add_routine(
-            ctx.author.channel.name,
-            name,
-            seconds,
-            minutes,
-            hours,
-            routine_text
-        )
-        await ctx.send('Routine créée avec succès SeemsGood')
-
-    @commands.command(name="routineStop")
-    async def routine_stop(self, ctx: commands.Context, name):
-        """Arrete et supprime une routine. Requiert privilege modérateur.
-        Ex: !routineStop ma_routine
-        """
-        if not ctx.author.is_mod:
-            return
-
-        # Stops routine
-        self.routines[ctx.author.channel.name + '_' + name].cancel()
-
-        # Removes routine from db
-        custom_commands.remove_routine(ctx.author.channel.name, name)
-        await ctx.send('Routine stoppée avec succès MrDestructoid')
-
-    ## GENERAL FUNCTIONS ##
-    @commands.command(name="git")
-    async def git(self, ctx: commands.Context):
-        """Renvoie le lien vers le repo GitHub de LeixBot. Ex: !git"""
-        await ctx.send(
-            f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
-        )
-
-    @commands.command(name='commandes', aliases=['commands'])
-    async def commandes(self, ctx: commands.Context):
-        """
-        Retourne la liste des commandes de LeixBot sur cette chaine
-        """
-        channel = ctx.author.channel.name
-        commands = custom_commands.find_commands_channel(channel)
-
-        cmd_list = ""
-        for command in commands:
-            cmd_list += command[0] + ", "
-
-        # Remove last comma and space
-        cmd_list = cmd_list[:-2]
-        await ctx.send(
-            f'La liste de mes commandes sur ce chat: {cmd_list}'
-        )
-
-    @commands.command(name="list")
-    async def list(self, ctx: commands.Context):
-        """
-        Retourne la liste des commandes globales de LeixBot
-        """
-
-        cmd_list = ""
-        for command in self.commands:
-            cmd_list += command + ", "
-
-        # Remove last comma and space
-        cmd_list = cmd_list[:-2]
-        await ctx.send(f'La liste des commandes globales de LeixBot: {cmd_list}')
-
-    @commands.command(name="help")
-    async def help(self, ctx: commands.Context, name):
-        """Fournit l'aide d'une commande globale. Ex: !help help"""
-        if name in self.commands:
-            await ctx.send(self.commands[name]._callback.__doc__)
-        else:
-            await ctx.send("Désolé, ce n'est pas une de mes commandes globales :(")
-
-    @commands.command(name="join")
-    async def join(self, ctx: commands.Context, channel):
-        """Envoie LeixBot sur votre chaine. Ex: !join ma_chaine"""
-        if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
-            channel = channel.lower()
-            await ctx.send(f'Joining channel {channel}')
-            user = await ctx.channel.user()
-            id = user.id
-            await self.join_channels({channel})
-            self.vip_so[channel] = {}
-            add_channel(channel, id)
-
-    @commands.command(name="leave")
-    async def leave(self, ctx: commands.Context, channel):
-        """Retire LeixBot de votre chaine. Ex: !leave ma_chaine"""
-        if ctx.author.name == os.environ['CHANNEL'] or ctx.author.name == channel:
-            channel = channel.lower()
-            await ctx.send(f'Leaving channel {channel}')
-
-            await self.part_channels({channel})
-            leave_channel(channel)
+    try:
+        asyncio.run(runner())
+    except KeyboardInterrupt:
+        LOGGER.warning("Shutting down due to KeyboardInterrupt")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        encoding='utf-8',
-        level=logging.INFO,
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
-
-    client = Client(
-        token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        client_secret=os.environ['CLIENT_SECRET']
-    )
-
-
-    bot = LeixBot()
-    bot.loop.create_task(bot.sub())
-    bot.run()
+    main()

@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 import aiohttp
 import asyncio
 import logging
@@ -34,7 +34,7 @@ async def get_token(user):
 
         # connect to the PostgreSQL server
         logging.info('Retrieving access token')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -48,7 +48,7 @@ async def get_token(user):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -96,7 +96,7 @@ async def validate(token, refresh_token):
 
                 # connect to the PostgreSQL server
                 logging.info('Updating access token')
-                conn = psycopg2.connect(**params)
+                conn = psycopg.connect(**params)
 
                 # create a cursor
                 cur = conn.cursor()
@@ -109,7 +109,7 @@ async def validate(token, refresh_token):
                 conn.commit()
                 # close the communication with the PostgreSQL
                 cur.close()
-            except (Exception, psycopg2.DatabaseError) as error:
+            except (Exception, psycopg.DatabaseError) as error:
                 logging.error(error)
             finally:
                 await session.close()
@@ -130,7 +130,7 @@ def init_channels():
 
         # connect to the PostgreSQL server
         logging.info('Initializing channels')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -148,7 +148,7 @@ def init_channels():
 
         return channels
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -165,7 +165,7 @@ def add_channel(channel, id):
 
         # connect to the PostgreSQL server
         logging.info(f'Adding channel {channel} to db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -180,7 +180,7 @@ def add_channel(channel, id):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -198,7 +198,7 @@ def leave_channel(channel):
 
         # connect to the PostgreSQL server
         logging.info(f'Removing channel {channel} to db')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -213,7 +213,7 @@ def leave_channel(channel):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -230,7 +230,7 @@ def get_channels_info()->dict:
 
         # connect to the PostgreSQL server
         logging.info(f'Getting channel ids')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -250,7 +250,7 @@ def get_channels_info()->dict:
 
         return di
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
@@ -267,7 +267,7 @@ def update_name(id: int, channel: str):
 
         # connect to the PostgreSQL server
         logging.info(f'Updating channel {id} with name {channel}')
-        conn = psycopg2.connect(**params)
+        conn = psycopg.connect(**params)
 
         # create a cursor
         cur = conn.cursor()
@@ -282,7 +282,7 @@ def update_name(id: int, channel: str):
         # close the communication with the PostgreSQL
         cur.close()
 
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         logging.error(error)
     finally:
         if conn is not None:
