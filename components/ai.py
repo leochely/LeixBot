@@ -6,10 +6,12 @@ import aiohttp
 
 from twitchio.ext import commands
 
+LOGGER: logging.Logger = logging.getLogger("AI")
+
 LLM_API_URL = os.environ.get('LLM_API_URL')
 
-class AI(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class AI(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
         self.chat_history = {}
 
@@ -24,7 +26,7 @@ class AI(commands.Cog):
             "content":prompt
             },
         )
-        logging.debug(self.chat_history[user])
+        LOGGER.debug(self.chat_history[user])
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f"{LLM_API_URL}/api/chat", 
@@ -37,7 +39,7 @@ class AI(commands.Cog):
                         }
                     }) as resp:
                 data = await resp.json()
-                logging.debug(data['message']['content'])
+                LOGGER.debug(data['message']['content'])
                 response = data['message']['content']
                 self.chat_history[user].append(
                     {
@@ -56,5 +58,5 @@ class AI(commands.Cog):
         await ctx.reply("J'ai effacé notre conversation. Nous pouvons repartir de zéro! :)")
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(AI(bot))
+async def setup(bot: commands.AutoBot):
+    await bot.add_component(AI(bot))

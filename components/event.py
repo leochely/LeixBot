@@ -22,8 +22,8 @@ class Run():
         return f'{self.runner} sur {self.game} (catégorie {self.category}) en {self.expected_time}'
 
 
-class Event(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Event(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
         self.planning = [
             Run('n0va',
@@ -64,7 +64,6 @@ class Event(commands.Cog):
         ]
         self.current_run = 0
 
-    @commands.cooldown(rate=1, per=360, bucket=commands.Bucket.channel)
     @commands.command(aliases=["denfest"])
     async def event(self, ctx: commands.Context):
         """Annonce pour l'événement a venir. Ex: !mdsr"""
@@ -131,16 +130,16 @@ class Event(commands.Cog):
         )
 
     ## ROUTINES ##
-    @routines.routine(minutes=30.0, wait_first=False)
-    async def giveaway(self):
-        denTV = self.bot.get_channel('dentvfr')
-        await denTV.send("N'hesitez pas de follow! Les followers sont automatiquement inscrits au giveaway! A gagner: des cles pour Mortal Kombat X, B4B et Mad Max!")
-        await asyncio.sleep(60 * 60)
+    # @routines.routine(minutes=30.0, wait_first=False)
+    # async def giveaway(self):
+    #     denTV = self.bot.get_channel('dentvfr')
+    #     await denTV.send("N'hesitez pas de follow! Les followers sont automatiquement inscrits au giveaway! A gagner: des cles pour Mortal Kombat X, B4B et Mad Max!")
+    #     await asyncio.sleep(60 * 60)
 
-    @commands.Cog.event()
-    async def event_ready(self):
-        self.giveaway.start()
+    # @commands.Cog.event()
+    # async def event_ready(self):
+    #     self.giveaway.start()
 
-def prepare(bot: commands.Bot):
+async def setup(bot: commands.AutoBot):
     logging.warning("Pas d'evenement alors skip")
-    # bot.add_cog(Event(bot))
+    # bot.add_component(Event(bot))

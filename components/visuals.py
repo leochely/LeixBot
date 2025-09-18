@@ -20,8 +20,8 @@ protocols = ["external"]
 
 
 
-class Visuals(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Visuals(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
 
     async def cog_check(self, ctx: commands.Context):
@@ -156,5 +156,5 @@ class Visuals(commands.Cog):
                 ctx.author.channel.name, value)
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(Visuals(bot))
+async def setup(bot: commands.AutoBot):
+    await bot.add_component(Visuals(bot))

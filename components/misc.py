@@ -1,12 +1,12 @@
 import asyncio
-import datetime
+from datetime import datetime, timezone
+import secrets
 import logging
 import os
 
 import wikiquote
 import wikipediaapi
 import humanize
-import random
 
 from twitchio import User
 from twitchio.ext import commands
@@ -17,11 +17,10 @@ humanize.i18n.activate("fr_FR")
 wiki = wikipediaapi.Wikipedia('fr')
 
 
-class Misc(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Misc(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
         self.game_id = {}
-        random.seed(datetime.datetime.now())
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
@@ -55,7 +54,7 @@ class Misc(commands.Cog):
             await ctx.send(f'Faites de beaux rêves {names} <3')
 
     @commands.command(name="uptime")
-    async def uptime(self, ctx: commands.bot.Context):
+    async def uptime(self, ctx: commands.Context):
         """Donne le temps du live actuel. Ex: !uptime"""
         stream = await self.bot.fetch_streams(
             user_logins=[
@@ -65,8 +64,8 @@ class Misc(commands.Cog):
         if len(stream) == 0:
             return await ctx.send("Il n'y a pas de live en cours :(")
 
-        uptime = datetime.datetime.now(
-            datetime.timezone.utc) - stream[0].started_at
+        uptime = datetime.now(
+            timezone.utc) - stream[0].started_at
         await ctx.send(f"Ton streamer préféré est en live depuis {humanize.precisedelta(uptime, minimum_unit='seconds')}")
 
     @commands.command(name="dblade")
@@ -135,11 +134,11 @@ class Misc(commands.Cog):
             author = ' '.join(author)
             author = wikiquote.search(author, lang='fr')
 
-        author = random.choice(author)
+        author = secrets.choice(author)
         quotes = [
             x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
         ]
-        quote = random.choice(quotes)
+        quote = secrets.choice(quotes)
         await ctx.send(f'{quote} - {author}')
 
         if not quote:
@@ -167,7 +166,7 @@ class Misc(commands.Cog):
         """Fait un pile ou face.
         Ex: !pileouface
         """
-        flip = random.choice(['pile', 'face'])
+        flip = secrets.choice(['pile', 'face'])
         await ctx.send(f'''C'est {flip}!''')
 
     @commands.command(name='howlong', aliases=['hl2b'])
@@ -205,5 +204,5 @@ class Misc(commands.Cog):
             await ctx.send('id set SeemsGood')
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(Misc(bot))
+async def setup(bot: commands.AutoBot):
+    await bot.add_component(Misc(bot))

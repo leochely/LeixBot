@@ -8,8 +8,8 @@ from twitchio.ext import commands
 import custom_commands
 
 
-class CustomCommand(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class CustomCommand(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
 
     async def cog_check(self, ctx):
@@ -84,5 +84,5 @@ class CustomCommand(commands.Cog):
         await ctx.send('Les réponses automatiques aux bots ont été activées SeemsGood')
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(CustomCommand(bot))
+async def setup(bot: commands.AutoBot):
+    await bot.add_component(CustomCommand(bot))

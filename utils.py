@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from db import get_token
 from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
-from twitchio import User, Message
+from twitchio import User, ChatMessage
 from twitchio.ext import commands
 
 
@@ -110,7 +110,7 @@ artist_replies = [
 ]
 
 
-async def auto_so(bot: commands.Bot, message: Message, vip_info):
+async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info):
     vip_name = message.author.display_name
     vip_channel_info = await bot.fetch_channel(message.author.name)
     stream = await bot.fetch_streams(
@@ -143,10 +143,10 @@ async def auto_so(bot: commands.Bot, message: Message, vip_info):
     await message.author.channel.send(reply)
 
 
-async def random_reply(bot, message: Message):
-    channel_info = await bot.fetch_channel(message.channel.name)
+async def random_reply(bot: commands.AutoBot, message: ChatMessage):
+    channel_info = await bot.fetch_channel(message.broadcaster.id)
     compiled_msg = re.compile(re.escape('@leixbot'), re.IGNORECASE)
-    msg_clean = compiled_msg.sub('', message.content)
+    msg_clean = compiled_msg.sub('', message.text)
     reply_pool = [
         "wsh t ki",
         "DONT LOOK BACK",
@@ -159,13 +159,13 @@ async def random_reply(bot, message: Message):
     if channel_info.game_name in game_replies:
         reply_pool += game_replies[channel_info.game_name]
 
-    if 'vip' in message.author.badges:
+    if 'vip' in message.chatter.badges:
         reply_pool += vip_replies
-    if 'artist' in message.author.badges:
+    if 'artist' in message.chatter.badges:
         reply_pool += artist_replies
 
     reply = random.choice(reply_pool)
-    await message.author.channel.send(f"@{message.author.display_name} {reply}")
+    await message.broadcaster.send_message(reply, bot.user, reply_to_message_id=message.id)
 
 
 async def random_bot_reply(message):

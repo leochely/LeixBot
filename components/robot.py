@@ -3,8 +3,8 @@ import logging
 import serial
 
 
-class Robot(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Robot(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
         self.port = "/dev/rfcomm0"
         try:
@@ -13,6 +13,13 @@ class Robot(commands.Cog):
         except serial.serialutil.SerialException:
             logging.warning("Bluetooth robot not connected")
 
+    @property
+    def is_connected(self) -> bool:
+        try:
+            return self.bluetooth.is_open
+        except AttributeError:
+            return False
+
     @commands.command(name="forward")
     async def forward(self, ctx: commands.Context):
         """Envoie l'ordre d'avancer au robot. Ex: !forward"""
@@ -20,5 +27,9 @@ class Robot(commands.Cog):
         self.bluetooth.write(b"FORWARD")
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(Robot(bot))
+async def setup(bot: commands.AutoBot):
+    robot = Robot(bot)
+    if robot.is_connected:
+        await bot.add_component(robot)
+    else:
+        logging.warning("Robot component not loaded, bluetooth not connected")

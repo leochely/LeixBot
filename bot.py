@@ -2,11 +2,14 @@ import asyncio
 import logging
 import asqlite
 import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub, web
+
+from utils import auto_so, random_bot_reply, random_reply
 
 if TYPE_CHECKING:
     import sqlite3
@@ -22,14 +25,34 @@ OWNER_ID = "109173981"  # Your personal User ID..
 class LeixBot(commands.AutoBot):
     def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
         self.token_database = token_database
+        self.connected_channels = []
+        self.vip_so = {}
+        self._components_names: t.Dict[str] = [
+            p.stem for p in Path(".").glob("./components/*.py")
+        ]
+        
+        LOGGER.info(f"Found components: {self._components_names}")
         super().__init__(*args, **kwargs, 
                          subscriptions=subs,
                          adapter = web.AiohttpAdapter(host="0.0.0.0", domain="leixbot.onrender.com")
                         )
 
     async def setup_hook(self) -> None:
-        # Add our component which contains our commands...
+        async with self.token_database.acquire() as connection:
+            users = await connection.fetchall(
+                """SELECT user_id FROM tokens"""
+            )
+        for (user_id,) in users:
+            self.connected_channels.append(user_id)
+            self.vip_so[user_id] = []
+
+        LOGGER.info(f"Managing SOs for {self.vip_so} VIP channels.")
+
+        # Add our components
         await self.add_component(MyComponent(self))
+        for component in self._components_names:
+            LOGGER.info(f"Loading `{component}` component.")
+            await self.load_module(f"components.{component}")
 
     async def event_oauth_authorized(self, payload: twitchio.authentication.UserTokenPayload) -> None:
         await self.add_token(payload.access_token, payload.refresh_token)
@@ -70,6 +93,23 @@ class LeixBot(commands.AutoBot):
     async def event_ready(self) -> None:
         LOGGER.info("Successfully logged in as: %s", self.bot_id)
 
+
+    async def event_message(self, message: twitchio.ChatMessage) -> None:
+        # Ignore own messages
+        if message.chatter.id == self.bot_id:
+            return
+
+        try:
+            if "@leixbot" in message.text.lower():
+                await random_reply(self, message)
+            # elif message.chatter.name.lower() in self.bot_to_reply and custom_commands.is_bot_reply(ctx.author.channel.name):
+            #     await random_bot_reply(message)
+            # else:
+            #     await auto_so(self, message, self.vip_so[message.broadcaster.id])
+        except Exception as e:
+            LOGGER.error(f"Error processing message {message}: {e}")
+
+        await self.process_commands(message)
 class MyComponent(commands.Component):
     def __init__(self, bot: LeixBot):
         # Passing args is not required...
