@@ -30,7 +30,8 @@ class LeixBot(commands.AutoBot):
         self._components_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./components/*.py")
         ]
-        
+        self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
+
         LOGGER.info(f"Found components: {self._components_names}")
         super().__init__(*args, **kwargs, 
                          subscriptions=subs,
@@ -49,7 +50,7 @@ class LeixBot(commands.AutoBot):
         LOGGER.info(f"Managing SOs for {self.vip_so} VIP channels.")
 
         # Add our components
-        await self.add_component(MyComponent(self))
+        await self.add_component(General(self))
         for component in self._components_names:
             LOGGER.info(f"Loading `{component}` component.")
             await self.load_module(f"components.{component}")
@@ -102,15 +103,15 @@ class LeixBot(commands.AutoBot):
         try:
             if "@leixbot" in message.text.lower():
                 await random_reply(self, message)
-            # elif message.chatter.name.lower() in self.bot_to_reply and custom_commands.is_bot_reply(ctx.author.channel.name):
-            #     await random_bot_reply(message)
-            # else:
-            #     await auto_so(self, message, self.vip_so[message.broadcaster.id])
+            elif message.chatter.name.lower() in self.bot_to_reply:
+                await random_bot_reply(message)
+            else:
+                await auto_so(self, message, self.vip_so[message.broadcaster.id])
         except Exception as e:
             LOGGER.error(f"Error processing message {message}: {e}")
 
         await self.process_commands(message)
-class MyComponent(commands.Component):
+class General(commands.Component):
     def __init__(self, bot: LeixBot):
         # Passing args is not required...
         # We pass bot here as an example...
@@ -121,38 +122,57 @@ class MyComponent(commands.Component):
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         print(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
 
-    @commands.command(aliases=["hello", "howdy", "hey"])
-    async def hi(self, ctx: commands.Context) -> None:
-        """Simple command that says hello!
+    @commands.command(name="git")
+    async def git(self, ctx: commands.Context):
+        """Renvoie le lien vers le repo GitHub de LeixBot. Ex: !git"""
+        await ctx.send(
+            f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
+        )
 
-        !hi, !hello, !howdy, !hey
+    @commands.command(name="list")
+    async def list(self, ctx: commands.Context):
         """
-        await ctx.reply(f"Coucou {ctx.chatter.mention}! Ca faisait si longtemps!")
-
-    @commands.group(invoke_fallback=True)
-    async def socials(self, ctx: commands.Context) -> None:
-        """Group command for our social links.
-
-        !socials
+        Retourne la liste des commandes globales de LeixBot
         """
-        await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")
 
-    @socials.command(name="discord")
-    async def socials_discord(self, ctx: commands.Context) -> None:
-        """Sub command of socials that sends only our discord invite.
+        cmd_list = ""
+        for command in self.bot.unique_commands:
+            cmd_list += command.name + ", "
 
-        !socials discord
-        """
-        await ctx.send("discord.gg/...")
+        # Remove last comma and space
+        cmd_list = cmd_list[:-2]
+        await ctx.send(f'La liste des commandes globales de LeixBot: {cmd_list}')
 
-    @commands.command(aliases=["repeat"])
-    @commands.is_moderator()
-    async def say(self, ctx: commands.Context, *, content: str) -> None:
-        """Moderator only command which repeats back what you say.
+    @commands.command(name="help")
+    async def help(self, ctx: commands.Context, name: str):
+        """Fournit l'aide d'une commande globale. Ex: !help help"""
+        command = next((cmd for cmd in self.bot.unique_commands if cmd.name == name), None)
+        if command:
+            if command.help:
+                await ctx.send(f"{command.help}")
+            else:
+                await ctx.send("Désolé, cette commande n'a pas de description :(")
+        else:
+            await ctx.send("Désolé, ce n'est pas une de mes commandes globales :(")
 
-        !say hello world, !repeat I am cool LUL
-        """
-        await ctx.send(content)
+
+    # @commands.command(name='commandes', aliases=['commands'])
+    # async def commandes(self, ctx: commands.Context):
+    #     """
+    #     Retourne la liste des commandes de LeixBot sur cette chaine
+    #     """
+    #     channel = ctx.author.channel.name
+    #     commands = custom_commands.find_commands_channel(channel)
+
+    #     cmd_list = ""
+    #     for command in commands:
+    #         cmd_list += command[0] + ", "
+
+    #     # Remove last comma and space
+    #     cmd_list = cmd_list[:-2]
+    #     await ctx.send(
+    #         f'La liste de mes commandes sur ce chat: {cmd_list}'
+    #     )
 
     @commands.Component.listener()
     async def event_stream_online(self, payload: twitchio.StreamOnline) -> None:

@@ -95,6 +95,8 @@ game_replies = {
     'Space Marine 2':                       ['FOR THE EMPEROR!',
                                              'Guys, full heal at drop pod',
                                              'Emmenez ce genogerme au bout mon frere!'],
+    'Monster Hunter Wilds':                ['Jin Dahaad!', "Cha'ah Doudoud!"]
+
 }
 
 vip_replies = [
@@ -111,23 +113,23 @@ artist_replies = [
 
 
 async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info):
-    vip_name = message.author.display_name
-    vip_channel_info = await bot.fetch_channel(message.author.name)
+    vip_name = message.chatter.display_name
+    vip_channel_info = await bot.fetch_channel(message.chatter.id)
     stream = await bot.fetch_streams(
         user_logins=[
-            message.author.channel.name
+            message.chatter.name
         ])
-
+    badges = await message.chatter.fetch_badges()
     if (len(stream) == 0 or
         (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
-        not is_vip_so(message.author.channel.name) or
-        ('vip' not in message.author.badges and
-         'moderator' not in message.author.badges and
-         'artist' not in message.author.badges)):
+        not is_vip_so(message.chatter.name) or
+        ('vip' not in badges and
+         'moderator' not in badges and
+         'artist' not in badges)):
         return
 
     # Update last automatic shoutout time
-    vip_info[message.author.display_name] = datetime.now(timezone.utc)
+    vip_info[message.chatter.id] = datetime.now(timezone.utc)
 
     # Send message
     reply = ''
