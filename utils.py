@@ -14,6 +14,7 @@ from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 from twitchio import User, ChatMessage
 from twitchio.ext import commands
 
+LOGGER: logging.Logger = logging.getLogger("Utils")
 
 ### Replies ###
 game_replies = {
@@ -170,11 +171,11 @@ async def random_reply(bot: commands.AutoBot, message: ChatMessage):
     await message.broadcaster.send_message(reply, bot.user, reply_to_message_id=message.id)
 
 
-async def random_bot_reply(message):
+async def random_bot_reply(message: ChatMessage):
     reply_pool = [
-        f'LeixBot > {message.author.name} SwiftRage',
-        f"LeixBot s'en charge {message.author.name} MrDestructoid",
-        f'#LeixBotOnly, pas besoin de toi @{message.author.name}'
+        f'LeixBot > {message.chatter.name} SwiftRage',
+        f"LeixBot s'en charge {message.chatter.name} MrDestructoid",
+        f'#LeixBotOnly, pas besoin de toi @{message.chatter.name}'
     ]
     reply = random.choice(reply_pool)
     await message.author.channel.send(f"{reply}")
@@ -195,7 +196,7 @@ def check_cooldown(channel, user):
             used[channel][user] = time.time()
             return True
         else:
-            logging.info(
+            LOGGER.info(
                 f'Command was used in the last {cooldownlength} seconds'
             )
             return False
@@ -228,7 +229,7 @@ async def modify_stream(user: User, game_id: int = None, language: str = None, t
     }
     user_encode_data = json.dumps(data).encode('utf-8')
 
-    logging.info('Updating stream')
+    LOGGER.info('Updating stream')
 
     async with aiohttp.ClientSession() as session:
         async with session.patch(url, data=data, headers=headers) as resp:
@@ -240,7 +241,7 @@ async def get_emote_list(user: User) -> [str]:
         "Client-Id": os.environ['CLIENT_ID'],
         "Authorization": "Bearer " + os.environ['ACCESS_TOKEN']
     }
-    logging.info(f"Getting emotes list for channel {user}")
+    LOGGER.info(f"Getting emotes list for channel {user}")
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
             data = await resp.json()

@@ -2,6 +2,7 @@ from twitchio.ext import commands
 import logging
 import serial
 
+LOGGER: logging.Logger = logging.getLogger("Components.Robot")
 
 class Robot(commands.Component):
     def __init__(self, bot: commands.AutoBot):
@@ -9,9 +10,9 @@ class Robot(commands.Component):
         self.port = "/dev/rfcomm0"
         try:
             self.bluetooth = serial.Serial(self.port, 9600)
-            logging.info("Bluetooth robot connected")
+            LOGGER.info("Bluetooth robot connected")
         except serial.serialutil.SerialException:
-            logging.warning("Bluetooth robot not connected")
+            LOGGER.warning("Bluetooth robot not connected")
 
     @property
     def is_connected(self) -> bool:
@@ -32,4 +33,4 @@ async def setup(bot: commands.AutoBot):
     if robot.is_connected:
         await bot.add_component(robot)
     else:
-        logging.warning("Robot component not loaded, bluetooth not connected")
+        LOGGER.warning("Robot component not loaded, bluetooth not connected")

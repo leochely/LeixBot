@@ -7,6 +7,7 @@ from websockets import connect
 import custom_commands
 from utils import check_cooldown, get_emote_list
 
+LOGGER: logging.Logger = logging.getLogger("Components.Visuals")
 
 KAPPAGEN_DEFAULT_VALUE = 500
 
@@ -31,7 +32,7 @@ class Visuals(commands.Component):
         """
         Not functional yet. Waiting for a twitchio fix.
         """
-        logging.info(
+        LOGGER.info(
             'User not moderator'
         )
         await ctx.send(f"@{ctx.author.name} tu n'es pas modérateur ou VIP!")
@@ -151,7 +152,6 @@ class Visuals(commands.Component):
             return
 
         if value > 0:
-            logging.info('test')
             custom_commands.set_kappagen_cooldown(
                 ctx.author.channel.name, value)
 

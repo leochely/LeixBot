@@ -7,6 +7,7 @@ from twitchio.ext import commands
 
 import custom_commands
 
+LOGGER: logging.Logger = logging.getLogger("Components.Custom")
 
 class CustomCommand(commands.Component):
     def __init__(self, bot: commands.AutoBot):

@@ -17,6 +17,8 @@ humanize.i18n.activate("fr_FR")
 wiki = wikipediaapi.Wikipedia('fr')
 
 
+LOGGER: logging.Logger = logging.getLogger("Components.Misc")
+
 class Misc(commands.Component):
     def __init__(self, bot: commands.AutoBot):
         self.bot = bot
@@ -58,7 +60,7 @@ class Misc(commands.Component):
         """Donne le temps du live actuel. Ex: !uptime"""
         stream = await self.bot.fetch_streams(
             user_logins=[
-                ctx.author.channel.name
+                ctx.channel.name
             ])
 
         if len(stream) == 0:
@@ -151,7 +153,7 @@ class Misc(commands.Component):
         """
         query = '_'.join(query)
         page = wiki.page(query)
-        print(page.summary.splitlines()[0])
+        LOGGER.debug(page.summary.splitlines()[0])
         if page.exists():
             if len(page.summary.splitlines()[0]) > 450:
                 await ctx.send(f'Il y a tant a dire! La page pour cette recherche: {page.fullurl }')
@@ -176,10 +178,10 @@ class Misc(commands.Component):
         """
         game = ' '.join(game)
         results = await HowLongToBeat().async_search(game, similarity_case_sensitive=False)
-        logging.info(results)
+        LOGGER.debug(results)
         if results is not None and len(results) > 0:
             game_entry = max(results, key=lambda element: element.similarity)
-            logging.info(game_entry)
+            LOGGER.debug(game_entry)
             main_story = game_entry.main_story
             extra = game_entry.main_extra
             completionist = game_entry.completionist

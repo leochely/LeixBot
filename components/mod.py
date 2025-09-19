@@ -4,6 +4,7 @@ import os
 from twitchio import Game, User
 from twitchio.ext import commands
 
+LOGGER: logging.Logger = logging.getLogger("Components.Mod")
 class Mod(commands.Component):
     def __init__(self, bot: commands.AutoBot):
         self.bot = bot
@@ -14,7 +15,7 @@ class Mod(commands.Component):
         """
         await ctx.reply('Wsh t pas modo')
 
-        logging.info(
+        LOGGER.info(
             'User not moderator'
         )
 
@@ -24,7 +25,7 @@ class Mod(commands.Component):
         privilège modérateur.
         Ex: !ban leix34 motif du ban
         """
-        logging.info(f'User {user.name} has been banned')
+        LOGGER.info(f'User {user.name} has been banned')
         if not reason:
             reason = 'Rise of the machines'
         else:
@@ -38,7 +39,7 @@ class Mod(commands.Component):
         privilège modérateur.
         Ex: !unban leix34
         """
-        logging.info(f'User {user.name} has been unbanned')
+        LOGGER.info(f'User {user.name} has been unbanned')
         await ctx.send(f"/unban {user.name}")
         await ctx.send(f"Bon retour parmi nous {user.name} HeyGuys !")
 

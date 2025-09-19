@@ -6,6 +6,8 @@ import humanize
 from twitchio import User
 from twitchio.ext import commands, routines
 
+LOGGER: logging.Logger = logging.getLogger("Components.Event")
+
 # Sets humanize to French language
 humanize.i18n.activate("fr_FR")
 
@@ -141,5 +143,5 @@ class Event(commands.Component):
     #     self.giveaway.start()
 
 async def setup(bot: commands.AutoBot):
-    logging.warning("Pas d'evenement alors skip")
+    LOGGER.warning("Pas d'evenement alors skip")
     # bot.add_component(Event(bot))

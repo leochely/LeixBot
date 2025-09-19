@@ -33,6 +33,7 @@ class LeixBot(commands.AutoBot):
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
 
         LOGGER.info(f"Found components: {self._components_names}")
+        LOGGER.info(f"Subs {subs}")
         super().__init__(*args, **kwargs, 
                          subscriptions=subs,
                          adapter = web.AiohttpAdapter(host="0.0.0.0", domain="leixbot.onrender.com")
@@ -100,17 +101,20 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
-        try:
-            if "@leixbot" in message.text.lower():
-                await random_reply(self, message)
-            elif message.chatter.name.lower() in self.bot_to_reply:
-                await random_bot_reply(message)
-            else:
+        # try:
+        if "@leixbot" in message.text.lower():
+            await random_reply(self, message)
+        elif message.chatter.name.lower() in self.bot_to_reply:
+            await random_bot_reply(message)
+        else:
+            if message.broadcaster.id in self.vip_so:
                 await auto_so(self, message, self.vip_so[message.broadcaster.id])
-        except Exception as e:
-            LOGGER.error(f"Error processing message {message}: {e}")
+        # except Exception as e:
+        #     LOGGER.error(f"Error processing message {message}: {e}")
 
         await self.process_commands(message)
+
+
 class General(commands.Component):
     def __init__(self, bot: LeixBot):
         # Passing args is not required...

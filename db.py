@@ -5,6 +5,7 @@ import logging
 import os
 from configparser import ConfigParser
 
+LOGGER: logging.Logger = logging.getLogger("DB")
 
 def config(filename='./database_auth.ini', section='postgresql'):
     # create a parser
@@ -33,7 +34,7 @@ async def get_token(user):
         params = config()
 
         # connect to the PostgreSQL server
-        logging.info('Retrieving access token')
+        LOGGER.info('Retrieving access token')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -49,18 +50,18 @@ async def get_token(user):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')
 
     return await validate(token[0], token[1])
 
 
 async def validate(token, refresh_token):
     """ Checks if token is valid and refreshes if needed """
-    logging.info('Validating token')
+    LOGGER.info('Validating token')
 
     url = 'https://id.twitch.tv/oauth2'
     auth = "Bearer " + token
@@ -85,7 +86,7 @@ async def validate(token, refresh_token):
 
         async with session.post(url + '/token', params=params) as refresh_resp:
             # Requests new access token
-            # logging.info(await refresh_resp.json())
+            # LOGGER.info(await refresh_resp.json())
             data = await refresh_resp.json()
             new_token = data['access_token']
 
@@ -95,7 +96,7 @@ async def validate(token, refresh_token):
                 params = config()
 
                 # connect to the PostgreSQL server
-                logging.info('Updating access token')
+                LOGGER.info('Updating access token')
                 conn = psycopg.connect(**params)
 
                 # create a cursor
@@ -110,12 +111,12 @@ async def validate(token, refresh_token):
                 # close the communication with the PostgreSQL
                 cur.close()
             except (Exception, psycopg.DatabaseError) as error:
-                logging.error(error)
+                LOGGER.error(error)
             finally:
                 await session.close()
                 if conn is not None:
                     conn.close()
-                    logging.info('Database connection closed.')
+                    LOGGER.info('Database connection closed.')
 
         return new_token
 
@@ -129,7 +130,7 @@ def init_channels():
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing channels')
+        LOGGER.info('Initializing channels')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -149,11 +150,11 @@ def init_channels():
         return channels
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')
 
 
 def add_channel(channel, id):
@@ -164,7 +165,7 @@ def add_channel(channel, id):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Adding channel {channel} to db')
+        LOGGER.info(f'Adding channel {channel} to db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -181,11 +182,11 @@ def add_channel(channel, id):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')
 
 
 def leave_channel(channel):
@@ -197,7 +198,7 @@ def leave_channel(channel):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Removing channel {channel} to db')
+        LOGGER.info(f'Removing channel {channel} to db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -214,11 +215,11 @@ def leave_channel(channel):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')
 
 
 def get_channels_info()->dict:
@@ -229,7 +230,7 @@ def get_channels_info()->dict:
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Getting channel ids')
+        LOGGER.info(f'Getting channel ids')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -251,11 +252,11 @@ def get_channels_info()->dict:
         return di
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')
 
 
 def update_name(id: int, channel: str):
@@ -266,7 +267,7 @@ def update_name(id: int, channel: str):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Updating channel {id} with name {channel}')
+        LOGGER.info(f'Updating channel {id} with name {channel}')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -283,8 +284,8 @@ def update_name(id: int, channel: str):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.info('Database connection closed.')
+            LOGGER.info('Database connection closed.')

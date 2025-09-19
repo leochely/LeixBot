@@ -4,6 +4,8 @@ import psycopg
 import os
 import logging
 
+LOGGER: logging.Logger = logging.getLogger("CustomCommands")
+
 
 commands = {}
 
@@ -16,7 +18,7 @@ def init_commands():
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing commands')
+        LOGGER.info('Initializing commands')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -35,11 +37,11 @@ def init_commands():
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def get_command(message):
@@ -67,7 +69,7 @@ def add_command(command, channel, text):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing commands')
+        LOGGER.info('Initializing commands')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -82,18 +84,18 @@ def add_command(command, channel, text):
         conn.commit()
 
         for command in commands_raw:
-            logging.info(command[1])
+            LOGGER.info(command[1])
             commands[(command[0], command[1])] = command[2]
 
         # close the communication with the PostgreSQL
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def edit_command(command, channel, text):
@@ -106,7 +108,7 @@ def edit_command(command, channel, text):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing commands')
+        LOGGER.info('Initializing commands')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -121,18 +123,18 @@ def edit_command(command, channel, text):
         conn.commit()
 
         for command in commands_raw:
-            logging.info(command[1])
+            LOGGER.info(command[1])
             commands[(command[0], command[1])] = command[2]
 
         # close the communication with the PostgreSQL
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def remove_command(command, channel):
@@ -145,7 +147,7 @@ def remove_command(command, channel):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing commands')
+        LOGGER.info('Initializing commands')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -162,11 +164,11 @@ def remove_command(command, channel):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 ### ROUTINES ###
@@ -189,7 +191,7 @@ def add_routine(
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Adding new routine to db')
+        LOGGER.info('Adding new routine to db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -207,11 +209,11 @@ def add_routine(
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def init_routines(bot):
@@ -223,7 +225,7 @@ def init_routines(bot):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Initializing routines')
+        LOGGER.info('Initializing routines')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -250,11 +252,11 @@ def init_routines(bot):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
         return routines_db
 
 
@@ -266,7 +268,7 @@ def remove_routine(channel, name):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Removing routine from db')
+        LOGGER.info('Removing routine from db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -284,11 +286,11 @@ def remove_routine(channel, name):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 ### COUNTERS ###
@@ -301,7 +303,7 @@ def set_counter(channel, counter):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Setting counter in db')
+        LOGGER.info('Setting counter in db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -319,11 +321,11 @@ def set_counter(channel, counter):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def get_counter(channel):
@@ -333,7 +335,7 @@ def get_counter(channel):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Getting counter from db')
+        LOGGER.info('Getting counter from db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -350,11 +352,11 @@ def get_counter(channel):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
         if counter:
             return counter[0]
         else:
@@ -369,7 +371,7 @@ def get_kappagen_cooldown(channel):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(
+        LOGGER.info(
             f'Getting kappagen cooldown for channel {channel} from db'
         )
         conn = psycopg.connect(**params)
@@ -387,11 +389,11 @@ def get_kappagen_cooldown(channel):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
@@ -405,7 +407,7 @@ def set_kappagen_cooldown(channel, cooldown):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info('Setting counter in db')
+        LOGGER.info('Setting counter in db')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -423,11 +425,11 @@ def set_kappagen_cooldown(channel, cooldown):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 ### CHANNEL PROPERTIES ###
@@ -440,7 +442,7 @@ def update_bot_replies(channel, bot_reply):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Updating bot replies for channel {channel}')
+        LOGGER.info(f'Updating bot replies for channel {channel}')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -458,11 +460,11 @@ def update_bot_replies(channel, bot_reply):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def is_bot_reply(channel) -> bool:
@@ -472,7 +474,7 @@ def is_bot_reply(channel) -> bool:
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(
+        LOGGER.info(
             f'Getting bot reply status for channel {channel} from db'
         )
         conn = psycopg.connect(**params)
@@ -490,11 +492,11 @@ def is_bot_reply(channel) -> bool:
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
@@ -510,7 +512,7 @@ def update_vip_so(channel, vip_so):
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.info(f'Updating auto VIP shoutout for channel {channel}')
+        LOGGER.info(f'Updating auto VIP shoutout for channel {channel}')
         conn = psycopg.connect(**params)
 
         # create a cursor
@@ -528,11 +530,11 @@ def update_vip_so(channel, vip_so):
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
 
 
 def is_vip_so(channel) -> bool:
@@ -542,7 +544,7 @@ def is_vip_so(channel) -> bool:
         params = config(filename='database_commands.ini')
 
         # connect to the PostgreSQL server
-        logging.debug(
+        LOGGER.debug(
             f'Getting vip shoutout status for channel {channel} from db'
         )
         conn = psycopg.connect(**params)
@@ -560,11 +562,11 @@ def is_vip_so(channel) -> bool:
         cur.close()
 
     except (Exception, psycopg.DatabaseError) as error:
-        logging.error(error)
+        LOGGER.error(error)
     finally:
         if conn is not None:
             conn.close()
-            logging.debug('Database connection closed.')
+            LOGGER.debug('Database connection closed.')
         if cooldown:
             return cooldown[0]
         else:
