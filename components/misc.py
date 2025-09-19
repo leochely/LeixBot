@@ -2,7 +2,6 @@ import asyncio
 from datetime import datetime, timezone
 import secrets
 import logging
-import os
 
 import wikiquote
 import wikipediaapi

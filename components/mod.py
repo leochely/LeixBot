@@ -20,19 +20,19 @@ class Mod(commands.Component):
         )
 
     @commands.command(name="ban")
-    async def ban(self, ctx: commands.Context, user: User = None, *reason):
+    async def ban(self, ctx: commands.Context, user: User = None, *, reason: str | None = None):
         """Banni un utilisateur avec possibilité d'ajouter une raison. Requiert
         privilège modérateur.
         Ex: !ban leix34 motif du ban
         """
-        LOGGER.info(f'User {user.name} has been banned')
         if not reason:
             reason = 'Rise of the machines'
         else:
             reason = ' '.join(reason)
-        await ctx.send(f"/ban {user.name} {reason}")
-        await ctx.send(f"Au revoir {user.name} HeyGuys")
 
+        await user.ban_user(moderator=self.bot.user, user=user, reason=reason)
+        LOGGER.info(f'User {user.name} has been banned')
+        
     @commands.command(name="unban")
     async def unban(self, ctx: commands.Context, user: User = None):
         """Retire le banissement d'un utilisateur. Requiert
