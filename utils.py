@@ -171,14 +171,14 @@ async def random_reply(bot: commands.AutoBot, message: ChatMessage):
     await message.broadcaster.send_message(reply, bot.user, reply_to_message_id=message.id)
 
 
-async def random_bot_reply(message: ChatMessage):
+async def random_bot_reply(bot:commands.AutoBot, message: ChatMessage):
     reply_pool = [
         f'LeixBot > {message.chatter.name} SwiftRage',
         f"LeixBot s'en charge {message.chatter.name} MrDestructoid",
         f'#LeixBotOnly, pas besoin de toi @{message.chatter.name}'
     ]
     reply = random.choice(reply_pool)
-    await message.author.channel.send(f"{reply}")
+    await message.broadcaster.send_message(f"{reply}", bot.user)
 
 
 def check_for_bot(message):

@@ -109,16 +109,16 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
-        # try:
-        if "@leixbot" in message.text.lower():
-            await random_reply(self, message)
-        elif message.chatter.name.lower() in self.bot_to_reply:
-            await random_bot_reply(message)
-        else:
-            if message.broadcaster.id in self.vip_so:
-                await auto_so(self, message, self.vip_so[message.broadcaster.id])
-        # except Exception as e:
-        #     LOGGER.error(f"Error processing message {message}: {e}")
+        try:
+            if "@leixbot" in message.text.lower():
+                await random_reply(self, message)
+            elif message.chatter.name.lower() in self.bot_to_reply:
+                await random_bot_reply(self, message)
+            else:
+                if message.broadcaster.id in self.vip_so:
+                    await auto_so(self, message, self.vip_so[message.broadcaster.id])
+        except Exception as e:
+            LOGGER.error(f"Error processing message {message}: {e}")
 
         await self.process_commands(message)
 
