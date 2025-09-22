@@ -21,7 +21,7 @@ class Mod(commands.Component):
         else:
             reason = ' '.join(reason)
 
-        await user.ban_user(moderator=self.bot.user, user=user, reason=reason)
+        await ctx.broadcaster.ban_user(moderator=self.bot.user, user=user, reason=reason)
         LOGGER.info(f'User {user.name} has been banned')
         
 
@@ -32,7 +32,7 @@ class Mod(commands.Component):
         privilège modérateur.
         Ex: !unban leix34
         """
-        await user.unban_user(moderator=self.bot.user, user=user)
+        await ctx.broadcaster.unban_user(moderator=self.bot.user, user=user)
         await ctx.send(f"Bon retour parmi nous {user.name} HeyGuys !")
         LOGGER.info(f'User {user.name} has been unbanned')
 
