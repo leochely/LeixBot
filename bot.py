@@ -54,7 +54,7 @@ class LeixBot(commands.AutoBot):
         # A list of subscriptions we would like to make to the newly authorized channel...
         subs: list[eventsub.SubscriptionPayload] = [
             eventsub.ChatMessageSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelModerateSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
+            eventsub.ChannelModerateSubscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
             # TODO: Add more subscriptions here...
         ]
 
