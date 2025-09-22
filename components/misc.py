@@ -95,7 +95,7 @@ class Misc(commands.Component):
     async def shoutout(self, ctx: commands.Context, broadcaster: User):
         """Shoutout l'utilisateur choisi. Ex: !so leix34"""
         await ctx.send('yapadeso')
-        if 'vip' in ctx.author.badges or ctx.author.is_mod:
+        if 'vip' in ctx.author.badges or ctx.author.moderator:
             channel_info = await self.bot.fetch_channel(broadcaster.name)
             await asyncio.sleep(5)
             if channel_info.game_name:
