@@ -115,7 +115,6 @@ artist_replies = [
 
 vip_info = {}
 async def auto_so(bot: commands.AutoBot, message: ChatMessage):
-    return
     vip_name = message.chatter.display_name
     vip_channel_info = await bot.fetch_channel(message.chatter.id)
     LOGGER.info(f"Channel info for VIP {vip_name}: {vip_channel_info}")
@@ -131,7 +130,7 @@ async def auto_so(bot: commands.AutoBot, message: ChatMessage):
 
     LOGGER.info(f"Auto SO for VIP {vip_name} in channel {message.broadcaster.name}")
     # Update last automatic shoutout time
-    vip_info[message.chatter.id] = datetime.now(timezone.utc)
+    vip_info[vip_name] = datetime.now(timezone.utc)
 
     # Send message
     reply = ''
