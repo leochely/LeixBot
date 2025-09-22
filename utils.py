@@ -133,7 +133,7 @@ async def auto_so(bot: commands.AutoBot, message: ChatMessage):
         (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at)):
         return
 
-    LOGGER.info(f"Auto SO for VIP {vip_name} in channel {message.broadcaster.name}")
+    LOGGER.debug(f"Auto SO for VIP {vip_name} in channel {message.broadcaster.name}")
     # Update last automatic shoutout time
     vip_info[vip_name] = datetime.now(timezone.utc)
 

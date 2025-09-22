@@ -55,6 +55,8 @@ class LeixBot(commands.AutoBot):
         subs: list[eventsub.SubscriptionPayload] = [
             eventsub.ChatMessageSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
             eventsub.ChannelModerateV2Subscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
+            eventsub.ChannelFollowSubscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
+            eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -103,6 +105,34 @@ class LeixBot(commands.AutoBot):
 
         await self.process_commands(message)
 
+
+    async def event_follow(self, message: twitchio.ChannelFollow) -> None:
+        channel = message.broadcaster.name
+        follower = message.user.name
+        LOGGER.info(f"New follower {follower} on channel {channel}")
+        await message.broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"Merci pour le follow {follower}! PogChamp",
+        )
+    
+    async def event_subscription(self, message: twitchio.ChannelSubscribe) -> None:
+        channel = message.broadcaster.name
+        user = message.user.name
+        LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier}")
+        await message.broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"{user} rejoint la legion au tier {message.tier}! PogChamp",
+        )
+
+    async def event_subscription_message(self, message: twitchio.ChannelSubscriptionMessage) -> None:
+        channel = message.broadcaster.name
+        user = message.user.name
+
+        LOGGER.debug(f"New subscription message on channel {channel} by user {user} with plan {message.tier} and message {message.text}")
+        await message.broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"{user} est dans la legion depuis {message.cumulative_months}! PogChamp",
+        )
 
 class General(commands.Component):
     def __init__(self, bot: LeixBot):
