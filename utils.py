@@ -124,6 +124,11 @@ async def auto_so(bot: commands.AutoBot, message: ChatMessage):
             message.broadcaster.id,
         ])
     
+    # Check if user is VIP or moderator
+    if not (message.chatter.moderator or message.chatter.vip):
+        return
+
+    # Check if automatic shoutout already triggered in the ongoing stream
     if (len(stream) == 0 or
         (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at)):
         return
