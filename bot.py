@@ -26,7 +26,6 @@ class LeixBot(commands.AutoBot):
     def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
         self.token_database = token_database
         self.connected_channels = []
-        self.vip_so = {}
         self._components_names: t.Dict[str] = [
             p.stem for p in Path(".").glob("./components/*.py")
         ]
@@ -40,16 +39,6 @@ class LeixBot(commands.AutoBot):
                         )
 
     async def setup_hook(self) -> None:
-        async with self.token_database.acquire() as connection:
-            users = await connection.fetchall(
-                """SELECT user_id FROM tokens"""
-            )
-        for (user_id,) in users:
-            self.connected_channels.append(user_id)
-            self.vip_so[user_id] = []
-
-        LOGGER.info(f"Managing SOs for {self.vip_so} VIP channels.")
-
         # Add our components
         await self.add_component(General(self))
         for component in self._components_names:
@@ -65,13 +54,6 @@ class LeixBot(commands.AutoBot):
         # A list of subscriptions we would like to make to the newly authorized channel...
         subs: list[eventsub.SubscriptionPayload] = [
             eventsub.ChatMessageSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelFollowSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelCheerSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelRaidSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.ChannelBanSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
-            eventsub.AdBreakBeginSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
             eventsub.ChannelModerateSubscription(broadcaster_user_id=payload.user_id, user_id=self.bot_id),
             # TODO: Add more subscriptions here...
         ]
@@ -109,16 +91,15 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
-        try:
-            if "@leixbot" in message.text.lower():
-                await random_reply(self, message)
-            elif message.chatter.name.lower() in self.bot_to_reply:
-                await random_bot_reply(self, message)
-            else:
-                if message.broadcaster.id in self.vip_so:
-                    await auto_so(self, message, self.vip_so[message.broadcaster.id])
-        except Exception as e:
-            LOGGER.error(f"Error processing message {message}: {e}")
+        # try:
+        if "@leixbot" in message.text.lower():
+            await random_reply(self, message)
+        elif message.chatter.name.lower() in self.bot_to_reply:
+            await random_bot_reply(self, message)
+        else:
+            await auto_so(self, message)
+        # except Exception as e:
+        #     LOGGER.error(f"Error processing message {message}: {e}")
 
         await self.process_commands(message)
 

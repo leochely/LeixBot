@@ -93,7 +93,7 @@ game_replies = {
                                              'Fais gaffe au pics en dessous Kappa'],
     'God of War Ragnarök':                  ['A gauche!', 'A droite!'],
     'Star Citizen':                         ['Pyro est inclus dans la prochaine maj de LeixBot PogChamp'],
-    'Space Marine 2':                       ['FOR THE EMPEROR!',
+    'Warhammer 40,000: Space Marine II':    ['FOR THE EMPEROR!',
                                              'Guys, full heal at drop pod',
                                              'Emmenez ce genogerme au bout mon frere!'],
     'Monster Hunter Wilds':                ['Jin Dahaad!', "Cha'ah Doudoud!"]
@@ -113,28 +113,28 @@ artist_replies = [
 ]
 
 
-async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info):
+vip_info = {}
+async def auto_so(bot: commands.AutoBot, message: ChatMessage):
     vip_name = message.chatter.display_name
     vip_channel_info = await bot.fetch_channel(message.chatter.id)
+    LOGGER.info(f"Channel info for VIP {vip_name}: {vip_channel_info}")
+    
     stream = await bot.fetch_streams(
-        user_logins=[
-            message.chatter.name
+        user_ids=[
+            message.broadcaster.id,
         ])
-    badges = await message.chatter.fetch_badges()
+    
     if (len(stream) == 0 or
-        (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
-        not is_vip_so(message.chatter.name) or
-        ('vip' not in badges and
-         'moderator' not in badges and
-         'artist' not in badges)):
+        (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at)):
         return
 
+    LOGGER.info(f"Auto SO for VIP {vip_name} in channel {message.broadcaster.name}")
     # Update last automatic shoutout time
     vip_info[message.chatter.id] = datetime.now(timezone.utc)
 
     # Send message
     reply = ''
-    if 'artist-badge' in message.author.badges:
+    if message.chatter.artist:
         reply = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name} !'
         if vip_channel_info.game_name:
             reply += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
@@ -143,7 +143,7 @@ async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info):
     else:
         reply = f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
 
-    await message.author.channel.send(reply)
+    await message.broadcaster.send_message(reply, bot.user)
 
 
 async def random_reply(bot: commands.AutoBot, message: ChatMessage):
@@ -159,12 +159,14 @@ async def random_reply(bot: commands.AutoBot, message: ChatMessage):
         "J'ai libéré Kingo SeemsGood",
         'Tu as entendu parler du Denfest? PogChamp'
     ]
+
     if channel_info.game_name in game_replies:
+        LOGGER.info(f"Adding game specific replies for {channel_info.game_name}")
         reply_pool += game_replies[channel_info.game_name]
 
-    if 'vip' in message.chatter.badges:
+    if message.chatter.vip:
         reply_pool += vip_replies
-    if 'artist' in message.chatter.badges:
+    if message.chatter.artist:
         reply_pool += artist_replies
 
     reply = random.choice(reply_pool)
