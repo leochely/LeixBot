@@ -115,6 +115,7 @@ artist_replies = [
 
 vip_info = {}
 async def auto_so(bot: commands.AutoBot, message: ChatMessage):
+    return
     vip_name = message.chatter.display_name
     vip_channel_info = await bot.fetch_channel(message.chatter.id)
     LOGGER.info(f"Channel info for VIP {vip_name}: {vip_channel_info}")

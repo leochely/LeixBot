@@ -9,6 +9,7 @@ class Mod(commands.Component):
     def __init__(self, bot: commands.AutoBot):
         self.bot = bot
 
+    @commands.is_moderator()
     @commands.command(name="ban")
     async def ban(self, ctx: commands.Context, user: User = None, *, reason: str | None = None):
         """Banni un utilisateur avec possibilité d'ajouter une raison. Requiert
@@ -23,6 +24,8 @@ class Mod(commands.Component):
         await user.ban_user(moderator=self.bot.user, user=user, reason=reason)
         LOGGER.info(f'User {user.name} has been banned')
         
+
+    @commands.is_moderator()
     @commands.command(name="unban")
     async def unban(self, ctx: commands.Context, user: User = None):
         """Retire le banissement d'un utilisateur. Requiert
