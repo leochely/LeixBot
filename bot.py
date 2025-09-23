@@ -58,6 +58,7 @@ class LeixBot(commands.AutoBot):
             eventsub.ChannelFollowSubscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
             eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id),
             eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.ChannelRaidSubscription(to_broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -138,11 +139,17 @@ class LeixBot(commands.AutoBot):
         )
 
     async def event_stream_online(self, message: twitchio.StreamOnline) -> None:
-        channel = message.broadcaster.name
-        LOGGER.info(f"{channel} is live!")
+        LOGGER.info(f"{message.broadcaster.name} is live!")
         await message.broadcaster.send_message(
             sender=self.bot_id,
-            message=f"Coucou {channel}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
+            message=f"Coucou {message.broadcaster.display_name}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
+        )
+
+    async def event_raid(self, message: twitchio.ChannelRaid) -> None:
+        LOGGER.info(f"{message.from_broadcaster} is raiding {message.to_broadcaster} with {message.viewer_count} viewers!")
+        await message.to_broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"Il faut se defendre SwiftRage Nous sommes raid par {message.from_broadcaster.display_name} avec ses {message.viewer_count} margoulins!",
         )
 
 
