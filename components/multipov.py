@@ -1,3 +1,4 @@
+from twitchio import User
 from twitchio.ext import commands
 
 class Multipov(commands.Component):
@@ -15,26 +16,26 @@ class Multipov(commands.Component):
 
     @commands.is_moderator()
     @commands.command(name="multiadd", aliases=[])
-    async def multiadd(self, ctx: commands.Context, *channels):
+    async def multiadd(self, ctx: commands.Context, *channels: User):
         """Ajoute un streamer au lien multipov. Requiert privilege modérateur.
         Ex: !multiadd leix34
         """
         if ctx.broadcaster.id not in self.multipov_channels:
             self.multipov_channels[ctx.broadcaster.id] = []
         for channel in channels:
-            self.multipov_channels[ctx.broadcaster.id].append(channel)
+            self.multipov_channels[ctx.broadcaster.id].append(channel.name)
         await ctx.send('Multi mis à jour SeemsGood')
 
     @commands.is_moderator()
     @commands.command(name="multiset", aliases=[])
-    async def multiset(self, ctx: commands.Context, *channels):
+    async def multiset(self, ctx: commands.Context, *channels: User):
         """Regle le lien multipov sur les chaines choisies. Requiert privilege
         modérateur.
         Ex: !multiset chaine1 chaine2 ...
         """
         self.multipov_channels[ctx.broadcaster.id] = []
         for channel in channels:
-            self.multipov_channels[ctx.broadcaster.id].append(channel)
+            self.multipov_channels[ctx.broadcaster.id].append(channel.display_name)
         await ctx.send('Multi mis à jour SeemsGood')
 
     @commands.is_moderator()

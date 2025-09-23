@@ -95,8 +95,8 @@ class Misc(commands.Component):
     async def shoutout(self, ctx: commands.Context, broadcaster: User):
         """Shoutout l'utilisateur choisi. Ex: !so leix34"""
         await ctx.send('yapadeso')
-        if 'vip' in ctx.author.badges or ctx.author.moderator:
-            channel_info = await self.bot.fetch_channel(broadcaster.name)
+        if ctx.author.vip or ctx.author.moderator:
+            channel_info = await self.bot.fetch_channel(broadcaster.id)
             await asyncio.sleep(5)
             if channel_info.game_name:
                 await ctx.send(
@@ -129,21 +129,25 @@ class Misc(commands.Component):
         spécifié.
         Ex: !quote Kojima
         """
-        if not author:
-            author = wikiquote.random_titles(max_titles=1, lang='fr')
-        else:
-            author = ' '.join(author)
-            author = wikiquote.search(author, lang='fr')
+        try:
+            if not author:
+                author = wikiquote.random_titles(max_titles=1, lang='fr')
+            else:
+                author = ' '.join(author)
+                author = wikiquote.search(author, lang='fr')
 
-        author = secrets.choice(author)
-        quotes = [
-            x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
-        ]
-        quote = secrets.choice(quotes)
-        await ctx.send(f'{quote} - {author}')
+            author = secrets.choice(author)
+            quotes = [
+                x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
+            ]
+            quote = secrets.choice(quotes)
+            await ctx.send(f'{quote} - {author}')
 
-        if not quote:
-            await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
+            if not quote:
+                await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
+        except Exception as e:
+            LOGGER.error(f"Erreur wikipedia: {e}")
+            await ctx.send(f"Cette commande est pour l'instant cassee :( Je travaille d'arrache pied a la reparer!")
 
     @commands.command(name="wikipedia", aliases=['wiki'])
     async def wikipedia(self, ctx: commands.Context, *query):
@@ -160,6 +164,7 @@ class Misc(commands.Component):
                 await ctx.send('. '.join(page.summary.splitlines()[0][:450].split(".")[:-1]) + '. ' + page.fullurl)
         else:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
+
 
 
     @commands.command(name="pileouface", aliases=['pile', 'face', 'coinflip'])
@@ -192,17 +197,17 @@ class Misc(commands.Component):
     @ commands.command(name='id')
     async def id(self, ctx: commands.Context):
         """Renvoie l'id de la session (si existant). Ex: !id"""
-        if ctx.author.channel.name not in self.game_id:
+        if ctx.broadcaster.id not in self.game_id:
             await ctx.send("Il n'y a pas d'id :(")
         else:
-            await ctx.send(self.game_id[ctx.author.channel.name])
+            await ctx.send(self.game_id[ctx.broadcaster.id])
 
+    @commands.is_moderator()
     @ commands.command(name="setId")
     async def setId(self, ctx: commands.Context, *id):
         """Regle l'id de la session. Ex: !id abc 1234"""
-        if ctx.author.is_mod:
-            self.game_id[ctx.author.channel.name] = ' '.join(id)
-            await ctx.send('id set SeemsGood')
+        self.game_id[ctx.broadcaster.id] = ' '.join(id)
+        await ctx.send('id set SeemsGood')
 
 
 async def setup(bot: commands.AutoBot):

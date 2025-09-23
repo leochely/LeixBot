@@ -57,12 +57,15 @@ class LeixBot(commands.AutoBot):
             eventsub.ChannelModerateV2Subscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
             eventsub.ChannelFollowSubscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
             eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
         resp: twitchio.MultiSubscribePayload = await self.multi_subscribe(subs)
         if resp.errors:
             LOGGER.warning("Failed to subscribe to: %r, for user: %s", resp.errors, payload.user_id)
+        else:
+            LOGGER.info("Successfully subscribed to events for user: %s", payload.user_id)
 
     async def add_token(self, token: str, refresh: str) -> twitchio.authentication.ValidateTokenPayload:
         # Make sure to call super() as it will add the tokens interally and return us some data...
@@ -134,6 +137,15 @@ class LeixBot(commands.AutoBot):
             message=f"{user} est dans la legion depuis {message.cumulative_months}! PogChamp",
         )
 
+    async def event_stream_online(self, message: twitchio.StreamOnline) -> None:
+        channel = message.broadcaster.name
+        LOGGER.info(f"{channel} is live!")
+        await message.broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"Coucou {channel}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
+        )
+
+
 class General(commands.Component):
     def __init__(self, bot: LeixBot):
         # Passing args is not required...
@@ -196,14 +208,6 @@ class General(commands.Component):
     #     await ctx.send(
     #         f'La liste de mes commandes sur ce chat: {cmd_list}'
     #     )
-
-    @commands.Component.listener()
-    async def event_stream_online(self, payload: twitchio.StreamOnline) -> None:
-        # Event dispatched when a user goes live from the subscription we made above...
-        await payload.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=f"Hi... {payload.broadcaster}! You are live!",
-        )
 
 
 async def setup_database(db: asqlite.Pool) -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:

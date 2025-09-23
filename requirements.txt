@@ -4,7 +4,7 @@ aiohappyeyeballs==2.6.1
     # via
     #   leixbot (pyproject.toml)
     #   aiohttp
-aiohttp==3.10.4
+aiohttp==3.12.13
     # via
     #   leixbot (pyproject.toml)
     #   howlongtobeatpy
@@ -68,7 +68,7 @@ h11==0.16.0
     # via
     #   leixbot (pyproject.toml)
     #   uvicorn
-howlongtobeatpy==1.0.8
+howlongtobeatpy==1.0.18
     # via leixbot (pyproject.toml)
 humanize==3.13.1
     # via leixbot (pyproject.toml)
@@ -94,6 +94,7 @@ playsound==1.2.2
 propcache==0.3.2
     # via
     #   leixbot (pyproject.toml)
+    #   aiohttp
     #   yarl
 psycopg==3.2.3
     # via leixbot (pyproject.toml)
