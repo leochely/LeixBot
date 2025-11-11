@@ -4,7 +4,7 @@ import re
 from twitchio.ext import commands
 from websockets import connect
 
-import custom_commands
+# import custom_commands
 from utils import check_cooldown, get_emote_list
 
 LOGGER: logging.Logger = logging.getLogger("Components.Visuals")

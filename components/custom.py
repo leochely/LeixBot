@@ -1,11 +1,9 @@
-import datetime
 import logging
-import os
 
 from twitchio import User
 from twitchio.ext import commands
 
-import custom_commands
+# import custom_commands
 
 LOGGER: logging.Logger = logging.getLogger("Components.Custom")
 

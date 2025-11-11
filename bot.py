@@ -59,6 +59,7 @@ class LeixBot(commands.AutoBot):
             eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id),
             eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id),
             eventsub.ChannelRaidSubscription(to_broadcaster_user_id=payload.user_id),
+            eventsub.AdBreakBeginSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -97,15 +98,15 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
-        # try:
-        if "@leixbot" in message.text.lower():
-            await random_reply(self, message)
-        elif message.chatter.name.lower() in self.bot_to_reply:
-            await random_bot_reply(self, message)
-        else:
-            await auto_so(self, message)
-        # except Exception as e:
-        #     LOGGER.error(f"Error processing message {message}: {e}")
+        try:
+            if "@leixbot" in message.text.lower():
+                await random_reply(self, message)
+            elif message.chatter.name.lower() in self.bot_to_reply:
+                await random_bot_reply(self, message)
+            else:
+                await auto_so(self, message)
+        except Exception as e:
+            LOGGER.error(f"Error processing message {message}: {e}")
 
         await self.process_commands(message)
 
@@ -150,6 +151,13 @@ class LeixBot(commands.AutoBot):
         await message.to_broadcaster.send_message(
             sender=self.bot_id,
             message=f"Il faut se defendre SwiftRage Nous sommes raid par {message.from_broadcaster.display_name} avec ses {message.viewer_count} margoulins!",
+        )
+
+    async def event_ad_break(self, message: twitchio.ChannelAdBreakBegin) -> None:
+        LOGGER.info(f"Ad break started on {message.broadcaster.name} for {message.duration} seconds!")
+        await message.broadcaster.send_message(
+            sender=self.bot_id,
+            message=f"Publicite de {message.duration} secondes en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid Je reste a votre service meme pendant la coupure pub!",
         )
 
 

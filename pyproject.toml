@@ -3,7 +3,7 @@ name = "LeixBot"
 version = "2.0.0"
 description = "LeixBot is a multi purpose twitch bot relying on the Twitchio library."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = "==3.12.8"
 dependencies = [
     "aiohappyeyeballs==2.6.1 ; python_full_version >= '3.9'",
     "aiohttp>=3.12.13",
@@ -34,6 +34,7 @@ dependencies = [
     "psycopg==3.2.3 ; python_full_version >= '3.8'",
     "psycopg-pool==3.2.6 ; python_full_version >= '3.8'",
     "pyserial==3.5",
+    "python-dotenv>=1.2.1",
     "python-engineio==4.3.2 ; python_full_version >= '3.6'",
     "python-socketio==5.6.0 ; python_full_version >= '3.6'",
     "requests==2.32.3 ; python_full_version >= '3.8'",

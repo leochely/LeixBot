@@ -8,8 +8,8 @@ from websockets import connect
 import time
 
 from datetime import datetime, timedelta, timezone
-from db import get_token
-from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
+# from db import get_token
+# from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
 from twitchio import User, ChatMessage
 from twitchio.ext import commands
@@ -117,7 +117,6 @@ vip_info = {}
 async def auto_so(bot: commands.AutoBot, message: ChatMessage):
     vip_name = message.chatter.display_name
     vip_channel_info = await bot.fetch_channel(message.chatter.id)
-    LOGGER.info(f"Channel info for VIP {vip_name}: {vip_channel_info}")
     
     stream = await bot.fetch_streams(
         user_ids=[
@@ -222,7 +221,7 @@ BASE_URL = "https://api.twitch.tv/helix"
 async def modify_stream(user: User, game_id: int = None, language: str = None, title: str = None):
     url = BASE_URL + "/channels?broadcaster_id=" + str(user.id)
     auth = "Bearer " + await get_token(user.name)
-    id = os.environ['CLIENT_ID']
+    id = os.getenv('CLIENT_ID')
 
     headers = {
         "Client-Id": id,
@@ -245,8 +244,8 @@ async def modify_stream(user: User, game_id: int = None, language: str = None, t
 async def get_emote_list(user: User) -> [str]:  
     url = BASE_URL + "/chat/emotes?broadcaster_id=" + str(user.id)
     headers = {
-        "Client-Id": os.environ['CLIENT_ID'],
-        "Authorization": "Bearer " + os.environ['ACCESS_TOKEN']
+        "Client-Id": os.getenv('CLIENT_ID'),
+        "Authorization": "Bearer " + os.getenv('ACCESS_TOKEN')
     }
     LOGGER.info(f"Getting emotes list for channel {user}")
     async with aiohttp.ClientSession() as session:
