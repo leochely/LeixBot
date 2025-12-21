@@ -157,7 +157,7 @@ class LeixBot(commands.AutoBot):
         LOGGER.info(f"Ad break started on {message.broadcaster.name} for {message.duration} seconds!")
         await message.broadcaster.send_message(
             sender=self.bot_id,
-            message=f"Publicite de {message.duration} secondes en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid Je reste a votre service meme pendant la coupure pub!",
+            message=f"Pub en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid",
         )
 
 
