@@ -56,3 +56,8 @@ dependencies = [
 
 [tool.uv.sources]
 asqlite = { git = "https://github.com/Rapptz/asqlite.git", rev = "8d929c7628e53d01b6905866f8b6d350e76a8d40" }
+
+[dependency-groups]
+dev = [
+    "watchfiles>=1.1.1",
+]

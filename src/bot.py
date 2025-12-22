@@ -60,6 +60,7 @@ class LeixBot(commands.AutoBot):
             eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id),
             eventsub.ChannelRaidSubscription(to_broadcaster_user_id=payload.user_id),
             eventsub.AdBreakBeginSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.ChannelBitsUseSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -170,7 +171,7 @@ class General(commands.Component):
     # We use a listener in our Component to display the messages received.
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
-        print(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
+        LOGGER.info(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
@@ -250,14 +251,8 @@ async def setup_database(db: asqlite.Pool) -> tuple[list[tuple[str, str]], list[
 
     return tokens, subs
 
-
 def main() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
-
-    subs = [
-        eventsub.ChatMessageSubscription(broadcaster_user_id=OWNER_ID, user_id=BOT_ID),
-        eventsub.ChatMessageSubscription(broadcaster_user_id=BOT_ID, user_id=BOT_ID),
-    ]
 
     async def runner() -> None:
         async with asqlite.create_pool("tokens.db") as tdb:

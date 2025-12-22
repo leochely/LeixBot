@@ -1,0 +1,8 @@
+services:
+  leixbot:
+    build: .
+    restart: always
+    env_file: ".env"
+    volumes:
+      - ./:/app
+    command: uv run python -m watchfiles  --filter python " uv run src/bot.py"
