@@ -3,6 +3,8 @@ services:
     build: .
     restart: always
     env_file: ".env"
+    ports:
+      - 4343:4343
     volumes:
       - ./:/app
     command: uv run python -m watchfiles  --filter python " uv run src/bot.py"

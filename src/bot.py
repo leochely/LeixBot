@@ -18,8 +18,9 @@ LOGGER: logging.Logger = logging.getLogger("Bot")
 
 CLIENT_ID: str = os.environ['CLIENT_ID'] # The CLIENT ID from the Twitch Dev Console
 CLIENT_SECRET: str = os.environ['CLIENT_SECRET'] # The CLIENT SECRET from the Twitch Dev Console
-BOT_ID = "734769203"  # The Account ID of the bot user...
-OWNER_ID = "109173981"  # Your personal User ID..
+BOT_PREFIX = os.environ.get('BOT_PREFIX', '!')  # The prefix for the bot commands. Defaults to '!'.
+BOT_ID = os.environ.get('BOT_ID', "734769203")  # The Account ID of the bot user. Defaults to LeixBot's ID.
+OWNER_ID = os.environ.get('OWNER_ID', "109173981")  # Your personal User ID. Defaults to Leix34's ID.
 
 
 class LeixBot(commands.AutoBot):
@@ -27,7 +28,7 @@ class LeixBot(commands.AutoBot):
         self.token_database = token_database
         self.connected_channels = []
         self._components_names: t.Dict[str] = [
-            p.stem for p in Path(".").glob("./components/*.py")
+            p.stem for p in Path(".").glob("./src/components/*.py")
         ]
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
 
@@ -58,9 +59,11 @@ class LeixBot(commands.AutoBot):
             eventsub.ChannelFollowSubscription(broadcaster_user_id=payload.user_id, moderator_user_id=self.bot_id),
             eventsub.ChannelSubscribeSubscription(broadcaster_user_id=payload.user_id),
             eventsub.StreamOnlineSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.StreamOfflineSubscription(broadcaster_user_id=payload.user_id),
             eventsub.ChannelRaidSubscription(to_broadcaster_user_id=payload.user_id),
             eventsub.AdBreakBeginSubscription(broadcaster_user_id=payload.user_id),
             eventsub.ChannelBitsUseSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.HypeTrainBeginSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -99,6 +102,7 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
+        LOGGER.info(f"[{message.channel.name}] - {message.author.name}: {message.content}")
         try:
             if "@leixbot" in message.text.lower():
                 await random_reply(self, message)
@@ -112,66 +116,11 @@ class LeixBot(commands.AutoBot):
         await self.process_commands(message)
 
 
-    async def event_follow(self, message: twitchio.ChannelFollow) -> None:
-        channel = message.broadcaster.name
-        follower = message.user.name
-        LOGGER.info(f"New follower {follower} on channel {channel}")
-        await message.broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"Merci pour le follow {follower}! PogChamp",
-        )
-    
-    async def event_subscription(self, message: twitchio.ChannelSubscribe) -> None:
-        channel = message.broadcaster.name
-        user = message.user.name
-        LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier}")
-        await message.broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"{user} rejoint la legion au tier {message.tier}! PogChamp",
-        )
-
-    async def event_subscription_message(self, message: twitchio.ChannelSubscriptionMessage) -> None:
-        channel = message.broadcaster.name
-        user = message.user.name
-
-        LOGGER.debug(f"New subscription message on channel {channel} by user {user} with plan {message.tier} and message {message.text}")
-        await message.broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"{user} est dans la legion depuis {message.cumulative_months}! PogChamp",
-        )
-
-    async def event_stream_online(self, message: twitchio.StreamOnline) -> None:
-        LOGGER.info(f"{message.broadcaster.name} is live!")
-        await message.broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"Coucou {message.broadcaster.display_name}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
-        )
-
-    async def event_raid(self, message: twitchio.ChannelRaid) -> None:
-        LOGGER.info(f"{message.from_broadcaster} is raiding {message.to_broadcaster} with {message.viewer_count} viewers!")
-        await message.to_broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"Il faut se defendre SwiftRage Nous sommes raid par {message.from_broadcaster.display_name} avec ses {message.viewer_count} margoulins!",
-        )
-
-    async def event_ad_break(self, message: twitchio.ChannelAdBreakBegin) -> None:
-        LOGGER.info(f"Ad break started on {message.broadcaster.name} for {message.duration} seconds!")
-        await message.broadcaster.send_message(
-            sender=self.bot_id,
-            message=f"Pub en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid",
-        )
-
-
 class General(commands.Component):
     def __init__(self, bot: LeixBot):
         # Passing args is not required...
         # We pass bot here as an example...
         self.bot = bot
-
-    # We use a listener in our Component to display the messages received.
-    @commands.Component.listener()
-    async def event_message(self, payload: twitchio.ChatMessage) -> None:
-        LOGGER.info(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
 
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
@@ -258,7 +207,7 @@ def main() -> None:
         async with asqlite.create_pool("tokens.db") as tdb:
             tokens, subs = await setup_database(tdb)
 
-            async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, prefix='!', token_database=tdb) as bot:
+            async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, owner_id=OWNER_ID, prefix=BOT_PREFIX, token_database=tdb) as bot:
                 for pair in tokens:
                     await bot.add_token(*pair)
 
