@@ -102,7 +102,7 @@ class LeixBot(commands.AutoBot):
         if message.chatter.id == self.bot_id:
             return
 
-        LOGGER.info(f"[{message.channel.name}] - {message.author.name}: {message.content}")
+        LOGGER.info(f"[{message.broadcaster.name}] - {message.chatter.name}: {message.text}")
         try:
             if "@leixbot" in message.text.lower():
                 await random_reply(self, message)
