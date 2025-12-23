@@ -28,7 +28,7 @@ class LeixBot(commands.AutoBot):
         self.token_database = token_database
         self.connected_channels = []
         self._components_names: t.Dict[str] = [
-            p.stem for p in Path(".").glob("./src/components/*.py")
+            p.stem for p in Path(".").glob("./components/*.py")
         ]
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
 
