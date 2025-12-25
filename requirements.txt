@@ -96,10 +96,6 @@ propcache==0.3.2
     #   leixbot (pyproject.toml)
     #   aiohttp
     #   yarl
-psycopg==3.2.3
-    # via leixbot (pyproject.toml)
-psycopg-pool==3.2.6
-    # via leixbot (pyproject.toml)
 pyserial==3.5
     # via leixbot (pyproject.toml)
 python-engineio==4.3.2
@@ -132,13 +128,9 @@ typing-extensions==4.15.0
     #   leixbot (pyproject.toml)
     #   anyio
     #   beautifulsoup4
-    #   psycopg
-    #   psycopg-pool
     #   starlette
 tzdata==2025.2
-    # via
-    #   leixbot (pyproject.toml)
-    #   psycopg
+    # via leixbot (pyproject.toml)
 urllib3==1.26.8
     # via
     #   leixbot (pyproject.toml)

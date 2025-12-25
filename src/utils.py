@@ -7,11 +7,10 @@ import json
 from websockets import connect
 import time
 
-from datetime import datetime, timedelta, timezone
-# from db import get_token
-# from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
+from datetime import datetime, timezone
+from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
 
-from twitchio import User, ChatMessage
+from twitchio import ChatMessage
 from twitchio.ext import commands
 
 LOGGER: logging.Logger = logging.getLogger("Utils")
@@ -195,8 +194,8 @@ def check_for_bot(message):
 used = {}
 
 
-def check_cooldown(channel, user):
-    cooldownlength = get_kappagen_cooldown(channel)
+async def check_cooldown(channel, user):
+    cooldownlength = await get_kappagen_cooldown(channel)
     try:
         if ((channel not in used or user not in used[channel]) or (time.time() - used[channel][user]) > cooldownlength):
             used[channel][user] = time.time()
@@ -212,47 +211,6 @@ def check_cooldown(channel, user):
         else:
             used[channel] = {user: time.time()}
         return True
-
-
-### API ###
-BASE_URL = "https://api.twitch.tv/helix"
-
-
-async def modify_stream(user: User, game_id: int = None, language: str = None, title: str = None):
-    url = BASE_URL + "/channels?broadcaster_id=" + str(user.id)
-    auth = "Bearer " + await get_token(user.name)
-    id = os.getenv('CLIENT_ID')
-
-    headers = {
-        "Client-Id": id,
-        "Authorization": auth
-    }
-
-    data = {
-        k: v
-        for k, v in {"game_id": game_id, "broadcaster_language": language, "title": title}.items()
-        if v is not None
-    }
-    user_encode_data = json.dumps(data).encode('utf-8')
-
-    LOGGER.info('Updating stream')
-
-    async with aiohttp.ClientSession() as session:
-        async with session.patch(url, data=data, headers=headers) as resp:
-            return resp.status == 204
-
-async def get_emote_list(user: User) -> [str]:  
-    url = BASE_URL + "/chat/emotes?broadcaster_id=" + str(user.id)
-    headers = {
-        "Client-Id": os.getenv('CLIENT_ID'),
-        "Authorization": "Bearer " + os.getenv('ACCESS_TOKEN')
-    }
-    LOGGER.info(f"Getting emotes list for channel {user}")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as resp:
-            data = await resp.json()
-            emotes = [url['images']['url_4x'] for url in data['data']]
-    return emotes
 
 ### ALERTS ###
 # Websocket connection parameters

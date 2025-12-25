@@ -2,6 +2,7 @@ import asyncio
 import logging
 import asqlite
 import os
+import typing as t
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -10,6 +11,8 @@ from twitchio.ext import commands
 from twitchio import eventsub, web
 
 from utils import auto_so, random_bot_reply, random_reply
+from db import init_database_pool, add_channel
+import custom_commands
 
 if TYPE_CHECKING:
     import sqlite3
@@ -26,17 +29,15 @@ OWNER_ID = os.environ.get('OWNER_ID', "109173981")  # Your personal User ID. Def
 class LeixBot(commands.AutoBot):
     def __init__(self, token_database: asqlite.Pool, subs: list[twitchio.eventsub.SubscriptionPayload], *args, **kwargs) -> None:
         self.token_database = token_database
-        self.connected_channels = []
-        self._components_names: t.Dict[str] = [
+        self._components_names: t.List[str] = [
             p.stem for p in Path(".").glob("./components/*.py")
         ]
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
 
         LOGGER.info(f"Found components: {self._components_names}")
-        LOGGER.info(f"Subs {subs}")
         super().__init__(*args, **kwargs, 
                          subscriptions=subs,
-                         adapter = web.AiohttpAdapter(host="0.0.0.0", domain="leixbot.onrender.com")
+                         adapter = web.AiohttpAdapter(host="0.0.0.0", domain="leixbot.onrender.com"),
                         )
 
     async def setup_hook(self) -> None:
@@ -45,6 +46,13 @@ class LeixBot(commands.AutoBot):
         for component in self._components_names:
             LOGGER.info(f"Loading `{component}` component.")
             await self.load_module(f"components.{component}")
+        subs = await self.fetch_eventsub_subscriptions()
+        LOGGER.info(f"Current subs: {subs}")
+        async for sub in subs.subscriptions:
+            LOGGER.info(f"Sub: {sub}")
+            if "broadcaster_user_id" in sub.condition:
+                user = await self.fetch_user(id=sub.condition["broadcaster_user_id"])
+                await add_channel(user)
 
     async def event_oauth_authorized(self, payload: twitchio.authentication.UserTokenPayload) -> None:
         await self.add_token(payload.access_token, payload.refresh_token)
@@ -106,7 +114,7 @@ class LeixBot(commands.AutoBot):
         try:
             if "@leixbot" in message.text.lower():
                 await random_reply(self, message)
-            elif message.chatter.name.lower() in self.bot_to_reply:
+            elif message.chatter.name.lower() in self.bot_to_reply and await custom_commands.is_bot_reply(message.broadcaster.id):
                 await random_bot_reply(self, message)
             else:
                 await auto_so(self, message)
@@ -115,6 +123,13 @@ class LeixBot(commands.AutoBot):
 
         await self.process_commands(message)
 
+    async def process_commands(self, payload: twitchio.ChatMessage | twitchio.ChannelPointsRedemptionAdd | twitchio.ChannelPointsRedemptionUpdate) -> None:
+        if payload.text[0] == BOT_PREFIX:
+            cc = await custom_commands.get_command(payload.text.split()[0][1:], payload.broadcaster.id)
+            if cc:
+                await payload.broadcaster.send_message(cc, self.user)
+
+        await super().process_commands(payload)
 
 class General(commands.Component):
     def __init__(self, bot: LeixBot):
@@ -156,23 +171,23 @@ class General(commands.Component):
             await ctx.send("Désolé, ce n'est pas une de mes commandes globales :(")
 
 
-    # @commands.command(name='commandes', aliases=['commands'])
-    # async def commandes(self, ctx: commands.Context):
-    #     """
-    #     Retourne la liste des commandes de LeixBot sur cette chaine
-    #     """
-    #     channel = ctx.author.channel.name
-    #     commands = custom_commands.find_commands_channel(channel)
+    @commands.command(name='commandes', aliases=['commands'])
+    async def commandes(self, ctx: commands.Context):
+        """
+        Retourne la liste des commandes de LeixBot sur cette chaine
+        """
+        channel = ctx.author.channel.name
+        commands = custom_commands.find_commands_channel(channel)
 
-    #     cmd_list = ""
-    #     for command in commands:
-    #         cmd_list += command[0] + ", "
+        cmd_list = ""
+        for command in commands:
+            cmd_list += command[0] + ", "
 
-    #     # Remove last comma and space
-    #     cmd_list = cmd_list[:-2]
-    #     await ctx.send(
-    #         f'La liste de mes commandes sur ce chat: {cmd_list}'
-    #     )
+        # Remove last comma and space
+        cmd_list = cmd_list[:-2]
+        await ctx.send(
+            f'La liste de mes commandes sur ce chat: {cmd_list}'
+        )
 
 
 async def setup_database(db: asqlite.Pool) -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
@@ -204,9 +219,13 @@ def main() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
 
     async def runner() -> None:
-        async with asqlite.create_pool("tokens.db") as tdb:
+        # Initialize the main database pool first
+        await init_database_pool("./data/leixbot.db")
+        
+        # Then create the token database pool
+        async with asqlite.create_pool("./data/tokens.db") as tdb:
             tokens, subs = await setup_database(tdb)
-
+            LOGGER.info(f"Subs: {subs}")
             async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, owner_id=OWNER_ID, prefix=BOT_PREFIX, token_database=tdb) as bot:
                 for pair in tokens:
                     await bot.add_token(*pair)

@@ -1,291 +1,103 @@
-import psycopg
-import aiohttp
-import asyncio
+import asqlite
 import logging
-import os
-from configparser import ConfigParser
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from twitchio import User
 
 LOGGER: logging.Logger = logging.getLogger("DB")
 
-def config(filename='./database_auth.ini', section='postgresql'):
-    # create a parser
-    parser = ConfigParser()
-    # read config file
-    parser.read(filename)
+# Global database pool for shared access
+_db_pool: asqlite.Pool = None
 
-    # get section, default to postgresql
-    db = {}
-    if parser.has_section(section):
-        params = parser.items(section)
-        for param in params:
-            db[param[0]] = param[1]
-    else:
-        raise Exception(
-            'Section {0} not found in the {1} file'.format(section, filename))
+async def init_database_pool(db_path: str = "./data/leixbot.db") -> asqlite.Pool:
+    """Initialize the database pool and create tables"""
+    global _db_pool
+    if _db_pool is None:
+        _db_pool = await asqlite.create_pool(db_path)
+        await create_tables()
+    return _db_pool
 
-    return db
+async def get_database_pool() -> asqlite.Pool:
+    """Get the database pool, initializing if necessary"""
+    if _db_pool is None:
+        return await init_database_pool()
+    return _db_pool
 
-
-async def get_token(user):
-    """ Connects to the PostgreSQL database server and returns user token """
-    conn = None
-    try:
-        # read connection parameters
-        params = config()
-
-        # connect to the PostgreSQL server
-        LOGGER.info('Retrieving access token')
-        conn = psycopg.connect(**params)
-
-        # create a cursor
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(
-            f"SELECT token, refresh_token FROM users where id ='{user}'"
-        )
-        token = cur.fetchone()
-
-        # close the communication with the PostgreSQL
-        cur.close()
-
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
-
-    return await validate(token[0], token[1])
-
-
-async def validate(token, refresh_token):
-    """ Checks if token is valid and refreshes if needed """
-    LOGGER.info('Validating token')
-
-    url = 'https://id.twitch.tv/oauth2'
-    auth = "Bearer " + token
-    id = os.environ['CLIENT_ID']
-    headers = {
-        "Client-Id": id,
-        "Authorization": auth
-    }
-    params = {
-        'grant_type': 'refresh_token',
-        'client_id': os.environ['CLIENT_ID'],
-        'client_secret': os.environ['CLIENT_SECRET'],
-        'refresh_token': refresh_token
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url + '/validate', headers=headers) as resp:
-            if resp.status == 200:
-                return token
-            else:
-                pass
-
-        async with session.post(url + '/token', params=params) as refresh_resp:
-            # Requests new access token
-            # LOGGER.info(await refresh_resp.json())
-            data = await refresh_resp.json()
-            new_token = data['access_token']
-
-            # Updates db
-            try:
-                # read connection parameters
-                params = config()
-
-                # connect to the PostgreSQL server
-                LOGGER.info('Updating access token')
-                conn = psycopg.connect(**params)
-
-                # create a cursor
-                cur = conn.cursor()
-
-                # execute a statement
-                cur.execute(
-                    f"UPDATE users SET token = '{new_token}' WHERE token = '{token}' AND refresh_token = '{refresh_token}'"
-                )
-
-                conn.commit()
-                # close the communication with the PostgreSQL
-                cur.close()
-            except (Exception, psycopg.DatabaseError) as error:
-                LOGGER.error(error)
-            finally:
-                await session.close()
-                if conn is not None:
-                    conn.close()
-                    LOGGER.info('Database connection closed.')
-
-        return new_token
-
-
-def init_channels():
-    """ Connects to the PostgreSQL database server and initializes the channels list """
-    conn = None
-    try:
-        # read connection parameters
-        channels = []
-        params = config(filename='database_commands.ini')
-
-        # connect to the PostgreSQL server
-        LOGGER.info('Initializing channels')
-        conn = psycopg.connect(**params)
-
-        # create a cursor
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(
-            f"SELECT name FROM channels"
-        )
-        channels_raw = cur.fetchall()
-        for channel in channels_raw:
-            channels.append(channel[0])
-
-        # close the communication with the PostgreSQL
-        cur.close()
-
-        return channels
-
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
-
-
-def add_channel(channel, id):
-    """ Connects to the PostgreSQL database server and adds a channel"""
-    conn = None
-    try:
-        # read connection parameters
-        params = config(filename='database_commands.ini')
-
-        # connect to the PostgreSQL server
-        LOGGER.info(f'Adding channel {channel} to db')
-        conn = psycopg.connect(**params)
-
-        # create a cursor
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(
-            "INSERT INTO channels (name, id) VALUES (%s, %s),", (channel, id)
-        )
-
-        conn.commit()
-
-        # close the communication with the PostgreSQL
-        cur.close()
-
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
-
-
-def leave_channel(channel):
-    """ Connects to the PostgreSQL database server and removes a channel"""
-    conn = None
-    try:
-        # read connection parameters
-        channels = []
-        params = config(filename='database_commands.ini')
-
-        # connect to the PostgreSQL server
-        LOGGER.info(f'Removing channel {channel} to db')
-        conn = psycopg.connect(**params)
-
-        # create a cursor
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(
-            "DELETE FROM channels WHERE name=%s", (channel, )
-        )
-
-        conn.commit()
-
-        # close the communication with the PostgreSQL
-        cur.close()
-
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
-
-
-def get_channels_info()->dict:
-    """ Connects to the PostgreSQL database server and removes a channel"""
-    conn = None
-    try:
-        # read connection parameters
-        params = config(filename='database_commands.ini')
-
-        # connect to the PostgreSQL server
-        LOGGER.info(f'Getting channel ids')
-        conn = psycopg.connect(**params)
-
-        # create a cursor
-        cur = conn.cursor()
-
-        # execute a statement
-        cur.execute(
-            "SELECT id, name FROM channels"
-        )
-
-        infos = cur.fetchall()
-        di = {}
-        for id, name in infos:
-            di.setdefault(id, name)
+async def create_tables():
+    """Create all necessary database tables"""
+    async with _db_pool.acquire() as connection:   
+        # Channels table
+        await connection.execute("""
+            CREATE TABLE IF NOT EXISTS channels (
+                channel_id TEXT PRIMARY KEY,
+                name TEXT DEFAULT '',
+                kappagen_cooldown INTEGER DEFAULT 0,
+                bot_reply BOOLEAN DEFAULT TRUE,
+                vip_so BOOLEAN DEFAULT TRUE
+            )
+        """)
         
-        # close the communication with the PostgreSQL
-        cur.close()
+        # Commands table
+        await connection.execute("""
+            CREATE TABLE IF NOT EXISTS commands (
+                command TEXT,
+                channel_id TEXT,
+                text TEXT,
+                PRIMARY KEY (command, channel_id)
+            )
+        """)
+        
+        # Routines table
+        await connection.execute("""
+            CREATE TABLE IF NOT EXISTS routines (
+                channel TEXT,
+                name TEXT,
+                seconds INTEGER,
+                minutes INTEGER,
+                hours INTEGER,
+                routine_text TEXT,
+                PRIMARY KEY (channel, name)
+            )
+        """)
+        
+        # Counters table
+        await connection.execute("""
+            CREATE TABLE IF NOT EXISTS counters (
+                channel TEXT PRIMARY KEY,
+                counter INTEGER DEFAULT 0
+            )
+        """)
 
-        return di
 
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
-
-
-def update_name(id: int, channel: str):
-    """ Connects to the PostgreSQL database server and removes a channel"""
-    conn = None
+async def add_channel(user: User):
+    """ Adds a channel to the database if it doesn't exist """
     try:
-        # read connection parameters
-        params = config(filename='database_commands.ini')
+        pool = await get_database_pool()
+        LOGGER.info(f'Adding channel {user.display_name} to db')
+        
+        async with pool.acquire() as connection:
+            query = "INSERT OR IGNORE INTO channels (channel_id, name) VALUES (?, ?)"
+            await connection.execute(query, (user.id, user.display_name))
+            await connection.commit()
 
-        # connect to the PostgreSQL server
-        LOGGER.info(f'Updating channel {id} with name {channel}')
-        conn = psycopg.connect(**params)
+    except Exception as error:
+        LOGGER.error(f"Database error: {error}")
 
-        # create a cursor
-        cur = conn.cursor()
+async def get_channel_info(id: str) -> dict:
+    """ Gets a channel info from SQLite database """
+    try:
+        pool = await get_database_pool()
+        LOGGER.info('Getting channel info')
+        
+        async with pool.acquire() as connection:
+            query = "SELECT channel_id, name, kappagen_cooldown, bot_reply, vip_so FROM channels WHERE channel_id = ?"
+            async with connection.execute(query, (id,)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return dict(row)
+                return {}
 
-        # execute a statement
-        cur.execute(
-            "UPDATE channels SET name=%s WHERE id=%s", (channel, id)
-        )
-
-        conn.commit()
-
-        # close the communication with the PostgreSQL
-        cur.close()
-
-    except (Exception, psycopg.DatabaseError) as error:
-        LOGGER.error(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            LOGGER.info('Database connection closed.')
+    except Exception as error:
+        LOGGER.error(f"Database error: {error}")
+        return {}

@@ -4,8 +4,8 @@ import re
 from twitchio.ext import commands
 from websockets import connect
 
-# import custom_commands
-from utils import check_cooldown, get_emote_list
+import custom_commands
+from utils import check_cooldown
 
 LOGGER: logging.Logger = logging.getLogger("Components.Visuals")
 
@@ -43,9 +43,9 @@ class Visuals(commands.Component):
         """Incrémente le compteur et lance une animation."""
         channel = ctx.author.channel.name
 
-        value = custom_commands.get_counter(channel)
+        value = await custom_commands.get_counter(channel)
         value += 1
-        custom_commands.set_counter(channel, value)
+        await custom_commands.set_counter(channel, value)
         
         data = {'command' : 'PLAY',
                 'page' : 'RIP',
@@ -66,7 +66,7 @@ class Visuals(commands.Component):
         """
         channel = ctx.author.channel.name
         
-        custom_commands.set_counter(channel, 0)
+        await custom_commands.set_counter(channel, 0)
 
         data = {'command' : 'PLAY',
         'page' : 'RIP',
@@ -85,7 +85,7 @@ class Visuals(commands.Component):
         """Règle le compteur à la valeur donnée et lance une animation."""
 
         channel = ctx.author.channel.name
-        custom_commands.set_counter(channel, int(value))
+        await custom_commands.set_counter(channel, int(value))
 
         data = {'command' : 'PLAY',
                 'page' : 'RIP',
@@ -106,10 +106,10 @@ class Visuals(commands.Component):
         les emotes spécifiées.
         Ex: !kappagen 123 emote1 emote2 ...
         """
-        user = await ctx.author.channel.user()
+        user = ctx.broadcaster
 
         # Exits if the user is on cooldown
-        if not (check_cooldown(user.name, ctx.author.name)):
+        if not (await check_cooldown(user.name, ctx.author.name)):
             return
         
         # Sets default value if not passed or invalid
@@ -128,7 +128,7 @@ class Visuals(commands.Component):
                     "https://static-cdn.jtvnw.net/emoticons/v2/" + emote_clean + "/default/light/3.0"
                 )
         else:
-            emotes_urls = await get_emote_list(user)
+            emotes_urls = [e.images['url_4x'] for e in await ctx.brodcaster.fetch_channel_emotes()]
 
         data = {'command' : 'PLAY',
                 'page' : 'KAPPAGEN',
@@ -152,7 +152,7 @@ class Visuals(commands.Component):
             return
 
         if value > 0:
-            custom_commands.set_kappagen_cooldown(
+            await custom_commands.set_kappagen_cooldown(
                 ctx.author.channel.name, value)
 
 
