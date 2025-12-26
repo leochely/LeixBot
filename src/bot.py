@@ -49,7 +49,7 @@ class LeixBot(commands.AutoBot):
         subs = await self.fetch_eventsub_subscriptions()
         LOGGER.info(f"Current subs: {subs}")
         async for sub in subs.subscriptions:
-            LOGGER.info(f"Sub: {sub}")
+            LOGGER.debug(f"Sub: {sub}")
             if "broadcaster_user_id" in sub.condition:
                 user = await self.fetch_user(id=sub.condition["broadcaster_user_id"])
                 await add_channel(user)
@@ -72,6 +72,7 @@ class LeixBot(commands.AutoBot):
             eventsub.AdBreakBeginSubscription(broadcaster_user_id=payload.user_id),
             eventsub.ChannelBitsUseSubscription(broadcaster_user_id=payload.user_id),
             eventsub.HypeTrainBeginSubscription(broadcaster_user_id=payload.user_id),
+            eventsub.ChannelUpdateSubscription(broadcaster_user_id=payload.user_id),
             # TODO: Add more subscriptions here...
         ]
 
@@ -225,12 +226,11 @@ def main() -> None:
         # Then create the token database pool
         async with asqlite.create_pool("./data/tokens.db") as tdb:
             tokens, subs = await setup_database(tdb)
-            LOGGER.info(f"Subs: {subs}")
-            async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, owner_id=OWNER_ID, prefix=BOT_PREFIX, token_database=tdb) as bot:
+            async with LeixBot(subs=subs, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, bot_id=BOT_ID, owner_id=OWNER_ID, prefix=BOT_PREFIX, token_database=tdb, load_tokens=True) as bot:
                 for pair in tokens:
                     await bot.add_token(*pair)
 
-                await bot.start(load_tokens=False)
+                await bot.start(load_tokens=False, save_tokens=True)
 
     try:
         asyncio.run(runner())

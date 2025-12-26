@@ -25,7 +25,7 @@ uv sync
 uv run --env-file=.env src/bot.py 
 ```
 
-To give the bot the right scopes, visit: http://localhost:4343/oauth?scopes=user:read:chat%20user:write:chat%20user:bot+moderator:read:blocked_terms+moderator:read:chat_settings+moderator:read:unban_requests+moderator:manage:banned_users+moderator:manage:chat_messages+moderator:manage:warnings+moderator:read:moderators+moderator:read:vips+moderator:read:suspicious_users+moderator:read:followers+moderator:manage:announcements+moderator:read:chatters+moderator:read:shield_mode+moderator:manage:shield_mode+moderator:read:automod_settings+moderator:manage:automod_settings+moderator:manage:blocked_terms+moderator:manage:chat_settings+channel:read:ads&force_verify=true
+To give the bot the right scopes, visit: http://localhost:4343/oauth?scopes=user:read:chat%20user:write:chat%20user:bot+moderator:read:blocked_terms+moderator:read:chat_settings+moderator:read:unban_requests+moderator:manage:banned_users+channel:manage:broadcast+moderator:manage:chat_messages+moderator:manage:warnings+moderator:read:moderators+moderator:read:vips+moderator:read:suspicious_users+moderator:read:followers+moderator:manage:announcements+moderator:read:chatters+moderator:read:shield_mode+moderator:manage:shield_mode+moderator:read:automod_settings+moderator:manage:automod_settings+moderator:manage:blocked_terms+moderator:manage:chat_settings+channel:read:ads&force_verify=true
 
 
 

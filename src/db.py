@@ -74,7 +74,7 @@ async def add_channel(user: User):
     """ Adds a channel to the database if it doesn't exist """
     try:
         pool = await get_database_pool()
-        LOGGER.info(f'Adding channel {user.display_name} to db')
+        LOGGER.debug(f'Adding channel {user.display_name} to db')
         
         async with pool.acquire() as connection:
             query = "INSERT OR IGNORE INTO channels (channel_id, name) VALUES (?, ?)"
@@ -88,7 +88,7 @@ async def get_channel_info(id: str) -> dict:
     """ Gets a channel info from SQLite database """
     try:
         pool = await get_database_pool()
-        LOGGER.info('Getting channel info')
+        LOGGER.debug('Getting channel info')
         
         async with pool.acquire() as connection:
             query = "SELECT channel_id, name, kappagen_cooldown, bot_reply, vip_so FROM channels WHERE channel_id = ?"

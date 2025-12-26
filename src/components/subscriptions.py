@@ -15,7 +15,7 @@ class Subscriptions(commands.Component):
         follower = message.user.name
         LOGGER.info(f"New follower {follower} on channel {channel}")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Merci pour le follow {follower}! PogChamp",
         )
 
@@ -25,7 +25,7 @@ class Subscriptions(commands.Component):
         user = message.user.name
         LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier}")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"{user} rejoint la legion au tier {message.tier}! PogChamp",
         )
 
@@ -36,7 +36,7 @@ class Subscriptions(commands.Component):
 
         LOGGER.debug(f"New subscription message on channel {channel} by user {user} with plan {message.tier} and message {message.text}")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"{user} est dans la legion depuis {message.cumulative_months}! PogChamp",
         )
 
@@ -44,7 +44,7 @@ class Subscriptions(commands.Component):
     async def event_stream_online(self, message: twitchio.StreamOnline) -> None:
         LOGGER.info(f"{message.broadcaster.name} is live!")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Coucou {message.broadcaster.display_name}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
         )
 
@@ -52,7 +52,7 @@ class Subscriptions(commands.Component):
     async def event_stream_offline(self, message: twitchio.StreamOffline) -> None:
         LOGGER.info(f"{message.broadcaster.name} is offline now.")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Au revoir {message.broadcaster.display_name}! A la prochaine fois! DinoDance",
         )
 
@@ -60,7 +60,7 @@ class Subscriptions(commands.Component):
     async def event_raid(self, message: twitchio.ChannelRaid) -> None:
         LOGGER.info(f"{message.from_broadcaster} is raiding {message.to_broadcaster} with {message.viewer_count} viewers!")
         await message.to_broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Il faut se defendre SwiftRage Nous sommes raid par {message.from_broadcaster.display_name} avec ses {message.viewer_count} margoulins!",
         )
 
@@ -68,7 +68,7 @@ class Subscriptions(commands.Component):
     async def event_ad_break(self, message: twitchio.ChannelAdBreakBegin) -> None:
         LOGGER.info(f"Ad break started on {message.broadcaster.name} for {message.duration} seconds!")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Pub en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid",
         )
 
@@ -76,7 +76,7 @@ class Subscriptions(commands.Component):
     async def event_bits_used(self, message: twitchio.ChannelBitsUse) -> None:
         LOGGER.info(f"{message.user.name} used {message.bits} bits on {message.broadcaster.display_name}!")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Merci {message.user.display_name} pour les {message.bits} bits! Tu connais TwitchRPG? 👀",
         )
 
@@ -84,7 +84,7 @@ class Subscriptions(commands.Component):
     async def event_hype_train_begin(self, message: twitchio.HypeTrainBegin) -> None:
         LOGGER.info(f"Hype Train started on {message.broadcaster.name}!")
         await message.broadcaster.send_message(
-            sender=self.bot_id,
+            sender=self.bot.bot_id,
             message=f"Un Train de la Hype commence! Allons-y tout le monde! PewPewPew",
         )
 
