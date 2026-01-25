@@ -61,7 +61,6 @@ class Mod(commands.Component):
         await ctx.send(f"{user.name} a été mis en timeout pour {duration} secondes SwiftRage")
         LOGGER.info(f'User {user.name} has been timed out for {duration} seconds')
 
-
     @commands.command(name="setgame")
     async def set_game(self, ctx: commands.Context, *, game_name: str):
         """PAS FONCTIONNEL. Change le jeu affiché sur le stream. Requiert privilège modérateur.

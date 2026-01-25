@@ -3,6 +3,8 @@ import logging
 import twitchio
 from twitchio.ext import commands
 
+from custom_commands import is_ads_warning
+
 LOGGER: logging.Logger = logging.getLogger("Components.Subscriptions")
 
 class Subscriptions(commands.Component):
@@ -67,10 +69,11 @@ class Subscriptions(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, message: twitchio.ChannelAdBreakBegin) -> None:
         LOGGER.info(f"Ad break started on {message.broadcaster.name} for {message.duration} seconds!")
-        await message.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=f"Pub en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid",
-        )
+        if await is_ads_warning(message.broadcaster.id):
+            await message.broadcaster.send_message(
+                sender=self.bot.bot_id,
+                message=f"Pub en cours mais ne vous inquietez pas, LeixBot ne prend pas de pause MrDestructoid",
+            )
 
     @commands.Component.listener()
     async def event_bits_used(self, message: twitchio.ChannelBitsUse) -> None:

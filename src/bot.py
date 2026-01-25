@@ -6,6 +6,7 @@ import typing as t
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import db
 import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub, web

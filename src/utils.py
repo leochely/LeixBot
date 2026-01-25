@@ -190,9 +190,8 @@ def check_for_bot(message):
     # TODO: Add a bot detection system
     return True
 
-
+### KAPPAGEN COOLDOWNS ###
 used = {}
-
 
 async def check_cooldown(channel, user):
     cooldownlength = await get_kappagen_cooldown(channel)

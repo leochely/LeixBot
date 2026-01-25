@@ -307,7 +307,6 @@ dependencies = [
     { name = "websocket-client" },
     { name = "websockets" },
     { name = "wikipedia-api" },
-    { name = "wikiquote" },
     { name = "wrapt" },
     { name = "yarl" },
     { name = "zipp" },
@@ -353,7 +352,7 @@ requires-dist = [
     { name = "sniffio", marker = "python_full_version >= '3.7'", specifier = "==1.3.1" },
     { name = "soupsieve", marker = "python_full_version >= '3.9'", specifier = "==2.8" },
     { name = "starlette", specifier = "==0.48.0" },
-    { name = "twitchio", extras = ["starlette"], marker = "python_full_version >= '3.11'", specifier = "==3.1.0" },
+    { name = "twitchio", extras = ["starlette"], specifier = "==3.2.0" },
     { name = "typing-extensions", marker = "python_full_version < '3.13'", specifier = "==4.15.0" },
     { name = "tzdata", marker = "sys_platform == 'win32'", specifier = "==2025.2" },
     { name = "urllib3", marker = "python_full_version >= '2.7' and python_full_version < '4'", specifier = "==1.26.8" },
@@ -361,7 +360,6 @@ requires-dist = [
     { name = "websocket-client", marker = "python_full_version >= '3.8'", specifier = "==1.7.0" },
     { name = "websockets", marker = "python_full_version >= '3.8'", specifier = "==12.0" },
     { name = "wikipedia-api", specifier = "==0.5.4" },
-    { name = "wikiquote", marker = "python_full_version >= '3.6' and python_full_version < '4'", specifier = "==0.1.16" },
     { name = "wrapt", marker = "python_full_version >= '3.6'", specifier = "==1.16.0" },
     { name = "yarl", marker = "python_full_version >= '3.9'", specifier = "==1.20.1" },
     { name = "zipp", marker = "python_full_version >= '3.8'", specifier = "==3.17.0" },
@@ -533,14 +531,14 @@ wheels = [
 
 [[package]]
 name = "twitchio"
-version = "3.1.0"
+version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/03/71aad99700042c98e7194c1d8778dc6ccc7b8a8967afd61bec63da68cf27/twitchio-3.1.0.tar.gz", hash = "sha256:2b1cac9e857bc524cb947c5284e704728a0561b372f1ac170f5de1714e8f8d56", size = 244969, upload-time = "2025-08-10T10:42:05.236Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/0a/c3a99aba21e6f293939a15215a197836c797add75cd3afd1c4e84afc962b/twitchio-3.2.0.tar.gz", hash = "sha256:04320d99306da923852e61f8f4469908845374123a65e5fe7a14b45e916442ff", size = 248437, upload-time = "2026-01-25T12:06:05.767Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/f1/3b3ec7cf2784f4a0745f006c1a5c130a3b4fbddcbab457fa80e5b86f8fb7/twitchio-3.1.0-py3-none-any.whl", hash = "sha256:d275d5d8c6879fae7212045e6bc08068166e3ab2824b5cbf78c82737ea94b636", size = 316539, upload-time = "2025-08-10T10:42:03.42Z" },
+    { url = "https://files.pythonhosted.org/packages/8e/4f/b4edef42783fc5b4189637513bfa10eb1ccd1f23d09d7bface294a35d828/twitchio-3.2.0-py3-none-any.whl", hash = "sha256:c7df722fa6c9a7c80404db1965d7b1ac51993f79b90673011107a65c32b9e2fc", size = 320411, upload-time = "2026-01-25T12:06:03.644Z" },
 ]
 
 [package.optional-dependencies]
@@ -650,15 +648,6 @@ dependencies = [
     { name = "requests" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ef/3d/289963bbf51f8d00cdf7483cdc2baee25ba877e8b4eb72157c47211e3b57/Wikipedia-API-0.5.4.tar.gz", hash = "sha256:5173d4db641cdb78d96f2b052df2232bcdc00cf32a424c43402958a40f783992", size = 18336, upload-time = "2020-01-26T21:17:38.141Z" }
-
-[[package]]
-name = "wikiquote"
-version = "0.1.16"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "lxml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4f/03/2518379e2b0157389a228bb9a8e832de1b38c7e9f0c185146eea4cac1434/wikiquote-0.1.16.tar.gz", hash = "sha256:4d995cb872096343ed6cb095b8d57706f089723c488584c507eb07c127ac169f", size = 12680, upload-time = "2021-07-27T21:54:16.249Z" }
 
 [[package]]
 name = "wrapt"

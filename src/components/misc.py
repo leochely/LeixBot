@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 import secrets
 import logging
 
-import wikiquote
 import wikipediaapi
 import humanize
 
@@ -123,31 +122,6 @@ class Misc(commands.Component):
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
 
-    @commands.command(name="quote", aliases=["citation"])
-    async def quote(self, ctx: commands.Context, *author):
-        """Renvoie une citation aléatoire depuis wikiquote. L'auteur peut etre
-        spécifié.
-        Ex: !quote Kojima
-        """
-        try:
-            if not author:
-                author = wikiquote.random_titles(max_titles=1, lang='fr')
-            else:
-                author = ' '.join(author)
-                author = wikiquote.search(author, lang='fr')
-
-            author = secrets.choice(author)
-            quotes = [
-                x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
-            ]
-            quote = secrets.choice(quotes)
-            await ctx.send(f'{quote} - {author}')
-
-            if not quote:
-                await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
-        except Exception as e:
-            LOGGER.error(f"Erreur wikipedia: {e}")
-            await ctx.send(f"Cette commande est pour l'instant cassee :( Je travaille d'arrache pied a la reparer!")
 
     @commands.command(name="wikipedia", aliases=['wiki'])
     async def wikipedia(self, ctx: commands.Context, *query):

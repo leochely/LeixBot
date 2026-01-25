@@ -34,7 +34,8 @@ async def create_tables():
                 name TEXT DEFAULT '',
                 kappagen_cooldown INTEGER DEFAULT 0,
                 bot_reply BOOLEAN DEFAULT TRUE,
-                vip_so BOOLEAN DEFAULT TRUE
+                vip_so BOOLEAN DEFAULT TRUE,
+                ads_warning BOOLEAN DEFAULT FALSE
             )
         """)
         
@@ -91,7 +92,7 @@ async def get_channel_info(id: str) -> dict:
         LOGGER.debug('Getting channel info')
         
         async with pool.acquire() as connection:
-            query = "SELECT channel_id, name, kappagen_cooldown, bot_reply, vip_so FROM channels WHERE channel_id = ?"
+            query = "SELECT * FROM channels WHERE channel_id = ?"
             async with connection.execute(query, (id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:

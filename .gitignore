@@ -8,3 +8,4 @@ __pycache__/*
 .python-version
 *.db*
 *.tokens.json
+.venv

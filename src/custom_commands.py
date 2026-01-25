@@ -251,3 +251,32 @@ async def is_vip_so(channel_id) -> bool:
     except Exception as error:
         LOGGER.error(f"Database error: {error}")
         return True
+
+async def is_ads_warning(channel_id: str) -> bool:
+    try:
+        pool = await get_database_pool()
+        LOGGER.info(f'Getting ads warning status for channel {channel_id} from db')
+        
+        async with pool.acquire() as connection:
+            query = "SELECT ads_warning FROM channels WHERE channel_id = ?"
+            async with connection.execute(query, (channel_id,)) as cursor:
+                row = await cursor.fetchone()
+                return row["ads_warning"] if row else False
+
+    except Exception as error:
+        LOGGER.error(f"Database error: {error}")
+        return False
+
+async def update_ads_warning(channel_id: str, ads_warning: bool):
+    """Enables or disables ads warning before ad breaks"""
+    try:
+        pool = await get_database_pool()
+        LOGGER.info(f'Updating ads warning for channel {channel_id}')
+        
+        async with pool.acquire() as connection:
+            query = "INSERT OR REPLACE INTO channels (channel_id, ads_warning) VALUES (?, ?)"
+            await connection.execute(query, (channel_id, ads_warning))
+            await connection.commit()
+
+    except Exception as error:
+        LOGGER.error(f"Database error: {error}")
