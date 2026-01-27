@@ -14,7 +14,7 @@ class Subscriptions(commands.Component):
     @commands.Component.listener()
     async def event_follow(self, message: twitchio.ChannelFollow) -> None:
         channel = message.broadcaster.name
-        follower = message.user.name
+        follower = message.user.display_name
         LOGGER.info(f"New follower {follower} on channel {channel}")
         await message.broadcaster.send_message(
             sender=self.bot.bot_id,
@@ -25,18 +25,17 @@ class Subscriptions(commands.Component):
     async def event_subscription(self, message: twitchio.ChannelSubscribe) -> None:
         channel = message.broadcaster.name
         user = message.user.name
-        LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier}")
+        LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier/1000}")
         await message.broadcaster.send_message(
             sender=self.bot.bot_id,
-            message=f"{user} rejoint la legion au tier {message.tier}! PogChamp",
+            message=f"{user} rejoint la legion au tier {message.tier/1000}! PogChamp",
         )
 
     @commands.Component.listener()
     async def event_subscription_message(self, message: twitchio.ChannelSubscriptionMessage) -> None:
         channel = message.broadcaster.name
-        user = message.user.name
-
-        LOGGER.debug(f"New subscription message on channel {channel} by user {user} with plan {message.tier} and message {message.text}")
+        user = message.user.display_name
+        LOGGER.debug(f"New subscription message on channel {channel} by user {user} with tier {message.tier/1000} and message {message.text}")
         await message.broadcaster.send_message(
             sender=self.bot.bot_id,
             message=f"{user} est dans la legion depuis {message.cumulative_months}! PogChamp",
@@ -45,18 +44,12 @@ class Subscriptions(commands.Component):
     @commands.Component.listener()
     async def event_stream_online(self, message: twitchio.StreamOnline) -> None:
         LOGGER.info(f"{message.broadcaster.name} is live!")
-        await message.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=f"Coucou {message.broadcaster.display_name}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp",
-        )
+        await message.respond(f"Coucou {message.broadcaster.display_name}, votre fidele LeixBot est pret a vous servir pour votre stream! PogChamp")
 
     @commands.Component.listener()
     async def event_stream_offline(self, message: twitchio.StreamOffline) -> None:
         LOGGER.info(f"{message.broadcaster.name} is offline now.")
-        await message.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=f"Au revoir {message.broadcaster.display_name}! A la prochaine fois! DinoDance",
-        )
+        await message.respond(f"Au revoir {message.broadcaster.display_name}! A la prochaine fois! DinoDance")
 
     @commands.Component.listener()
     async def event_raid(self, message: twitchio.ChannelRaid) -> None:
