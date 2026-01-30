@@ -32,7 +32,7 @@ class Mod(commands.Component):
             reason = ' '.join(reason)
 
         await ctx.broadcaster.ban_user(user=user, reason=reason)
-        await ctx.send(f"Au revoir {user.name} SwiftRage")
+        await ctx.send(f"Au revoir {user.display_name} SwiftRage")
         LOGGER.info(f'User {user.name} has been banned')
         
 
@@ -43,7 +43,7 @@ class Mod(commands.Component):
         Ex: !unban leix34
         """
         await ctx.broadcaster.unban_user(moderator=self.bot.user, user_id=user.id)
-        await ctx.send(f"Bon retour parmi nous {user.name} HeyGuys !")
+        await ctx.send(f"Bon retour parmi nous {user.display_name} HeyGuys !")
         LOGGER.info(f'User {user.name} has been unbanned')
 
     @commands.command(name="to")
@@ -58,7 +58,7 @@ class Mod(commands.Component):
             reason = ' '.join(reason)
 
         await ctx.broadcaster.timeout_user(moderator=self.bot.user, user=user, duration=duration, reason=reason)
-        await ctx.send(f"{user.name} a été mis en timeout pour {duration} secondes SwiftRage")
+        await ctx.send(f"{user.display_name} a été mis en timeout pour {duration} secondes SwiftRage")
         LOGGER.info(f'User {user.name} has been timed out for {duration} seconds')
 
     @commands.command(name="setgame")

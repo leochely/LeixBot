@@ -24,11 +24,10 @@ class Subscriptions(commands.Component):
     @commands.Component.listener()  
     async def event_subscription(self, message: twitchio.ChannelSubscribe) -> None:
         channel = message.broadcaster.name
-        user = message.user.name
-        LOGGER.debug(f"New subscription on channel {channel} by user {user} with plan {message.tier/1000}")
+        LOGGER.debug(f"New subscription on channel {channel} by user {message.user.name} with plan {message.tier/1000}")
         await message.broadcaster.send_message(
             sender=self.bot.bot_id,
-            message=f"{user} rejoint la legion au tier {message.tier/1000}! PogChamp",
+            message=f"{message.user.display_name} rejoint la legion au tier {message.tier/1000}! PogChamp",
         )
 
     @commands.Component.listener()
