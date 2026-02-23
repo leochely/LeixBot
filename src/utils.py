@@ -1,14 +1,9 @@
 import random
 import logging
-import aiohttp
-import os
 import re
-import json
-from websockets import connect
-import time
 
 from datetime import datetime, timezone
-from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
+from custom_commands import is_vip_so
 
 from twitchio import ChatMessage
 from twitchio.ext import commands
@@ -112,8 +107,14 @@ artist_replies = [
 ]
 
 
-vip_info = {}
-async def auto_so(bot: commands.AutoBot, message: ChatMessage):
+async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info: dict):
+    if not await is_vip_so(message.broadcaster.id):
+        return
+    # Check if user is VIP or moderator
+
+    if not (message.chatter.moderator or message.chatter.vip):
+        return
+    
     vip_name = message.chatter.display_name
     vip_channel_info = await bot.fetch_channel(message.chatter.id)
     
@@ -121,10 +122,6 @@ async def auto_so(bot: commands.AutoBot, message: ChatMessage):
         user_ids=[
             message.broadcaster.id,
         ])
-    
-    # Check if user is VIP or moderator
-    if not (message.chatter.moderator or message.chatter.vip):
-        return
 
     # Check if automatic shoutout already triggered in the ongoing stream
     if (len(stream) == 0 or

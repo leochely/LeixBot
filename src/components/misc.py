@@ -122,7 +122,6 @@ class Misc(commands.Component):
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
 
-
     @commands.command(name="wikipedia", aliases=['wiki'])
     async def wikipedia(self, ctx: commands.Context, *query):
         """Renvoie la definition wikipedia d'un mot.
@@ -138,8 +137,6 @@ class Misc(commands.Component):
                 await ctx.send('. '.join(page.summary.splitlines()[0][:450].split(".")[:-1]) + '. ' + page.fullurl)
         else:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
-
-
 
     @commands.command(name="pileouface", aliases=['pile', 'face', 'coinflip'])
     async def pileouface(self, ctx: commands.Context, *query):
@@ -177,7 +174,7 @@ class Misc(commands.Component):
             await ctx.send(self.game_id[ctx.broadcaster.id])
 
     @commands.is_moderator()
-    @ commands.command(name="setId")
+    @ commands.command(name="setId", aliases=['setid'])
     async def setId(self, ctx: commands.Context, *id):
         """Regle l'id de la session. Ex: !id abc 1234"""
         self.game_id[ctx.broadcaster.id] = ' '.join(id)

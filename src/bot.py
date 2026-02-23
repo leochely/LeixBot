@@ -34,6 +34,7 @@ class LeixBot(commands.AutoBot):
             p.stem for p in Path(".").glob("./components/*.py")
         ]
         self.bot_to_reply = ['wizebot', 'streamelements', 'nightbot', 'moobot']
+        self.vip_so = {}
 
         LOGGER.info(f"Found components: {self._components_names}")
         super().__init__(*args, **kwargs, 
@@ -54,6 +55,7 @@ class LeixBot(commands.AutoBot):
             if "broadcaster_user_id" in sub.condition:
                 user = await self.fetch_user(id=sub.condition["broadcaster_user_id"])
                 await add_channel(user)
+                self.vip_so[user.id] = {}
 
     async def event_oauth_authorized(self, payload: twitchio.authentication.UserTokenPayload) -> None:
         await self.add_token(payload.access_token, payload.refresh_token)
@@ -119,7 +121,7 @@ class LeixBot(commands.AutoBot):
             elif message.chatter.name.lower() in self.bot_to_reply and await custom_commands.is_bot_reply(message.broadcaster.id):
                 await random_bot_reply(self, message)
             else:
-                await auto_so(self, message)
+                await auto_so(self, message, self.vip_so.get(message.broadcaster.id))
         except Exception as e:
             LOGGER.error(f"Error processing message {message}: {e}")
 

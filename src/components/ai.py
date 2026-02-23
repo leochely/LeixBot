@@ -47,7 +47,8 @@ class AI(commands.Component):
                         "content":response
                     },
                 )
-                response_chunked = wrap(response, 500)
+                response_chunked = wrap(response, 450)
+                logging.info(f"Réponse de l'IA pour {user}: {response}")
                 for chunk in response_chunked:
                     await ctx.reply(chunk)
 
