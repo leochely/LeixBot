@@ -13,10 +13,8 @@ aiosignal==1.3.1
     # via
     #   leixbot (pyproject.toml)
     #   aiohttp
-aiounittest==1.4.2
-    # via
-    #   leixbot (pyproject.toml)
-    #   howlongtobeatpy
+aiounittest==1.5.0
+    # via howlongtobeatpy
 anyio==4.10.0
     # via
     #   leixbot (pyproject.toml)
@@ -68,7 +66,7 @@ h11==0.16.0
     # via
     #   leixbot (pyproject.toml)
     #   uvicorn
-howlongtobeatpy==1.0.18
+howlongtobeatpy==1.0.20
     # via leixbot (pyproject.toml)
 humanize==3.13.1
     # via leixbot (pyproject.toml)
@@ -81,9 +79,7 @@ idna==3.3
 iso8601==1.0.0
     # via leixbot (pyproject.toml)
 lxml==4.9.4
-    # via
-    #   leixbot (pyproject.toml)
-    #   wikiquote
+    # via leixbot (pyproject.toml)
 multidict==6.6.4
     # via
     #   leixbot (pyproject.toml)
@@ -97,6 +93,8 @@ propcache==0.3.2
     #   aiohttp
     #   yarl
 pyserial==3.5
+    # via leixbot (pyproject.toml)
+python-dotenv==1.2.1
     # via leixbot (pyproject.toml)
 python-engineio==4.3.2
     # via
@@ -121,7 +119,7 @@ starlette==0.48.0
     # via
     #   leixbot (pyproject.toml)
     #   twitchio
-twitchio==3.1.0
+twitchio==3.2.0
     # via leixbot (pyproject.toml)
 typing-extensions==4.15.0
     # via
@@ -144,8 +142,6 @@ websocket-client==1.7.0
 websockets==12.0
     # via leixbot (pyproject.toml)
 wikipedia-api==0.5.4
-    # via leixbot (pyproject.toml)
-wikiquote==0.1.16
     # via leixbot (pyproject.toml)
 wrapt==1.16.0
     # via
