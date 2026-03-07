@@ -22,7 +22,7 @@ dependencies = [
     "fake-useragent==2.2.0 ; python_full_version >= '3.9'",
     "frozenlist==1.4.1 ; python_full_version >= '3.8'",
     "h11==0.16.0 ; python_full_version >= '3.8'",
-    "howlongtobeatpy==1.0.19",
+    "howlongtobeatpy==1.0.20",
     "humanize==3.13.1 ; python_full_version >= '3.6'",
     "idna==3.3 ; python_full_version >= '3.5'",
     "iso8601==1.0.0 ; python_full_version >= '3.6.2' and python_full_version < '4'",

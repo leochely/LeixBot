@@ -220,7 +220,7 @@ wheels = [
 
 [[package]]
 name = "howlongtobeatpy"
-version = "1.0.19"
+version = "1.0.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -229,9 +229,9 @@ dependencies = [
     { name = "fake-useragent" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/67/f3/1c65a43f072ab65d9fd509279491b67b6c541ad25653896a3ec0d4dbd6cb/howlongtobeatpy-1.0.19.tar.gz", hash = "sha256:c57d5beff4c8e5f7b646bbb1fea70f2f86ae317a3feaae110bf8ee59fbb858f4", size = 16073, upload-time = "2025-11-27T12:07:52.301Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/59/a1/cd3563effacb56a5d71227da57e7843f136a67690301e34f88f21c38450b/howlongtobeatpy-1.0.20.tar.gz", hash = "sha256:2a34c83e5c792c0fa46e122c2884c6275f9fffe5fa9ad113b0433876fdbd1d3a", size = 16190, upload-time = "2026-02-06T13:25:29.397Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/0c/a3c1bd16715a3f246e6dd7a9a45a71da602180b496e16edf8b6f598af647/howlongtobeatpy-1.0.19-py3-none-any.whl", hash = "sha256:7f308f0c23c787169eabc6d91dbf464454bb548882013b321283f51c3a325b27", size = 13355, upload-time = "2025-11-27T12:07:51.045Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/a2/292efe34bfd8708e06f8d64aa3d44a4391fba6924327e8db6f1d7cac5d8c/howlongtobeatpy-1.0.20-py3-none-any.whl", hash = "sha256:60927a3bae2f86be7f2815e9f9b3cd21a241cb0141673791adc1317e933c4b6e", size = 13486, upload-time = "2026-02-06T13:25:28.151Z" },
 ]
 
 [[package]]
@@ -336,7 +336,7 @@ requires-dist = [
     { name = "fake-useragent", marker = "python_full_version >= '3.9'", specifier = "==2.2.0" },
     { name = "frozenlist", marker = "python_full_version >= '3.8'", specifier = "==1.4.1" },
     { name = "h11", marker = "python_full_version >= '3.8'", specifier = "==0.16.0" },
-    { name = "howlongtobeatpy", specifier = "==1.0.19" },
+    { name = "howlongtobeatpy", specifier = "==1.0.20" },
     { name = "humanize", marker = "python_full_version >= '3.6'", specifier = "==3.13.1" },
     { name = "idna", marker = "python_full_version >= '3.5'", specifier = "==3.3" },
     { name = "iso8601", marker = "python_full_version >= '3.6.2' and python_full_version < '4'", specifier = "==1.0.0" },
