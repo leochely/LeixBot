@@ -12,7 +12,7 @@ LOGGER: logging.Logger = logging.getLogger("Utils")
 
 ### Replies ###
 game_replies = {
-    'Guilty Gear: Strive':                 ['#10HitPetitPoingCombo',
+    'Guilty Gear: Strive':                  ['#10HitPetitPoingCombo',
                                             'MET TA GARDE',
                                             'Arrête de piffer tes ults SwiftRage',
                                             'Tu main Faust? leix34Trigerred',
@@ -20,19 +20,19 @@ game_replies = {
                                             'Tu main May? WutFace',
                                             'DONT LOOK BACK SwiftRage',
                                             'Le choppeur fou PogChamp'],
-    'Monster Hunter: World':               ['Arrête de critiquer les hitboxes stp Kappa',
+    'Monster Hunter: World':                ['Arrête de critiquer les hitboxes stp Kappa',
                                             '#FixTheClaw',
                                             'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
                                             "RisE C'eSt B1",
                                             'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood'],
-    'DOOM Eternal':                        ['RIP AND TEAR leix34Trigerred',
+    'DOOM Eternal':                         ['RIP AND TEAR leix34Trigerred',
                                             'Meurs démon SwiftRage',
                                             '#BloodPunchFixed', ],
-    'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
+    'Monster Hunter Generations Ultimate':  ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
                                             "J'ai beau être un robot, j'ai mal aux yeux devant GU smallp9EuuuuuH",
                                             'Toi aussi tu es hébété devant le MALAISE du Tigrex??',
                                             "Je note ton message 6 sur l'échelle de MALAISE du Diablos Noir"],
-    'Monster Hunter Rise':                 ['World > Rise Kappa',
+    'Monster Hunter Rise':                  ['World > Rise Kappa',
                                             "Comment s'appelle ton palico? <3",
                                             "Comment s'appelle ton doggo? <3",
                                             '#TeamMarteau',
@@ -40,9 +40,9 @@ game_replies = {
                                             'Tiens, prend ce filoptère <3',
                                             '#TeamGS',
                                             'Fais gaffe, il y a un narga malaisant derrière toi!'],
-    'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
+    'Middle-earth: Shadow of War':          ['La fosse SwiftRage',
                                             'Je suis enragé par ton message SwiftRage'],
-    'Elden Ring':                          ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
+    'Elden Ring':                           ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
                                             '#TeamClaymore',
                                             '#TeamEspadon',
                                             "Le cheval magique c'est vraiment génial!",
@@ -90,7 +90,9 @@ game_replies = {
     'Warhammer 40,000: Space Marine II':    ['FOR THE EMPEROR!',
                                              'Guys, full heal at drop pod',
                                              'Emmenez ce genogerme au bout mon frere!'],
-    'Monster Hunter Wilds':                ['Jin Dahaad!', "Cha'ah Doudoud!"]
+    'Monster Hunter Wilds':                 ['Jin Dahaad!', "Cha'ah Doudoud!"],
+    'Death Stranding':                      ['Moi, je pisse droit moi'],
+    "Death Stranding: Director's Cut":      ['Moi, je pisse droit moi'],
 
 }
 
