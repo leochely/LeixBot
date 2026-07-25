@@ -1,0 +1,12 @@
+services:
+  leixbot:
+    build: .
+    restart: always
+    env_file: ".env"
+    working_dir: /app/src
+    ports:
+      - 4343:4343
+    volumes:
+      - ./:/app
+      - ./src/data:/app/data
+    command: uv run python -m watchfiles  --filter python " uv run bot.py"

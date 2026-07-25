@@ -5,3 +5,7 @@ Pipfile*
 __pycache__/*
 .vscode/*
 *.pyc
+.python-version
+*.db*
+*.tokens.json
+.venv

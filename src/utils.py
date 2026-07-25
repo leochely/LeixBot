@@ -1,23 +1,18 @@
 import random
 import logging
-import aiohttp
-import os
 import re
-import json
-from websockets import connect
-import time
 
-from datetime import datetime, timedelta, timezone
-from db import get_token
-from custom_commands import get_kappagen_cooldown, is_vip_so, is_bot_reply
+from datetime import datetime, timezone
+from custom_commands import is_vip_so
 
-from twitchio import User, Message
+from twitchio import ChatMessage
 from twitchio.ext import commands
 
+LOGGER: logging.Logger = logging.getLogger("Utils")
 
 ### Replies ###
 game_replies = {
-    'Guilty Gear: Strive':                 ['#10HitPetitPoingCombo',
+    'Guilty Gear: Strive':                  ['#10HitPetitPoingCombo',
                                             'MET TA GARDE',
                                             'Arrête de piffer tes ults SwiftRage',
                                             'Tu main Faust? leix34Trigerred',
@@ -25,19 +20,19 @@ game_replies = {
                                             'Tu main May? WutFace',
                                             'DONT LOOK BACK SwiftRage',
                                             'Le choppeur fou PogChamp'],
-    'Monster Hunter: World':               ['Arrête de critiquer les hitboxes stp Kappa',
+    'Monster Hunter: World':                ['Arrête de critiquer les hitboxes stp Kappa',
                                             '#FixTheClaw',
                                             'Toi aussi tu aimes les monstres originaux comme le Fatalis? Kappa',
                                             "RisE C'eSt B1",
                                             'Tu peux rejoindre la session et carry grâce à la commande !id SeemsGood'],
-    'DOOM Eternal':                        ['RIP AND TEAR leix34Trigerred',
+    'DOOM Eternal':                         ['RIP AND TEAR leix34Trigerred',
                                             'Meurs démon SwiftRage',
                                             '#BloodPunchFixed', ],
-    'Monster Hunter Generations Ultimate': ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
+    'Monster Hunter Generations Ultimate':  ['Tu peux rejoindre avec la commande !id si tu as une GBA Kappa',
                                             "J'ai beau être un robot, j'ai mal aux yeux devant GU smallp9EuuuuuH",
                                             'Toi aussi tu es hébété devant le MALAISE du Tigrex??',
                                             "Je note ton message 6 sur l'échelle de MALAISE du Diablos Noir"],
-    'Monster Hunter Rise':                 ['World > Rise Kappa',
+    'Monster Hunter Rise':                  ['World > Rise Kappa',
                                             "Comment s'appelle ton palico? <3",
                                             "Comment s'appelle ton doggo? <3",
                                             '#TeamMarteau',
@@ -45,9 +40,9 @@ game_replies = {
                                             'Tiens, prend ce filoptère <3',
                                             '#TeamGS',
                                             'Fais gaffe, il y a un narga malaisant derrière toi!'],
-    'Middle-earth: Shadow of War':         ['La fosse SwiftRage',
+    'Middle-earth: Shadow of War':          ['La fosse SwiftRage',
                                             'Je suis enragé par ton message SwiftRage'],
-    'Elden Ring':                          ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
+    'Elden Ring':                           ['Mes yeux de robot détectent des points pas dépensés dans la force! Il est temps de respec SwiftRage',
                                             '#TeamClaymore',
                                             '#TeamEspadon',
                                             "Le cheval magique c'est vraiment génial!",
@@ -92,9 +87,13 @@ game_replies = {
                                              'Fais gaffe au pics en dessous Kappa'],
     'God of War Ragnarök':                  ['A gauche!', 'A droite!'],
     'Star Citizen':                         ['Pyro est inclus dans la prochaine maj de LeixBot PogChamp'],
-    'Space Marine 2':                       ['FOR THE EMPEROR!',
+    'Warhammer 40,000: Space Marine II':    ['FOR THE EMPEROR!',
                                              'Guys, full heal at drop pod',
                                              'Emmenez ce genogerme au bout mon frere!'],
+    'Monster Hunter Wilds':                 ['Jin Dahaad!', "Cha'ah Doudoud!"],
+    'Death Stranding':                      ['Moi, je pisse droit moi'],
+    "Death Stranding: Director's Cut":      ['Moi, je pisse droit moi'],
+
 }
 
 vip_replies = [
@@ -110,28 +109,34 @@ artist_replies = [
 ]
 
 
-async def auto_so(bot: commands.Bot, message: Message, vip_info):
-    vip_name = message.author.display_name
-    vip_channel_info = await bot.fetch_channel(message.author.name)
+async def auto_so(bot: commands.AutoBot, message: ChatMessage, vip_info: dict):
+    if not await is_vip_so(message.broadcaster.id):
+        return
+    # Check if user is VIP or moderator
+
+    if not (message.chatter.moderator or message.chatter.vip):
+        return
+    
+    vip_name = message.chatter.display_name
+    vip_channel_info = await bot.fetch_channel(message.chatter.id)
+    
     stream = await bot.fetch_streams(
-        user_logins=[
-            message.author.channel.name
+        user_ids=[
+            message.broadcaster.id,
         ])
 
+    # Check if automatic shoutout already triggered in the ongoing stream
     if (len(stream) == 0 or
-        (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at) or
-        not is_vip_so(message.author.channel.name) or
-        ('vip' not in message.author.badges and
-         'moderator' not in message.author.badges and
-         'artist' not in message.author.badges)):
+        (vip_name in vip_info and vip_info[vip_name] > stream[0].started_at)):
         return
 
+    LOGGER.debug(f"Auto SO for VIP {vip_name} in channel {message.broadcaster.name}")
     # Update last automatic shoutout time
-    vip_info[message.author.display_name] = datetime.now(timezone.utc)
+    vip_info[vip_name] = datetime.now(timezone.utc)
 
     # Send message
     reply = ''
-    if 'artist-badge' in message.author.badges:
+    if message.chatter.artist:
         reply = f'@{vip_name} est un artiste super cool! Passez sur sa chaine www.twitch.tv/{vip_name} !'
         if vip_channel_info.game_name:
             reply += f' Il propose du gaming de qualitay sur {vip_channel_info.game_name}'
@@ -140,13 +145,13 @@ async def auto_so(bot: commands.Bot, message: Message, vip_info):
     else:
         reply = f"@{vip_name} ne stream pas mais c'est quelqu'un de super cool SeemsGood"
 
-    await message.author.channel.send(reply)
+    await message.broadcaster.send_message(reply, bot.user)
 
 
-async def random_reply(bot, message: Message):
-    channel_info = await bot.fetch_channel(message.channel.name)
+async def random_reply(bot: commands.AutoBot, message: ChatMessage):
+    channel_info = await bot.fetch_channel(message.broadcaster.id)
     compiled_msg = re.compile(re.escape('@leixbot'), re.IGNORECASE)
-    msg_clean = compiled_msg.sub('', message.content)
+    msg_clean = compiled_msg.sub('', message.text)
     reply_pool = [
         "wsh t ki",
         "DONT LOOK BACK",
@@ -156,120 +161,30 @@ async def random_reply(bot, message: Message):
         "J'ai libéré Kingo SeemsGood",
         'Tu as entendu parler du Denfest? PogChamp'
     ]
+
     if channel_info.game_name in game_replies:
+        LOGGER.info(f"Adding game specific replies for {channel_info.game_name}")
         reply_pool += game_replies[channel_info.game_name]
 
-    if 'vip' in message.author.badges:
+    if message.chatter.vip:
         reply_pool += vip_replies
-    if 'artist' in message.author.badges:
+    if message.chatter.artist:
         reply_pool += artist_replies
 
     reply = random.choice(reply_pool)
-    await message.author.channel.send(f"@{message.author.display_name} {reply}")
+    await message.broadcaster.send_message(reply, bot.user, reply_to_message_id=message.id)
 
 
-async def random_bot_reply(message):
+async def random_bot_reply(bot:commands.AutoBot, message: ChatMessage):
     reply_pool = [
-        f'LeixBot > {message.author.name} SwiftRage',
-        f"LeixBot s'en charge {message.author.name} MrDestructoid",
-        f'#LeixBotOnly, pas besoin de toi @{message.author.name}'
+        f'LeixBot > {message.chatter.name} SwiftRage',
+        f"LeixBot s'en charge {message.chatter.name} MrDestructoid",
+        f'#LeixBotOnly, pas besoin de toi @{message.chatter.name}'
     ]
     reply = random.choice(reply_pool)
-    await message.author.channel.send(f"{reply}")
+    await message.broadcaster.send_message(f"{reply}", bot.user)
 
 
 def check_for_bot(message):
     # TODO: Add a bot detection system
     return True
-
-
-used = {}
-
-
-def check_cooldown(channel, user):
-    cooldownlength = get_kappagen_cooldown(channel)
-    try:
-        if ((channel not in used or user not in used[channel]) or (time.time() - used[channel][user]) > cooldownlength):
-            used[channel][user] = time.time()
-            return True
-        else:
-            logging.info(
-                f'Command was used in the last {cooldownlength} seconds'
-            )
-            return False
-    except KeyError:
-        if channel in used:
-            used[channel][user] = time.time()
-        else:
-            used[channel] = {user: time.time()}
-        return True
-
-
-### API ###
-BASE_URL = "https://api.twitch.tv/helix"
-
-
-async def modify_stream(user: User, game_id: int = None, language: str = None, title: str = None):
-    url = BASE_URL + "/channels?broadcaster_id=" + str(user.id)
-    auth = "Bearer " + await get_token(user.name)
-    id = os.environ['CLIENT_ID']
-
-    headers = {
-        "Client-Id": id,
-        "Authorization": auth
-    }
-
-    data = {
-        k: v
-        for k, v in {"game_id": game_id, "broadcaster_language": language, "title": title}.items()
-        if v is not None
-    }
-    user_encode_data = json.dumps(data).encode('utf-8')
-
-    logging.info('Updating stream')
-
-    async with aiohttp.ClientSession() as session:
-        async with session.patch(url, data=data, headers=headers) as resp:
-            return resp.status == 204
-
-async def get_emote_list(user: User) -> [str]:  
-    url = BASE_URL + "/chat/emotes?broadcaster_id=" + str(user.id)
-    headers = {
-        "Client-Id": os.environ['CLIENT_ID'],
-        "Authorization": "Bearer " + os.environ['ACCESS_TOKEN']
-    }
-    logging.info(f"Getting emotes list for channel {user}")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as resp:
-            data = await resp.json()
-            emotes = [url['images']['url_4x'] for url in data['data']]
-    return emotes
-
-### ALERTS ###
-# Websocket connection parameters
-WS_URL = "ws://57.128.22.87/externalwebsocket"
-headers = {
-    "api-key": "myKey"
-}
-protocols = ["external"]
-
-async def play_alert(channel, event='default', viewer=None, msg=None):
-    data = {'command' : 'PLAY',
-        'page' : 'TWITCH_EVENT',
-        'content':{
-            "alert": {
-                "layout": "",
-                "message": msg,
-                "image": event + ".png",
-                "sound": event + ".mp3",
-                "soundVolume": 50,
-                "viewer": viewer
-            }
-        },
-        'channel': channel}
-
-    async with connect(WS_URL, extra_headers=headers, subprotocols=protocols) as session:
-        await session.send(str({'command': 'REGISTER', 'page': 'TWITCH_EVENT'}))
-        await session.send(str(data))
-        await session.close()
-

@@ -1,12 +1,10 @@
 import asyncio
-import datetime
+from datetime import datetime, timezone
+import secrets
 import logging
-import os
 
-import wikiquote
 import wikipediaapi
 import humanize
-import random
 
 from twitchio import User
 from twitchio.ext import commands
@@ -17,11 +15,12 @@ humanize.i18n.activate("fr_FR")
 wiki = wikipediaapi.Wikipedia('fr')
 
 
-class Misc(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+LOGGER: logging.Logger = logging.getLogger("Components.Misc")
+
+class Misc(commands.Component):
+    def __init__(self, bot: commands.AutoBot):
         self.bot = bot
         self.game_id = {}
-        random.seed(datetime.datetime.now())
 
     @commands.command(name="leixban")
     async def leixban(self, ctx: commands.Context, user):
@@ -55,18 +54,18 @@ class Misc(commands.Cog):
             await ctx.send(f'Faites de beaux rêves {names} <3')
 
     @commands.command(name="uptime")
-    async def uptime(self, ctx: commands.bot.Context):
+    async def uptime(self, ctx: commands.Context):
         """Donne le temps du live actuel. Ex: !uptime"""
         stream = await self.bot.fetch_streams(
             user_logins=[
-                ctx.author.channel.name
+                ctx.channel.name
             ])
 
         if len(stream) == 0:
             return await ctx.send("Il n'y a pas de live en cours :(")
 
-        uptime = datetime.datetime.now(
-            datetime.timezone.utc) - stream[0].started_at
+        uptime = datetime.now(
+            timezone.utc) - stream[0].started_at
         await ctx.send(f"Ton streamer préféré est en live depuis {humanize.precisedelta(uptime, minimum_unit='seconds')}")
 
     @commands.command(name="dblade")
@@ -95,8 +94,8 @@ class Misc(commands.Cog):
     async def shoutout(self, ctx: commands.Context, broadcaster: User):
         """Shoutout l'utilisateur choisi. Ex: !so leix34"""
         await ctx.send('yapadeso')
-        if 'vip' in ctx.author.badges or ctx.author.is_mod:
-            channel_info = await self.bot.fetch_channel(broadcaster.name)
+        if ctx.author.vip or ctx.author.moderator:
+            channel_info = await self.bot.fetch_channel(broadcaster.id)
             await asyncio.sleep(5)
             if channel_info.game_name:
                 await ctx.send(
@@ -123,28 +122,6 @@ class Misc(commands.Cog):
     async def cam(self, ctx: commands.Context):
         await ctx.send('MET LA CAM')
 
-    @commands.command(name="quote", aliases=["citation"])
-    async def quote(self, ctx: commands.Context, *author):
-        """Renvoie une citation aléatoire depuis wikiquote. L'auteur peut etre
-        spécifié.
-        Ex: !quote Kojima
-        """
-        if not author:
-            author = wikiquote.random_titles(max_titles=1, lang='fr')
-        else:
-            author = ' '.join(author)
-            author = wikiquote.search(author, lang='fr')
-
-        author = random.choice(author)
-        quotes = [
-            x for x in wikiquote.quotes(author, lang='fr') if len(x) < 500 - len(author)
-        ]
-        quote = random.choice(quotes)
-        await ctx.send(f'{quote} - {author}')
-
-        if not quote:
-            await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
-
     @commands.command(name="wikipedia", aliases=['wiki'])
     async def wikipedia(self, ctx: commands.Context, *query):
         """Renvoie la definition wikipedia d'un mot.
@@ -152,7 +129,7 @@ class Misc(commands.Cog):
         """
         query = '_'.join(query)
         page = wiki.page(query)
-        print(page.summary.splitlines()[0])
+        LOGGER.debug(page.summary.splitlines()[0])
         if page.exists():
             if len(page.summary.splitlines()[0]) > 450:
                 await ctx.send(f'Il y a tant a dire! La page pour cette recherche: {page.fullurl }')
@@ -161,13 +138,12 @@ class Misc(commands.Cog):
         else:
             await ctx.send(f"Je n'ai rien trouvé pour cette recherche :(")
 
-
     @commands.command(name="pileouface", aliases=['pile', 'face', 'coinflip'])
     async def pileouface(self, ctx: commands.Context, *query):
         """Fait un pile ou face.
         Ex: !pileouface
         """
-        flip = random.choice(['pile', 'face'])
+        flip = secrets.choice(['pile', 'face'])
         await ctx.send(f'''C'est {flip}!''')
 
     @commands.command(name='howlong', aliases=['hl2b'])
@@ -177,10 +153,10 @@ class Misc(commands.Cog):
         """
         game = ' '.join(game)
         results = await HowLongToBeat().async_search(game, similarity_case_sensitive=False)
-        logging.info(results)
+        LOGGER.debug(results)
         if results is not None and len(results) > 0:
             game_entry = max(results, key=lambda element: element.similarity)
-            logging.info(game_entry)
+            LOGGER.debug(game_entry)
             main_story = game_entry.main_story
             extra = game_entry.main_extra
             completionist = game_entry.completionist
@@ -192,18 +168,18 @@ class Misc(commands.Cog):
     @ commands.command(name='id')
     async def id(self, ctx: commands.Context):
         """Renvoie l'id de la session (si existant). Ex: !id"""
-        if ctx.author.channel.name not in self.game_id:
+        if ctx.broadcaster.id not in self.game_id:
             await ctx.send("Il n'y a pas d'id :(")
         else:
-            await ctx.send(self.game_id[ctx.author.channel.name])
+            await ctx.send(self.game_id[ctx.broadcaster.id])
 
-    @ commands.command(name="setId")
+    @commands.is_moderator()
+    @ commands.command(name="setId", aliases=['setid'])
     async def setId(self, ctx: commands.Context, *id):
         """Regle l'id de la session. Ex: !id abc 1234"""
-        if ctx.author.is_mod:
-            self.game_id[ctx.author.channel.name] = ' '.join(id)
-            await ctx.send('id set SeemsGood')
+        self.game_id[ctx.broadcaster.id] = ' '.join(id)
+        await ctx.send('id set SeemsGood')
 
 
-def prepare(bot: commands.Bot):
-    bot.add_cog(Misc(bot))
+async def setup(bot: commands.AutoBot):
+    await bot.add_component(Misc(bot))
